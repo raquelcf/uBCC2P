@@ -1,0 +1,2395 @@
+#include <iostream>
+#include <iomanip>
+#include <string>
+#include <fstream>
+
+#include "TTree.h"
+#include "TChain.h"
+#include "TSystem.h"
+#include "THStack.h"
+#include "TH1.h"
+#include "TFile.h"
+#include "TGraph.h"
+#include "TString.h"
+#include "TCanvas.h"
+#include "TLatex.h"
+#include "TPad.h"
+#include "TGaxis.h"
+#include "TLegend.h"
+#include "TLine.h"
+#include "TROOT.h"
+#include "TStyle.h"  
+
+#include <TH2.h>
+#include <TStyle.h>
+#include <TH1D.h>
+
+#include <cstring>
+//using namespace std;
+
+void DataMC_PID_300_Tune3(){ 
+  
+  TFile* BNBMC = new TFile("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/MC/analysis_PID_300_BNBMCTune3.root","READ");
+  TFile* OnBeam = new TFile("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/MC/analysis_PID_OnBeam.root","READ");
+  TFile* OffBeam = new TFile("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/MC/analysis_PID_OffBeam.root","READ");
+
+  std::cout<<"antes de Tfile"<<std::endl;
+  
+  ////// BNB MC
+
+  TH1D* selmuon_lenght_CC0Pion0Proton_PID_300 = (TH1D*) BNBMC->Get("selmuon_lenght_CC0Pion0Proton_PID_300");
+  TH1D* selmuon_lenght_CC0Pion1Proton_PID_300 = (TH1D*) BNBMC->Get("selmuon_lenght_CC0Pion1Proton_PID_300");
+  TH1D* selmuon_lenght_CC0Pion2Proton_PID_300 = (TH1D*) BNBMC->Get("selmuon_lenght_CC0Pion2Proton_PID_300");
+  TH1D* selmuon_lenght_CC0PionNProton_PID_300 = (TH1D*) BNBMC->Get("selmuon_lenght_CC0PionNProton_PID_300");
+  TH1D* selmuon_lenght_CC1PionNProton_PID_300 = (TH1D*) BNBMC->Get("selmuon_lenght_CC1PionNProton_PID_300");
+  TH1D* selmuon_lenght_CCNPionNProton_PID_300 = (TH1D*) BNBMC->Get("selmuon_lenght_CCNPionNProton_PID_300");
+  TH1D* selmuon_lenght_CCNue_PID_300 = (TH1D*) BNBMC->Get("selmuon_lenght_CCNue_PID_300");
+  TH1D* selmuon_lenght_NC_PID_300 = (TH1D*) BNBMC->Get("selmuon_lenght_NC_PID_300");
+  TH1D* selmuon_lenght_OOFV_PID_300 = (TH1D*) BNBMC->Get("selmuon_lenght_OOFV_PID_300");
+  TH1D* selmuon_lenght_EXT_PID_300 = (TH1D*) BNBMC->Get("selmuon_lenght_EXT_PID_300");
+  TH1D* selmuon_lenght_other_PID_300 = (TH1D*) BNBMC->Get("selmuon_lenght_other_PID_300");
+
+  TH1D* selmuon_mom_CC0Pion0Proton_PID_300 = (TH1D*) BNBMC->Get("selmuon_mom_CC0Pion0Proton_PID_300");
+  TH1D* selmuon_mom_CC0Pion1Proton_PID_300 = (TH1D*) BNBMC->Get("selmuon_mom_CC0Pion1Proton_PID_300");
+  TH1D* selmuon_mom_CC0Pion2Proton_PID_300 = (TH1D*) BNBMC->Get("selmuon_mom_CC0Pion2Proton_PID_300");
+  TH1D* selmuon_mom_CC0PionNProton_PID_300 = (TH1D*) BNBMC->Get("selmuon_mom_CC0PionNProton_PID_300");
+  TH1D* selmuon_mom_CC1PionNProton_PID_300 = (TH1D*) BNBMC->Get("selmuon_mom_CC1PionNProton_PID_300");
+  TH1D* selmuon_mom_CCNPionNProton_PID_300 = (TH1D*) BNBMC->Get("selmuon_mom_CCNPionNProton_PID_300");
+  TH1D* selmuon_mom_CCNue_PID_300 = (TH1D*) BNBMC->Get("selmuon_mom_CCNue_PID_300");
+  TH1D* selmuon_mom_NC_PID_300 = (TH1D*) BNBMC->Get("selmuon_mom_NC_PID_300");
+  TH1D* selmuon_mom_OOFV_PID_300 = (TH1D*) BNBMC->Get("selmuon_mom_OOFV_PID_300");
+  TH1D* selmuon_mom_EXT_PID_300 = (TH1D*) BNBMC->Get("selmuon_mom_EXT_PID_300");
+  TH1D* selmuon_mom_other_PID_300 = (TH1D*) BNBMC->Get("selmuon_mom_other_PID_300");
+
+  TH1D* selmuon_costheta_CC0Pion0Proton_PID_300 = (TH1D*) BNBMC->Get("selmuon_costheta_CC0Pion0Proton_PID_300");
+  TH1D* selmuon_costheta_CC0Pion1Proton_PID_300 = (TH1D*) BNBMC->Get("selmuon_costheta_CC0Pion1Proton_PID_300");
+  TH1D* selmuon_costheta_CC0Pion2Proton_PID_300 = (TH1D*) BNBMC->Get("selmuon_costheta_CC0Pion2Proton_PID_300");
+  TH1D* selmuon_costheta_CC0PionNProton_PID_300 = (TH1D*) BNBMC->Get("selmuon_costheta_CC0PionNProton_PID_300");
+  TH1D* selmuon_costheta_CC1PionNProton_PID_300 = (TH1D*) BNBMC->Get("selmuon_costheta_CC1PionNProton_PID_300");
+  TH1D* selmuon_costheta_CCNPionNProton_PID_300 = (TH1D*) BNBMC->Get("selmuon_costheta_CCNPionNProton_PID_300");
+  TH1D* selmuon_costheta_CCNue_PID_300 = (TH1D*) BNBMC->Get("selmuon_costheta_CCNue_PID_300");
+  TH1D* selmuon_costheta_NC_PID_300 = (TH1D*) BNBMC->Get("selmuon_costheta_NC_PID_300");
+  TH1D* selmuon_costheta_OOFV_PID_300 = (TH1D*) BNBMC->Get("selmuon_costheta_OOFV_PID_300");
+  TH1D* selmuon_costheta_EXT_PID_300 = (TH1D*) BNBMC->Get("selmuon_costheta_EXT_PID_300");
+  TH1D* selmuon_costheta_other_PID_300 = (TH1D*) BNBMC->Get("selmuon_costheta_other_PID_300");
+
+  TH1D* selmuon_phi_CC0Pion0Proton_PID_300 = (TH1D*) BNBMC->Get("selmuon_phi_CC0Pion0Proton_PID_300");
+  TH1D* selmuon_phi_CC0Pion1Proton_PID_300 = (TH1D*) BNBMC->Get("selmuon_phi_CC0Pion1Proton_PID_300");
+  TH1D* selmuon_phi_CC0Pion2Proton_PID_300 = (TH1D*) BNBMC->Get("selmuon_phi_CC0Pion2Proton_PID_300");
+  TH1D* selmuon_phi_CC0PionNProton_PID_300 = (TH1D*) BNBMC->Get("selmuon_phi_CC0PionNProton_PID_300");
+  TH1D* selmuon_phi_CC1PionNProton_PID_300 = (TH1D*) BNBMC->Get("selmuon_phi_CC1PionNProton_PID_300");
+  TH1D* selmuon_phi_CCNPionNProton_PID_300 = (TH1D*) BNBMC->Get("selmuon_phi_CCNPionNProton_PID_300");
+  TH1D* selmuon_phi_CCNue_PID_300 = (TH1D*) BNBMC->Get("selmuon_phi_CCNue_PID_300");
+  TH1D* selmuon_phi_NC_PID_300 = (TH1D*) BNBMC->Get("selmuon_phi_NC_PID_300");
+  TH1D* selmuon_phi_OOFV_PID_300 = (TH1D*) BNBMC->Get("selmuon_phi_OOFV_PID_300");
+  TH1D* selmuon_phi_EXT_PID_300 = (TH1D*) BNBMC->Get("selmuon_phi_EXT_PID_300");
+  TH1D* selmuon_phi_other_PID_300 = (TH1D*) BNBMC->Get("selmuon_phi_other_PID_300");
+
+  TH1D* selmuon_lenght_muon_PID_300 = (TH1D*) BNBMC->Get("selmuon_lenght_muon_PID_300");
+  TH1D* selmuon_lenght_proton_PID_300 = (TH1D*) BNBMC->Get("selmuon_lenght_proton_PID_300");
+  TH1D* selmuon_lenght_pion_PID_300 = (TH1D*) BNBMC->Get("selmuon_lenght_pion_PID_300");
+  TH1D* selmuon_lenght_electron_PID_300 = (TH1D*) BNBMC->Get("selmuon_lenght_electron_PID_300");
+  TH1D* selmuon_lenght_pother_PID_300 = (TH1D*) BNBMC->Get("selmuon_lenght_pother_PID_300");
+
+  TH1D* selmuon_mom_muon_PID_300 = (TH1D*) BNBMC->Get("selmuon_mom_muon_PID_300");
+  TH1D* selmuon_mom_proton_PID_300 = (TH1D*) BNBMC->Get("selmuon_mom_proton_PID_300");
+  TH1D* selmuon_mom_pion_PID_300 = (TH1D*) BNBMC->Get("selmuon_mom_pion_PID_300");
+  TH1D* selmuon_mom_electron_PID_300 = (TH1D*) BNBMC->Get("selmuon_mom_electron_PID_300");
+  TH1D* selmuon_mom_pother_PID_300 = (TH1D*) BNBMC->Get("selmuon_mom_pother_PID_300");
+
+  TH1D* selmuon_costheta_muon_PID_300 = (TH1D*) BNBMC->Get("selmuon_costheta_muon_PID_300");
+  TH1D* selmuon_costheta_proton_PID_300 = (TH1D*) BNBMC->Get("selmuon_costheta_proton_PID_300");
+  TH1D* selmuon_costheta_pion_PID_300 = (TH1D*) BNBMC->Get("selmuon_costheta_pion_PID_300");
+  TH1D* selmuon_costheta_electron_PID_300 = (TH1D*) BNBMC->Get("selmuon_costheta_electron_PID_300");
+  TH1D* selmuon_costheta_pother_PID_300 = (TH1D*) BNBMC->Get("selmuon_costheta_pother_PID_300");
+
+  TH1D* selmuon_phi_muon_PID_300 = (TH1D*) BNBMC->Get("selmuon_phi_muon_PID_300");
+  TH1D* selmuon_phi_proton_PID_300 = (TH1D*) BNBMC->Get("selmuon_phi_proton_PID_300");
+  TH1D* selmuon_phi_pion_PID_300 = (TH1D*) BNBMC->Get("selmuon_phi_pion_PID_300");
+  TH1D* selmuon_phi_electron_PID_300 = (TH1D*) BNBMC->Get("selmuon_phi_electron_PID_300");
+  TH1D* selmuon_phi_pother_PID_300 = (TH1D*) BNBMC->Get("selmuon_phi_pother_PID_300");
+
+  TH1D* selmuon_chi2proton_muon_PID_300 = (TH1D*) BNBMC->Get("selmuon_chi2proton_muon_PID_300");
+  TH1D* selmuon_chi2proton_proton_PID_300 = (TH1D*) BNBMC->Get("selmuon_chi2proton_proton_PID_300");
+  TH1D* selmuon_chi2proton_pion_PID_300 = (TH1D*) BNBMC->Get("selmuon_chi2proton_pion_PID_300");
+  TH1D* selmuon_chi2proton_electron_PID_300 = (TH1D*) BNBMC->Get("selmuon_chi2proton_electron_PID_300");
+  TH1D* selmuon_chi2proton_pother_PID_300 = (TH1D*) BNBMC->Get("selmuon_chi2proton_pother_PID_300");
+
+  TH1D* selmuon_chi2proton_cont_muon_PID_300 = (TH1D*) BNBMC->Get("selmuon_chi2proton_cont_muon_PID_300");
+  TH1D* selmuon_chi2proton_cont_proton_PID_300 = (TH1D*) BNBMC->Get("selmuon_chi2proton_cont_proton_PID_300");
+  TH1D* selmuon_chi2proton_cont_pion_PID_300 = (TH1D*) BNBMC->Get("selmuon_chi2proton_cont_pion_PID_300");
+  TH1D* selmuon_chi2proton_cont_electron_PID_300 = (TH1D*) BNBMC->Get("selmuon_chi2proton_cont_electron_PID_300");
+  TH1D* selmuon_chi2proton_cont_pother_PID_300 = (TH1D*) BNBMC->Get("selmuon_chi2proton_cont_pother_PID_300");
+
+  TH1D* selmuon_chi2proton_uncont_muon_PID_300 = (TH1D*) BNBMC->Get("selmuon_chi2proton_uncont_muon_PID_300");
+  TH1D* selmuon_chi2proton_uncont_proton_PID_300 = (TH1D*) BNBMC->Get("selmuon_chi2proton_uncont_proton_PID_300");
+  TH1D* selmuon_chi2proton_uncont_pion_PID_300 = (TH1D*) BNBMC->Get("selmuon_chi2proton_uncont_pion_PID_300");
+  TH1D* selmuon_chi2proton_uncont_electron_PID_300 = (TH1D*) BNBMC->Get("selmuon_chi2proton_uncont_electron_PID_300");
+  TH1D* selmuon_chi2proton_uncont_pother_PID_300 = (TH1D*) BNBMC->Get("selmuon_chi2proton_uncont_pother_PID_300");
+
+  TH2D* selmuon_dEdx_vs_resrange_muon_PID_300 = (TH2D*) BNBMC->Get("selmuon_dEdx_vs_resrange_muon_PID_300");
+  TH2D* selmuon_dEdx_vs_resrange_proton_PID_300 = (TH2D*) BNBMC->Get("selmuon_dEdx_vs_resrange_proton_PID_300");
+  TH2D* selmuon_dEdx_vs_resrange_pion_PID_300 = (TH2D*) BNBMC->Get("selmuon_dEdx_vs_resrange_pion_PID_300");
+
+  /// proton 1
+
+  TH1D* selproton1_lenght_CC0Pion0Proton_PID_300 = (TH1D*) BNBMC->Get("selproton1_lenght_CC0Pion0Proton_PID_300");
+  TH1D* selproton1_lenght_CC0Pion1Proton_PID_300 = (TH1D*) BNBMC->Get("selproton1_lenght_CC0Pion1Proton_PID_300");
+  TH1D* selproton1_lenght_CC0Pion2Proton_PID_300 = (TH1D*) BNBMC->Get("selproton1_lenght_CC0Pion2Proton_PID_300");
+  TH1D* selproton1_lenght_CC0PionNProton_PID_300 = (TH1D*) BNBMC->Get("selproton1_lenght_CC0PionNProton_PID_300");
+  TH1D* selproton1_lenght_CC1PionNProton_PID_300 = (TH1D*) BNBMC->Get("selproton1_lenght_CC1PionNProton_PID_300");
+  TH1D* selproton1_lenght_CCNPionNProton_PID_300 = (TH1D*) BNBMC->Get("selproton1_lenght_CCNPionNProton_PID_300");
+  TH1D* selproton1_lenght_CCNue_PID_300 = (TH1D*) BNBMC->Get("selproton1_lenght_CCNue_PID_300");
+  TH1D* selproton1_lenght_NC_PID_300 = (TH1D*) BNBMC->Get("selproton1_lenght_NC_PID_300");
+  TH1D* selproton1_lenght_OOFV_PID_300 = (TH1D*) BNBMC->Get("selproton1_lenght_OOFV_PID_300");
+  TH1D* selproton1_lenght_EXT_PID_300 = (TH1D*) BNBMC->Get("selproton1_lenght_EXT_PID_300");
+  TH1D* selproton1_lenght_other_PID_300 = (TH1D*) BNBMC->Get("selproton1_lenght_other_PID_300");
+
+  TH1D* selproton1_mom_CC0Pion0Proton_PID_300 = (TH1D*) BNBMC->Get("selproton1_mom_CC0Pion0Proton_PID_300");
+  TH1D* selproton1_mom_CC0Pion1Proton_PID_300 = (TH1D*) BNBMC->Get("selproton1_mom_CC0Pion1Proton_PID_300");
+  TH1D* selproton1_mom_CC0Pion2Proton_PID_300 = (TH1D*) BNBMC->Get("selproton1_mom_CC0Pion2Proton_PID_300");
+  TH1D* selproton1_mom_CC0PionNProton_PID_300 = (TH1D*) BNBMC->Get("selproton1_mom_CC0PionNProton_PID_300");
+  TH1D* selproton1_mom_CC1PionNProton_PID_300 = (TH1D*) BNBMC->Get("selproton1_mom_CC1PionNProton_PID_300");
+  TH1D* selproton1_mom_CCNPionNProton_PID_300 = (TH1D*) BNBMC->Get("selproton1_mom_CCNPionNProton_PID_300");
+  TH1D* selproton1_mom_CCNue_PID_300 = (TH1D*) BNBMC->Get("selproton1_mom_CCNue_PID_300");
+  TH1D* selproton1_mom_NC_PID_300 = (TH1D*) BNBMC->Get("selproton1_mom_NC_PID_300");
+  TH1D* selproton1_mom_OOFV_PID_300 = (TH1D*) BNBMC->Get("selproton1_mom_OOFV_PID_300");
+  TH1D* selproton1_mom_EXT_PID_300 = (TH1D*) BNBMC->Get("selproton1_mom_EXT_PID_300");
+  TH1D* selproton1_mom_other_PID_300 = (TH1D*) BNBMC->Get("selproton1_mom_other_PID_300");
+
+  TH1D* selproton1_costheta_CC0Pion0Proton_PID_300 = (TH1D*) BNBMC->Get("selproton1_costheta_CC0Pion0Proton_PID_300");
+  TH1D* selproton1_costheta_CC0Pion1Proton_PID_300 = (TH1D*) BNBMC->Get("selproton1_costheta_CC0Pion1Proton_PID_300");
+  TH1D* selproton1_costheta_CC0Pion2Proton_PID_300 = (TH1D*) BNBMC->Get("selproton1_costheta_CC0Pion2Proton_PID_300");
+  TH1D* selproton1_costheta_CC0PionNProton_PID_300 = (TH1D*) BNBMC->Get("selproton1_costheta_CC0PionNProton_PID_300");
+  TH1D* selproton1_costheta_CC1PionNProton_PID_300 = (TH1D*) BNBMC->Get("selproton1_costheta_CC1PionNProton_PID_300");
+  TH1D* selproton1_costheta_CCNPionNProton_PID_300 = (TH1D*) BNBMC->Get("selproton1_costheta_CCNPionNProton_PID_300");
+  TH1D* selproton1_costheta_CCNue_PID_300 = (TH1D*) BNBMC->Get("selproton1_costheta_CCNue_PID_300");
+  TH1D* selproton1_costheta_NC_PID_300 = (TH1D*) BNBMC->Get("selproton1_costheta_NC_PID_300");
+  TH1D* selproton1_costheta_OOFV_PID_300 = (TH1D*) BNBMC->Get("selproton1_costheta_OOFV_PID_300");
+  TH1D* selproton1_costheta_EXT_PID_300 = (TH1D*) BNBMC->Get("selproton1_costheta_EXT_PID_300");
+  TH1D* selproton1_costheta_other_PID_300 = (TH1D*) BNBMC->Get("selproton1_costheta_other_PID_300");
+
+  TH1D* selproton1_phi_CC0Pion0Proton_PID_300 = (TH1D*) BNBMC->Get("selproton1_phi_CC0Pion0Proton_PID_300");
+  TH1D* selproton1_phi_CC0Pion1Proton_PID_300 = (TH1D*) BNBMC->Get("selproton1_phi_CC0Pion1Proton_PID_300");
+  TH1D* selproton1_phi_CC0Pion2Proton_PID_300 = (TH1D*) BNBMC->Get("selproton1_phi_CC0Pion2Proton_PID_300");
+  TH1D* selproton1_phi_CC0PionNProton_PID_300 = (TH1D*) BNBMC->Get("selproton1_phi_CC0PionNProton_PID_300");
+  TH1D* selproton1_phi_CC1PionNProton_PID_300 = (TH1D*) BNBMC->Get("selproton1_phi_CC1PionNProton_PID_300");
+  TH1D* selproton1_phi_CCNPionNProton_PID_300 = (TH1D*) BNBMC->Get("selproton1_phi_CCNPionNProton_PID_300");
+  TH1D* selproton1_phi_CCNue_PID_300 = (TH1D*) BNBMC->Get("selproton1_phi_CCNue_PID_300");
+  TH1D* selproton1_phi_NC_PID_300 = (TH1D*) BNBMC->Get("selproton1_phi_NC_PID_300");
+  TH1D* selproton1_phi_OOFV_PID_300 = (TH1D*) BNBMC->Get("selproton1_phi_OOFV_PID_300");
+  TH1D* selproton1_phi_EXT_PID_300 = (TH1D*) BNBMC->Get("selproton1_phi_EXT_PID_300");
+  TH1D* selproton1_phi_other_PID_300 = (TH1D*) BNBMC->Get("selproton1_phi_other_PID_300");
+
+  TH1D* selproton1_lenght_muon_PID_300 = (TH1D*) BNBMC->Get("selproton1_lenght_muon_PID_300");
+  TH1D* selproton1_lenght_proton_PID_300 = (TH1D*) BNBMC->Get("selproton1_lenght_proton_PID_300");
+  TH1D* selproton1_lenght_pion_PID_300 = (TH1D*) BNBMC->Get("selproton1_lenght_pion_PID_300");
+  TH1D* selproton1_lenght_electron_PID_300 = (TH1D*) BNBMC->Get("selproton1_lenght_electron_PID_300");
+  TH1D* selproton1_lenght_pother_PID_300 = (TH1D*) BNBMC->Get("selproton1_lenght_pother_PID_300");
+
+  TH1D* selproton1_costheta_muon_PID_300 = (TH1D*) BNBMC->Get("selproton1_costheta_muon_PID_300");
+  TH1D* selproton1_costheta_proton_PID_300 = (TH1D*) BNBMC->Get("selproton1_costheta_proton_PID_300");
+  TH1D* selproton1_costheta_pion_PID_300 = (TH1D*) BNBMC->Get("selproton1_costheta_pion_PID_300");
+  TH1D* selproton1_costheta_electron_PID_300 = (TH1D*) BNBMC->Get("selproton1_costheta_electron_PID_300");
+  TH1D* selproton1_costheta_pother_PID_300 = (TH1D*) BNBMC->Get("selproton1_costheta_pother_PID_300");
+
+  TH1D* selproton1_phi_muon_PID_300 = (TH1D*) BNBMC->Get("selproton1_phi_muon_PID_300");
+  TH1D* selproton1_phi_proton_PID_300 = (TH1D*) BNBMC->Get("selproton1_phi_proton_PID_300");
+  TH1D* selproton1_phi_pion_PID_300 = (TH1D*) BNBMC->Get("selproton1_phi_pion_PID_300");
+  TH1D* selproton1_phi_electron_PID_300 = (TH1D*) BNBMC->Get("selproton1_phi_electron_PID_300");
+  TH1D* selproton1_phi_pother_PID_300 = (TH1D*) BNBMC->Get("selproton1_phi_pother_PID_300");
+
+  TH1D* selproton1_chi2proton_muon_PID_300 = (TH1D*) BNBMC->Get("selproton1_chi2proton_muon_PID_300");
+  TH1D* selproton1_chi2proton_proton_PID_300 = (TH1D*) BNBMC->Get("selproton1_chi2proton_proton_PID_300");
+  TH1D* selproton1_chi2proton_pion_PID_300 = (TH1D*) BNBMC->Get("selproton1_chi2proton_pion_PID_300");
+  TH1D* selproton1_chi2proton_electron_PID_300 = (TH1D*) BNBMC->Get("selproton1_chi2proton_electron_PID_300");
+  TH1D* selproton1_chi2proton_pother_PID_300 = (TH1D*) BNBMC->Get("selproton1_chi2proton_pother_PID_300");
+
+  TH2D* selproton1_dEdx_vs_resrange_muon_PID_300 = (TH2D*) BNBMC->Get("selproton1_dEdx_vs_resrange_muon_PID_300");
+  TH2D* selproton1_dEdx_vs_resrange_proton_PID_300 = (TH2D*) BNBMC->Get("selproton1_dEdx_vs_resrange_proton_PID_300");
+  TH2D* selproton1_dEdx_vs_resrange_pion_PID_300 = (TH2D*) BNBMC->Get("selproton1_dEdx_vs_resrange_pion_PID_300");
+
+  /// proton 2
+  TH1D* selproton2_lenght_CC0Pion0Proton_PID_300 = (TH1D*) BNBMC->Get("selproton2_lenght_CC0Pion0Proton_PID_300");
+  TH1D* selproton2_lenght_CC0Pion1Proton_PID_300 = (TH1D*) BNBMC->Get("selproton2_lenght_CC0Pion1Proton_PID_300");
+  TH1D* selproton2_lenght_CC0Pion2Proton_PID_300 = (TH1D*) BNBMC->Get("selproton2_lenght_CC0Pion2Proton_PID_300");
+  TH1D* selproton2_lenght_CC0PionNProton_PID_300 = (TH1D*) BNBMC->Get("selproton2_lenght_CC0PionNProton_PID_300");
+  TH1D* selproton2_lenght_CC1PionNProton_PID_300 = (TH1D*) BNBMC->Get("selproton2_lenght_CC1PionNProton_PID_300");
+  TH1D* selproton2_lenght_CCNPionNProton_PID_300 = (TH1D*) BNBMC->Get("selproton2_lenght_CCNPionNProton_PID_300");
+  TH1D* selproton2_lenght_CCNue_PID_300 = (TH1D*) BNBMC->Get("selproton2_lenght_CCNue_PID_300");
+  TH1D* selproton2_lenght_NC_PID_300 = (TH1D*) BNBMC->Get("selproton2_lenght_NC_PID_300");
+  TH1D* selproton2_lenght_OOFV_PID_300 = (TH1D*) BNBMC->Get("selproton2_lenght_OOFV_PID_300");
+  TH1D* selproton2_lenght_EXT_PID_300 = (TH1D*) BNBMC->Get("selproton2_lenght_EXT_PID_300");
+  TH1D* selproton2_lenght_other_PID_300 = (TH1D*) BNBMC->Get("selproton2_lenght_other_PID_300");
+
+  TH1D* selproton2_mom_CC0Pion0Proton_PID_300 = (TH1D*) BNBMC->Get("selproton2_mom_CC0Pion0Proton_PID_300");
+  TH1D* selproton2_mom_CC0Pion1Proton_PID_300 = (TH1D*) BNBMC->Get("selproton2_mom_CC0Pion1Proton_PID_300");
+  TH1D* selproton2_mom_CC0Pion2Proton_PID_300 = (TH1D*) BNBMC->Get("selproton2_mom_CC0Pion2Proton_PID_300");
+  TH1D* selproton2_mom_CC0PionNProton_PID_300 = (TH1D*) BNBMC->Get("selproton2_mom_CC0PionNProton_PID_300");
+  TH1D* selproton2_mom_CC1PionNProton_PID_300 = (TH1D*) BNBMC->Get("selproton2_mom_CC1PionNProton_PID_300");
+  TH1D* selproton2_mom_CCNPionNProton_PID_300 = (TH1D*) BNBMC->Get("selproton2_mom_CCNPionNProton_PID_300");
+  TH1D* selproton2_mom_CCNue_PID_300 = (TH1D*) BNBMC->Get("selproton2_mom_CCNue_PID_300");
+  TH1D* selproton2_mom_NC_PID_300 = (TH1D*) BNBMC->Get("selproton2_mom_NC_PID_300");
+  TH1D* selproton2_mom_OOFV_PID_300 = (TH1D*) BNBMC->Get("selproton2_mom_OOFV_PID_300");
+  TH1D* selproton2_mom_EXT_PID_300 = (TH1D*) BNBMC->Get("selproton2_mom_EXT_PID_300");
+  TH1D* selproton2_mom_other_PID_300 = (TH1D*) BNBMC->Get("selproton2_mom_other_PID_300");
+
+  TH1D* selproton2_costheta_CC0Pion0Proton_PID_300 = (TH1D*) BNBMC->Get("selproton2_costheta_CC0Pion0Proton_PID_300");
+  TH1D* selproton2_costheta_CC0Pion1Proton_PID_300 = (TH1D*) BNBMC->Get("selproton2_costheta_CC0Pion1Proton_PID_300");
+  TH1D* selproton2_costheta_CC0Pion2Proton_PID_300 = (TH1D*) BNBMC->Get("selproton2_costheta_CC0Pion2Proton_PID_300");
+  TH1D* selproton2_costheta_CC0PionNProton_PID_300 = (TH1D*) BNBMC->Get("selproton2_costheta_CC0PionNProton_PID_300");
+  TH1D* selproton2_costheta_CC1PionNProton_PID_300 = (TH1D*) BNBMC->Get("selproton2_costheta_CC1PionNProton_PID_300");
+  TH1D* selproton2_costheta_CCNPionNProton_PID_300 = (TH1D*) BNBMC->Get("selproton2_costheta_CCNPionNProton_PID_300");
+  TH1D* selproton2_costheta_CCNue_PID_300 = (TH1D*) BNBMC->Get("selproton2_costheta_CCNue_PID_300");
+  TH1D* selproton2_costheta_NC_PID_300 = (TH1D*) BNBMC->Get("selproton2_costheta_NC_PID_300");
+  TH1D* selproton2_costheta_OOFV_PID_300 = (TH1D*) BNBMC->Get("selproton2_costheta_OOFV_PID_300");
+  TH1D* selproton2_costheta_EXT_PID_300 = (TH1D*) BNBMC->Get("selproton2_costheta_EXT_PID_300");
+  TH1D* selproton2_costheta_other_PID_300 = (TH1D*) BNBMC->Get("selproton2_costheta_other_PID_300");
+
+  TH1D* selproton2_phi_CC0Pion0Proton_PID_300 = (TH1D*) BNBMC->Get("selproton2_phi_CC0Pion0Proton_PID_300");
+  TH1D* selproton2_phi_CC0Pion1Proton_PID_300 = (TH1D*) BNBMC->Get("selproton2_phi_CC0Pion1Proton_PID_300");
+  TH1D* selproton2_phi_CC0Pion2Proton_PID_300 = (TH1D*) BNBMC->Get("selproton2_phi_CC0Pion2Proton_PID_300");
+  TH1D* selproton2_phi_CC0PionNProton_PID_300 = (TH1D*) BNBMC->Get("selproton2_phi_CC0PionNProton_PID_300");
+  TH1D* selproton2_phi_CC1PionNProton_PID_300 = (TH1D*) BNBMC->Get("selproton2_phi_CC1PionNProton_PID_300");
+  TH1D* selproton2_phi_CCNPionNProton_PID_300 = (TH1D*) BNBMC->Get("selproton2_phi_CCNPionNProton_PID_300");
+  TH1D* selproton2_phi_CCNue_PID_300 = (TH1D*) BNBMC->Get("selproton2_phi_CCNue_PID_300");
+  TH1D* selproton2_phi_NC_PID_300 = (TH1D*) BNBMC->Get("selproton2_phi_NC_PID_300");
+  TH1D* selproton2_phi_OOFV_PID_300 = (TH1D*) BNBMC->Get("selproton2_phi_OOFV_PID_300");
+  TH1D* selproton2_phi_EXT_PID_300 = (TH1D*) BNBMC->Get("selproton2_phi_EXT_PID_300");
+  TH1D* selproton2_phi_other_PID_300 = (TH1D*) BNBMC->Get("selproton2_phi_other_PID_300");
+
+  TH1D* selproton2_lenght_muon_PID_300 = (TH1D*) BNBMC->Get("selproton2_lenght_muon_PID_300");
+  TH1D* selproton2_lenght_proton_PID_300 = (TH1D*) BNBMC->Get("selproton2_lenght_proton_PID_300");
+  TH1D* selproton2_lenght_pion_PID_300 = (TH1D*) BNBMC->Get("selproton2_lenght_pion_PID_300");
+  TH1D* selproton2_lenght_electron_PID_300 = (TH1D*) BNBMC->Get("selproton2_lenght_electron_PID_300");
+  TH1D* selproton2_lenght_pother_PID_300 = (TH1D*) BNBMC->Get("selproton2_lenght_pother_PID_300");
+
+  TH1D* selproton2_costheta_muon_PID_300 = (TH1D*) BNBMC->Get("selproton2_costheta_muon_PID_300");
+  TH1D* selproton2_costheta_proton_PID_300 = (TH1D*) BNBMC->Get("selproton2_costheta_proton_PID_300");
+  TH1D* selproton2_costheta_pion_PID_300 = (TH1D*) BNBMC->Get("selproton2_costheta_pion_PID_300");
+  TH1D* selproton2_costheta_electron_PID_300 = (TH1D*) BNBMC->Get("selproton2_costheta_electron_PID_300");
+  TH1D* selproton2_costheta_pother_PID_300 = (TH1D*) BNBMC->Get("selproton2_costheta_pother_PID_300");
+
+  TH1D* selproton2_phi_muon_PID_300 = (TH1D*) BNBMC->Get("selproton2_phi_muon_PID_300");
+  TH1D* selproton2_phi_proton_PID_300 = (TH1D*) BNBMC->Get("selproton2_phi_proton_PID_300");
+  TH1D* selproton2_phi_pion_PID_300 = (TH1D*) BNBMC->Get("selproton2_phi_pion_PID_300");
+  TH1D* selproton2_phi_electron_PID_300 = (TH1D*) BNBMC->Get("selproton2_phi_electron_PID_300");
+  TH1D* selproton2_phi_pother_PID_300 = (TH1D*) BNBMC->Get("selproton2_phi_pother_PID_300");
+
+  TH1D* selproton2_chi2proton_muon_PID_300 = (TH1D*) BNBMC->Get("selproton2_chi2proton_muon_PID_300");
+  TH1D* selproton2_chi2proton_proton_PID_300 = (TH1D*) BNBMC->Get("selproton2_chi2proton_proton_PID_300");
+  TH1D* selproton2_chi2proton_pion_PID_300 = (TH1D*) BNBMC->Get("selproton2_chi2proton_pion_PID_300");
+  TH1D* selproton2_chi2proton_electron_PID_300 = (TH1D*) BNBMC->Get("selproton2_chi2proton_electron_PID_300");
+  TH1D* selproton2_chi2proton_pother_PID_300 = (TH1D*) BNBMC->Get("selproton2_chi2proton_pother_PID_300");
+
+  TH2D* selproton2_dEdx_vs_resrange_muon_PID_300 = (TH2D*) BNBMC->Get("selproton2_dEdx_vs_resrange_muon_PID_300");
+  TH2D* selproton2_dEdx_vs_resrange_proton_PID_300 = (TH2D*) BNBMC->Get("selproton2_dEdx_vs_resrange_proton_PID_300");
+  TH2D* selproton2_dEdx_vs_resrange_pion_PID_300 = (TH2D*) BNBMC->Get("selproton2_dEdx_vs_resrange_pion_PID_300");
+  ///// opening angles
+
+  TH1D* angle_mup1_CC0Pion0Proton_PID_300 = (TH1D*) BNBMC->Get("angle_mup1_CC0Pion0Proton_PID_300");
+  TH1D* angle_mup1_CC0Pion1Proton_PID_300 = (TH1D*) BNBMC->Get("angle_mup1_CC0Pion1Proton_PID_300");
+  TH1D* angle_mup1_CC0Pion2Proton_PID_300 = (TH1D*) BNBMC->Get("angle_mup1_CC0Pion2Proton_PID_300");
+  TH1D* angle_mup1_CC0PionNProton_PID_300 = (TH1D*) BNBMC->Get("angle_mup1_CC0PionNProton_PID_300");
+  TH1D* angle_mup1_CC1PionNProton_PID_300 = (TH1D*) BNBMC->Get("angle_mup1_CC1PionNProton_PID_300");
+  TH1D* angle_mup1_CCNPionNProton_PID_300 = (TH1D*) BNBMC->Get("angle_mup1_CCNPionNProton_PID_300");
+  TH1D* angle_mup1_CCNue_PID_300 = (TH1D*) BNBMC->Get("angle_mup1_CCNue_PID_300");
+  TH1D* angle_mup1_NC_PID_300 = (TH1D*) BNBMC->Get("angle_mup1_NC_PID_300");
+  TH1D* angle_mup1_OOFV_PID_300 = (TH1D*) BNBMC->Get("angle_mup1_OOFV_PID_300");
+  TH1D* angle_mup1_EXT_PID_300 = (TH1D*) BNBMC->Get("angle_mup1_EXT_PID_300");
+  TH1D* angle_mup1_other_PID_300 = (TH1D*) BNBMC->Get("angle_mup1_other_PID_300");
+
+  TH1D* angle_mup2_CC0Pion0Proton_PID_300 = (TH1D*) BNBMC->Get("angle_mup2_CC0Pion0Proton_PID_300");
+  TH1D* angle_mup2_CC0Pion1Proton_PID_300 = (TH1D*) BNBMC->Get("angle_mup2_CC0Pion1Proton_PID_300");
+  TH1D* angle_mup2_CC0Pion2Proton_PID_300 = (TH1D*) BNBMC->Get("angle_mup2_CC0Pion2Proton_PID_300");
+  TH1D* angle_mup2_CC0PionNProton_PID_300 = (TH1D*) BNBMC->Get("angle_mup2_CC0PionNProton_PID_300");
+  TH1D* angle_mup2_CC1PionNProton_PID_300 = (TH1D*) BNBMC->Get("angle_mup2_CC1PionNProton_PID_300");
+  TH1D* angle_mup2_CCNPionNProton_PID_300 = (TH1D*) BNBMC->Get("angle_mup2_CCNPionNProton_PID_300");
+  TH1D* angle_mup2_CCNue_PID_300 = (TH1D*) BNBMC->Get("angle_mup2_CCNue_PID_300");
+  TH1D* angle_mup2_NC_PID_300 = (TH1D*) BNBMC->Get("angle_mup2_NC_PID_300");
+  TH1D* angle_mup2_OOFV_PID_300 = (TH1D*) BNBMC->Get("angle_mup2_OOFV_PID_300");
+  TH1D* angle_mup2_EXT_PID_300 = (TH1D*) BNBMC->Get("angle_mup2_EXT_PID_300");
+  TH1D* angle_mup2_other_PID_300 = (TH1D*) BNBMC->Get("angle_mup2_other_PID_300");
+
+  TH1D* angle_p1p2_CC0Pion0Proton_PID_300 = (TH1D*) BNBMC->Get("angle_p1p2_CC0Pion0Proton_PID_300");
+  TH1D* angle_p1p2_CC0Pion1Proton_PID_300 = (TH1D*) BNBMC->Get("angle_p1p2_CC0Pion1Proton_PID_300");
+  TH1D* angle_p1p2_CC0Pion2Proton_PID_300 = (TH1D*) BNBMC->Get("angle_p1p2_CC0Pion2Proton_PID_300");
+  TH1D* angle_p1p2_CC0PionNProton_PID_300 = (TH1D*) BNBMC->Get("angle_p1p2_CC0PionNProton_PID_300");
+  TH1D* angle_p1p2_CC1PionNProton_PID_300 = (TH1D*) BNBMC->Get("angle_p1p2_CC1PionNProton_PID_300");
+  TH1D* angle_p1p2_CCNPionNProton_PID_300 = (TH1D*) BNBMC->Get("angle_p1p2_CCNPionNProton_PID_300");
+  TH1D* angle_p1p2_CCNue_PID_300 = (TH1D*) BNBMC->Get("angle_p1p2_CCNue_PID_300");
+  TH1D* angle_p1p2_NC_PID_300 = (TH1D*) BNBMC->Get("angle_p1p2_NC_PID_300");
+  TH1D* angle_p1p2_OOFV_PID_300 = (TH1D*) BNBMC->Get("angle_p1p2_OOFV_PID_300");
+  TH1D* angle_p1p2_EXT_PID_300 = (TH1D*) BNBMC->Get("angle_p1p2_EXT_PID_300");
+  TH1D* angle_p1p2_other_PID_300 = (TH1D*) BNBMC->Get("angle_p1p2_other_PID_300");
+
+  TH1D* cosangle_p1p2_CC0Pion0Proton_PID_300 = (TH1D*) BNBMC->Get("cosangle_p1p2_CC0Pion0Proton_PID_300");
+  TH1D* cosangle_p1p2_CC0Pion1Proton_PID_300 = (TH1D*) BNBMC->Get("cosangle_p1p2_CC0Pion1Proton_PID_300");
+  TH1D* cosangle_p1p2_CC0Pion2Proton_PID_300 = (TH1D*) BNBMC->Get("cosangle_p1p2_CC0Pion2Proton_PID_300");
+  TH1D* cosangle_p1p2_CC0PionNProton_PID_300 = (TH1D*) BNBMC->Get("cosangle_p1p2_CC0PionNProton_PID_300");
+  TH1D* cosangle_p1p2_CC1PionNProton_PID_300 = (TH1D*) BNBMC->Get("cosangle_p1p2_CC1PionNProton_PID_300");
+  TH1D* cosangle_p1p2_CCNPionNProton_PID_300 = (TH1D*) BNBMC->Get("cosangle_p1p2_CCNPionNProton_PID_300");
+  TH1D* cosangle_p1p2_CCNue_PID_300 = (TH1D*) BNBMC->Get("cosangle_p1p2_CCNue_PID_300");
+  TH1D* cosangle_p1p2_NC_PID_300 = (TH1D*) BNBMC->Get("cosangle_p1p2_NC_PID_300");
+  TH1D* cosangle_p1p2_OOFV_PID_300 = (TH1D*) BNBMC->Get("cosangle_p1p2_OOFV_PID_300");
+  TH1D* cosangle_p1p2_EXT_PID_300 = (TH1D*) BNBMC->Get("cosangle_p1p2_EXT_PID_300");
+  TH1D* cosangle_p1p2_other_PID_300 = (TH1D*) BNBMC->Get("cosangle_p1p2_other_PID_300");
+
+  ///// resolutions (MC)
+  TH2D* selmuon_mom_res_PID_300 = (TH2D*) BNBMC->Get("selmuon_mom_res_PID_300");
+  TH2D* selmuon_costheta_res_PID_300 = (TH2D*) BNBMC->Get("selmuon_costheta_res_PID_300");
+  TH2D* selmuon_phi_res_PID_300 = (TH2D*) BNBMC->Get("selmuon_phi_res_PID_300");
+
+  TH2D* selproton1_mom_res_PID_300 = (TH2D*) BNBMC->Get("selproton1_mom_res_PID_300");
+  TH2D* selproton1_costheta_res_PID_300 = (TH2D*) BNBMC->Get("selproton1_costheta_res_PID_300");
+  TH2D* selproton1_phi_res_PID_300 = (TH2D*) BNBMC->Get("selproton1_phi_res_PID_300");
+
+  TH2D* selproton2_mom_res_PID_300 = (TH2D*) BNBMC->Get("selproton2_mom_res_PID_300");
+  TH2D* selproton2_costheta_res_PID_300 = (TH2D*) BNBMC->Get("selproton2_costheta_res_PID_300");
+  TH2D* selproton2_phi_res_PID_300 = (TH2D*) BNBMC->Get("selproton2_phi_res_PID_300");
+
+  //// On-Beam data
+
+  /// muon candidate properties
+  TH1D* selmuon_lenght_OnBeam_PID = (TH1D*) OnBeam->Get("selmuon_lenght_OnBeam_PID");
+  TH1D* selmuon_mom_OnBeam_PID = (TH1D*) OnBeam->Get("selmuon_mom_OnBeam_PID");
+  TH1D* selmuon_costheta_OnBeam_PID = (TH1D*) OnBeam->Get("selmuon_costheta_OnBeam_PID");
+  TH1D* selmuon_phi_OnBeam_PID = (TH1D*) OnBeam->Get("selmuon_phi_OnBeam_PID");
+
+  TH1D* selmuon_chi2proton_OnBeam_PID = (TH1D*) OnBeam->Get("selmuon_chi2proton_OnBeam_PID");
+
+  TH1D* selmuon_chi2proton_cont_OnBeam_PID = (TH1D*) OnBeam->Get("selmuon_chi2proton_cont_OnBeam_PID");
+  TH1D* selmuon_chi2proton_uncont_OnBeam_PID = (TH1D*) OnBeam->Get("selmuon_chi2proton_uncont_OnBeam_PID");
+
+  TH2D* selmuon_dEdx_vs_resrange_OnBeam_PID = (TH2D*) OnBeam->Get("selmuon_dEdx_vs_resrange_OnBeam_PID");
+
+  ////proton 1
+
+  TH1D* selproton1_lenght_OnBeam_PID = (TH1D*) OnBeam->Get("selproton1_lenght_OnBeam_PID");
+  TH1D* selproton1_costheta_OnBeam_PID = (TH1D*) OnBeam->Get("selproton1_costheta_OnBeam_PID");
+  TH1D* selproton1_phi_OnBeam_PID = (TH1D*) OnBeam->Get("selproton1_phi_OnBeam_PID");
+  TH1D* selproton1_mom_OnBeam_PID = (TH1D*) OnBeam->Get("selproton1_mom_OnBeam_PID");
+
+  TH1D* selproton1_chi2proton_OnBeam_PID = (TH1D*) OnBeam->Get("selproton1_chi2proton_OnBeam_PID");
+
+  TH2D* selproton1_dEdx_vs_resrange_OnBeam_PID = (TH2D*) OnBeam->Get("selproton1_dEdx_vs_resrange_OnBeam_PID");
+
+  //////////////// proton 2
+  TH1D* selproton2_lenght_OnBeam_PID = (TH1D*) OnBeam->Get("selproton2_lenght_OnBeam_PID");
+  TH1D* selproton2_costheta_OnBeam_PID = (TH1D*) OnBeam->Get("selproton2_costheta_OnBeam_PID");
+  TH1D* selproton2_phi_OnBeam_PID = (TH1D*) OnBeam->Get("selproton2_phi_OnBeam_PID");
+  TH1D* selproton2_mom_OnBeam_PID = (TH1D*) OnBeam->Get("selproton2_mom_OnBeam_PID");
+  TH1D* selproton2_chi2proton_OnBeam_PID = (TH1D*) OnBeam->Get("selproton2_chi2proton_OnBeam_PID");
+
+  TH2D* selproton2_dEdx_vs_resrange_OnBeam_PID = (TH2D*) OnBeam->Get("selproton2_dEdx_vs_resrange_OnBeam_PID");
+
+  /// opening angles
+  TH1D* angle_mup1_OnBeam_PID = (TH1D*) OnBeam->Get("angle_mup1_OnBeam_PID");
+  TH1D* angle_mup2_OnBeam_PID = (TH1D*) OnBeam->Get("angle_mup2_OnBeam_PID");
+  TH1D* angle_p1p2_OnBeam_PID = (TH1D*) OnBeam->Get("angle_p1p2_OnBeam_PID");
+  TH1D* cosangle_p1p2_OnBeam_PID = (TH1D*) OnBeam->Get("cosangle_p1p2_OnBeam_PID");
+
+  //// Off-Beam data
+
+  /// muon candidate properties
+  TH1D* selmuon_lenght_OffBeam_PID = (TH1D*) OffBeam->Get("selmuon_lenght_OffBeam_PID");
+  TH1D* selmuon_mom_OffBeam_PID = (TH1D*) OffBeam->Get("selmuon_mom_OffBeam_PID");
+  TH1D* selmuon_costheta_OffBeam_PID = (TH1D*) OffBeam->Get("selmuon_costheta_OffBeam_PID");
+  TH1D* selmuon_phi_OffBeam_PID = (TH1D*) OffBeam->Get("selmuon_phi_OffBeam_PID");
+
+  TH1D* selmuon_chi2proton_OffBeam_PID = (TH1D*) OffBeam->Get("selmuon_chi2proton_OffBeam_PID");
+  TH1D* selmuon_chi2proton_cont_OffBeam_PID = (TH1D*) OffBeam->Get("selmuon_chi2proton_cont_OffBeam_PID");
+  TH1D* selmuon_chi2proton_uncont_OffBeam_PID = (TH1D*) OffBeam->Get("selmuon_chi2proton_uncont_OffBeam_PID");
+
+  TH2D* selmuon_dEdx_vs_resrange_OffBeam_PID = (TH2D*) OffBeam->Get("selmuon_dEdx_vs_resrange_OffBeam_PID");
+
+  ////proton 1
+
+  TH1D* selproton1_lenght_OffBeam_PID = (TH1D*) OffBeam->Get("selproton1_lenght_OffBeam_PID");
+  TH1D* selproton1_costheta_OffBeam_PID = (TH1D*) OffBeam->Get("selproton1_costheta_OffBeam_PID");
+  TH1D* selproton1_phi_OffBeam_PID = (TH1D*) OffBeam->Get("selproton1_phi_OffBeam_PID");
+  TH1D* selproton1_mom_OffBeam_PID = (TH1D*) OffBeam->Get("selproton1_mom_OffBeam_PID");
+
+  TH1D* selproton1_chi2proton_OffBeam_PID = (TH1D*) OffBeam->Get("selproton1_chi2proton_OffBeam_PID");
+
+  TH2D* selproton1_dEdx_vs_resrange_OffBeam_PID = (TH2D*) OffBeam->Get("selproton1_dEdx_vs_resrange_OffBeam_PID");
+
+  //////////////// proton 2
+  TH1D* selproton2_lenght_OffBeam_PID = (TH1D*) OffBeam->Get("selproton2_lenght_OffBeam_PID");
+  TH1D* selproton2_costheta_OffBeam_PID = (TH1D*) OffBeam->Get("selproton2_costheta_OffBeam_PID");
+  TH1D* selproton2_phi_OffBeam_PID = (TH1D*) OffBeam->Get("selproton2_phi_OffBeam_PID");
+  TH1D* selproton2_mom_OffBeam_PID = (TH1D*) OffBeam->Get("selproton2_mom_OffBeam_PID");
+
+  TH1D* selproton2_chi2proton_OffBeam_PID = (TH1D*) OffBeam->Get("selproton2_chi2proton_OffBeam_PID");
+
+  TH2D* selproton2_dEdx_vs_resrange_OffBeam_PID = (TH2D*) OffBeam->Get("selproton2_dEdx_vs_resrange_OffBeam_PID");
+
+  /// opening angles
+ 
+  /// opening angles
+  TH1D* angle_mup1_OffBeam_PID = (TH1D*) OffBeam->Get("angle_mup1_OffBeam_PID");
+  TH1D* angle_mup2_OffBeam_PID = (TH1D*) OffBeam->Get("angle_mup2_OffBeam_PID");
+  TH1D* angle_p1p2_OffBeam_PID = (TH1D*) OffBeam->Get("angle_p1p2_OffBeam_PID");
+  TH1D* cosangle_p1p2_OffBeam_PID = (TH1D*) OffBeam->Get("cosangle_p1p2_OffBeam_PID");
+
+  /// valores de las normalizaciones
+
+  Double_t normMCBNB =  (4.411e+19)/(4.0878e+20);//tune 3
+  //Double_t normMCBNB =  (4.411e+19)/(2.010e+20);//(4.874e+19)/(1.566e+20);
+  Double_t normOffBeam = 9775610./73710197.;  //0.1464;//(33320382.)/(36177265.);
+
+  //Double_t normOffBeam = 9775610./35789730.;  //0.1464;//(33320382.)/(36177265.);
+  //h->Scale(1/norm);
+
+  /// normalizing MC
+  std::cout<<"antes del scale"<<std::endl;
+  std::cout<<"normMCBNB : "<<normMCBNB<<std::endl;
+  std::cout<<"normOffBeam : "<<normOffBeam<<std::endl;
+  
+  selmuon_lenght_CC0Pion0Proton_PID_300->Scale(normMCBNB);
+  selmuon_lenght_CC0Pion1Proton_PID_300->Scale(normMCBNB);
+  selmuon_lenght_CC0Pion2Proton_PID_300->Scale(normMCBNB);
+  selmuon_lenght_CC0PionNProton_PID_300->Scale(normMCBNB);
+  selmuon_lenght_CC1PionNProton_PID_300->Scale(normMCBNB);
+  selmuon_lenght_CCNPionNProton_PID_300->Scale(normMCBNB);
+  selmuon_lenght_CCNue_PID_300->Scale(normMCBNB);;
+  selmuon_lenght_NC_PID_300->Scale(normMCBNB);
+  selmuon_lenght_OOFV_PID_300->Scale(normMCBNB);
+  selmuon_lenght_EXT_PID_300->Scale(normMCBNB);
+  selmuon_lenght_other_PID_300->Scale(normMCBNB);
+ 
+  selmuon_mom_CC0Pion0Proton_PID_300->Scale(normMCBNB);
+  selmuon_mom_CC0Pion1Proton_PID_300->Scale(normMCBNB);
+  selmuon_mom_CC0Pion2Proton_PID_300->Scale(normMCBNB);
+  selmuon_mom_CC0PionNProton_PID_300->Scale(normMCBNB);
+  selmuon_mom_CC1PionNProton_PID_300->Scale(normMCBNB);
+  selmuon_mom_CCNPionNProton_PID_300->Scale(normMCBNB);
+  selmuon_mom_CCNue_PID_300->Scale(normMCBNB);
+  selmuon_mom_NC_PID_300->Scale(normMCBNB);
+  selmuon_mom_OOFV_PID_300->Scale(normMCBNB);
+  selmuon_mom_EXT_PID_300->Scale(normMCBNB);
+  selmuon_mom_other_PID_300->Scale(normMCBNB);
+  
+  selmuon_costheta_CC0Pion0Proton_PID_300->Scale(normMCBNB);
+  selmuon_costheta_CC0Pion1Proton_PID_300->Scale(normMCBNB);
+  selmuon_costheta_CC0Pion2Proton_PID_300->Scale(normMCBNB);
+  selmuon_costheta_CC0PionNProton_PID_300->Scale(normMCBNB);
+  selmuon_costheta_CC1PionNProton_PID_300->Scale(normMCBNB);
+  selmuon_costheta_CCNPionNProton_PID_300->Scale(normMCBNB);
+  selmuon_costheta_CCNue_PID_300->Scale(normMCBNB);
+  selmuon_costheta_NC_PID_300->Scale(normMCBNB);
+  selmuon_costheta_OOFV_PID_300->Scale(normMCBNB);
+  selmuon_costheta_EXT_PID_300->Scale(normMCBNB);
+  selmuon_costheta_other_PID_300->Scale(normMCBNB);
+  
+  selmuon_phi_CC0Pion0Proton_PID_300->Scale(normMCBNB);
+  selmuon_phi_CC0Pion1Proton_PID_300->Scale(normMCBNB);
+  selmuon_phi_CC0Pion2Proton_PID_300->Scale(normMCBNB);
+  selmuon_phi_CC0PionNProton_PID_300->Scale(normMCBNB);
+  selmuon_phi_CC1PionNProton_PID_300->Scale(normMCBNB);
+  selmuon_phi_CCNPionNProton_PID_300->Scale(normMCBNB);
+  selmuon_phi_CCNue_PID_300->Scale(normMCBNB);
+  selmuon_phi_NC_PID_300->Scale(normMCBNB);
+  selmuon_phi_OOFV_PID_300->Scale(normMCBNB);
+  selmuon_phi_EXT_PID_300->Scale(normMCBNB);
+  selmuon_phi_other_PID_300->Scale(normMCBNB);
+  
+  selmuon_lenght_muon_PID_300->Scale(normMCBNB);
+  selmuon_lenght_proton_PID_300->Scale(normMCBNB);
+  selmuon_lenght_pion_PID_300->Scale(normMCBNB);
+  selmuon_lenght_electron_PID_300->Scale(normMCBNB);
+  selmuon_lenght_pother_PID_300->Scale(normMCBNB);
+  
+  selmuon_mom_muon_PID_300->Scale(normMCBNB);
+  selmuon_mom_proton_PID_300->Scale(normMCBNB);
+  selmuon_mom_pion_PID_300->Scale(normMCBNB);
+  selmuon_mom_electron_PID_300->Scale(normMCBNB);
+  selmuon_mom_pother_PID_300->Scale(normMCBNB);
+  
+  selmuon_costheta_muon_PID_300->Scale(normMCBNB);
+  selmuon_costheta_proton_PID_300->Scale(normMCBNB);
+  selmuon_costheta_pion_PID_300->Scale(normMCBNB);
+  selmuon_costheta_electron_PID_300->Scale(normMCBNB);
+  selmuon_costheta_pother_PID_300->Scale(normMCBNB);
+  
+  selmuon_phi_muon_PID_300->Scale(normMCBNB);
+  selmuon_phi_proton_PID_300->Scale(normMCBNB);
+  selmuon_phi_pion_PID_300->Scale(normMCBNB);
+  selmuon_phi_electron_PID_300->Scale(normMCBNB);
+  selmuon_phi_pother_PID_300->Scale(normMCBNB);
+      
+  ///
+  selmuon_chi2proton_muon_PID_300->Scale(normMCBNB);
+  selmuon_chi2proton_proton_PID_300->Scale(normMCBNB);
+  selmuon_chi2proton_pion_PID_300->Scale(normMCBNB);
+  selmuon_chi2proton_electron_PID_300->Scale(normMCBNB);
+  selmuon_chi2proton_pother_PID_300->Scale(normMCBNB);
+  
+  selmuon_chi2proton_cont_muon_PID_300->Scale(normMCBNB);
+  selmuon_chi2proton_cont_proton_PID_300->Scale(normMCBNB);
+  selmuon_chi2proton_cont_pion_PID_300->Scale(normMCBNB);
+  selmuon_chi2proton_cont_electron_PID_300->Scale(normMCBNB);
+  selmuon_chi2proton_cont_pother_PID_300->Scale(normMCBNB);
+  
+  selmuon_chi2proton_uncont_muon_PID_300->Scale(normMCBNB);
+  selmuon_chi2proton_uncont_proton_PID_300->Scale(normMCBNB);
+  selmuon_chi2proton_uncont_pion_PID_300->Scale(normMCBNB);
+  selmuon_chi2proton_uncont_electron_PID_300->Scale(normMCBNB);
+  selmuon_chi2proton_uncont_pother_PID_300->Scale(normMCBNB);
+    
+  /// proton 1
+
+  selproton1_lenght_CC0Pion0Proton_PID_300->Scale(normMCBNB);
+  selproton1_lenght_CC0Pion1Proton_PID_300->Scale(normMCBNB);
+  selproton1_lenght_CC0Pion2Proton_PID_300->Scale(normMCBNB);
+  selproton1_lenght_CC0PionNProton_PID_300->Scale(normMCBNB);
+  selproton1_lenght_CC1PionNProton_PID_300->Scale(normMCBNB);
+  selproton1_lenght_CCNPionNProton_PID_300->Scale(normMCBNB);
+  selproton1_lenght_CCNue_PID_300->Scale(normMCBNB);
+  selproton1_lenght_NC_PID_300->Scale(normMCBNB);
+  selproton1_lenght_OOFV_PID_300->Scale(normMCBNB);
+  selproton1_lenght_EXT_PID_300->Scale(normMCBNB);
+  selproton1_lenght_other_PID_300->Scale(normMCBNB);
+  
+  selproton1_costheta_CC0Pion0Proton_PID_300->Scale(normMCBNB);
+  selproton1_costheta_CC0Pion1Proton_PID_300->Scale(normMCBNB);
+  selproton1_costheta_CC0Pion2Proton_PID_300->Scale(normMCBNB);
+  selproton1_costheta_CC0PionNProton_PID_300->Scale(normMCBNB);
+  selproton1_costheta_CC1PionNProton_PID_300->Scale(normMCBNB);
+  selproton1_costheta_CCNPionNProton_PID_300->Scale(normMCBNB);
+  selproton1_costheta_CCNue_PID_300->Scale(normMCBNB);
+  selproton1_costheta_NC_PID_300->Scale(normMCBNB);
+  selproton1_costheta_OOFV_PID_300->Scale(normMCBNB);
+  selproton1_costheta_EXT_PID_300->Scale(normMCBNB);
+  selproton1_costheta_other_PID_300->Scale(normMCBNB);
+  
+  selproton1_phi_CC0Pion0Proton_PID_300->Scale(normMCBNB);
+  selproton1_phi_CC0Pion1Proton_PID_300->Scale(normMCBNB);
+  selproton1_phi_CC0Pion2Proton_PID_300->Scale(normMCBNB);
+  selproton1_phi_CC0PionNProton_PID_300->Scale(normMCBNB);
+  selproton1_phi_CC1PionNProton_PID_300->Scale(normMCBNB);
+  selproton1_phi_CCNPionNProton_PID_300->Scale(normMCBNB);
+  selproton1_phi_CCNue_PID_300->Scale(normMCBNB);
+  selproton1_phi_NC_PID_300->Scale(normMCBNB);
+  selproton1_phi_OOFV_PID_300->Scale(normMCBNB);
+  selproton1_phi_EXT_PID_300->Scale(normMCBNB);
+  selproton1_phi_other_PID_300->Scale(normMCBNB);
+
+  selproton1_mom_CC0Pion0Proton_PID_300->Scale(normMCBNB);
+  selproton1_mom_CC0Pion1Proton_PID_300->Scale(normMCBNB);
+  selproton1_mom_CC0Pion2Proton_PID_300->Scale(normMCBNB);
+  selproton1_mom_CC0PionNProton_PID_300->Scale(normMCBNB);
+  selproton1_mom_CC1PionNProton_PID_300->Scale(normMCBNB);
+  selproton1_mom_CCNPionNProton_PID_300->Scale(normMCBNB);
+  selproton1_mom_CCNue_PID_300->Scale(normMCBNB);
+  selproton1_mom_NC_PID_300->Scale(normMCBNB);
+  selproton1_mom_OOFV_PID_300->Scale(normMCBNB);
+  selproton1_mom_EXT_PID_300->Scale(normMCBNB);
+  selproton1_mom_other_PID_300->Scale(normMCBNB);
+  
+  selproton1_lenght_muon_PID_300->Scale(normMCBNB);
+  selproton1_lenght_proton_PID_300->Scale(normMCBNB);
+  selproton1_lenght_pion_PID_300->Scale(normMCBNB);
+  selproton1_lenght_electron_PID_300->Scale(normMCBNB);
+  selproton1_lenght_pother_PID_300->Scale(normMCBNB);
+  
+  selproton1_costheta_muon_PID_300->Scale(normMCBNB);
+  selproton1_costheta_proton_PID_300->Scale(normMCBNB);
+  selproton1_costheta_pion_PID_300->Scale(normMCBNB);
+  selproton1_costheta_electron_PID_300->Scale(normMCBNB);
+  selproton1_costheta_pother_PID_300->Scale(normMCBNB);
+  
+  selproton1_phi_muon_PID_300->Scale(normMCBNB);
+  selproton1_phi_proton_PID_300->Scale(normMCBNB);
+  selproton1_phi_pion_PID_300->Scale(normMCBNB);
+  selproton1_phi_electron_PID_300->Scale(normMCBNB);
+  selproton1_phi_pother_PID_300->Scale(normMCBNB);
+    
+  selproton1_chi2proton_muon_PID_300->Scale(normMCBNB);
+  selproton1_chi2proton_proton_PID_300->Scale(normMCBNB);
+  selproton1_chi2proton_pion_PID_300->Scale(normMCBNB);
+  selproton1_chi2proton_electron_PID_300->Scale(normMCBNB);
+  selproton1_chi2proton_pother_PID_300->Scale(normMCBNB);
+
+  /// proton 2
+  selproton2_lenght_CC0Pion0Proton_PID_300->Scale(normMCBNB);
+  selproton2_lenght_CC0Pion1Proton_PID_300->Scale(normMCBNB);
+  selproton2_lenght_CC0Pion2Proton_PID_300->Scale(normMCBNB);
+  selproton2_lenght_CC0PionNProton_PID_300->Scale(normMCBNB);
+  selproton2_lenght_CC1PionNProton_PID_300->Scale(normMCBNB);
+  selproton2_lenght_CCNPionNProton_PID_300->Scale(normMCBNB);
+  selproton2_lenght_CCNue_PID_300->Scale(normMCBNB);
+  selproton2_lenght_NC_PID_300->Scale(normMCBNB);
+  selproton2_lenght_OOFV_PID_300->Scale(normMCBNB);
+  selproton2_lenght_EXT_PID_300->Scale(normMCBNB);
+  selproton2_lenght_other_PID_300->Scale(normMCBNB);
+
+  selproton2_costheta_CC0Pion0Proton_PID_300->Scale(normMCBNB);
+  selproton2_costheta_CC0Pion1Proton_PID_300->Scale(normMCBNB);
+  selproton2_costheta_CC0Pion2Proton_PID_300->Scale(normMCBNB);
+  selproton2_costheta_CC0PionNProton_PID_300->Scale(normMCBNB);
+  selproton2_costheta_CC1PionNProton_PID_300->Scale(normMCBNB);
+  selproton2_costheta_CCNPionNProton_PID_300->Scale(normMCBNB);
+  selproton2_costheta_CCNue_PID_300->Scale(normMCBNB);
+  selproton2_costheta_NC_PID_300->Scale(normMCBNB);
+  selproton2_costheta_OOFV_PID_300->Scale(normMCBNB);
+  selproton2_costheta_EXT_PID_300->Scale(normMCBNB);
+  selproton2_costheta_other_PID_300->Scale(normMCBNB);
+
+  selproton2_phi_CC0Pion0Proton_PID_300->Scale(normMCBNB);
+  selproton2_phi_CC0Pion1Proton_PID_300->Scale(normMCBNB);
+  selproton2_phi_CC0Pion2Proton_PID_300->Scale(normMCBNB);
+  selproton2_phi_CC0PionNProton_PID_300->Scale(normMCBNB);
+  selproton2_phi_CC1PionNProton_PID_300->Scale(normMCBNB);
+  selproton2_phi_CCNPionNProton_PID_300->Scale(normMCBNB);
+  selproton2_phi_CCNue_PID_300->Scale(normMCBNB);
+  selproton2_phi_NC_PID_300->Scale(normMCBNB);
+  selproton2_phi_OOFV_PID_300->Scale(normMCBNB);
+  selproton2_phi_EXT_PID_300->Scale(normMCBNB);
+  selproton2_phi_other_PID_300->Scale(normMCBNB);
+
+  selproton2_mom_CC0Pion0Proton_PID_300->Scale(normMCBNB);
+  selproton2_mom_CC0Pion1Proton_PID_300->Scale(normMCBNB);
+  selproton2_mom_CC0Pion2Proton_PID_300->Scale(normMCBNB);
+  selproton2_mom_CC0PionNProton_PID_300->Scale(normMCBNB);
+  selproton2_mom_CC1PionNProton_PID_300->Scale(normMCBNB);
+  selproton2_mom_CCNPionNProton_PID_300->Scale(normMCBNB);
+  selproton2_mom_CCNue_PID_300->Scale(normMCBNB);
+  selproton2_mom_NC_PID_300->Scale(normMCBNB);
+  selproton2_mom_OOFV_PID_300->Scale(normMCBNB);
+  selproton2_mom_EXT_PID_300->Scale(normMCBNB);
+  selproton2_mom_other_PID_300->Scale(normMCBNB);
+
+  selproton2_lenght_muon_PID_300->Scale(normMCBNB);
+  selproton2_lenght_proton_PID_300->Scale(normMCBNB);
+  selproton2_lenght_pion_PID_300->Scale(normMCBNB);
+  selproton2_lenght_electron_PID_300->Scale(normMCBNB);
+  selproton2_lenght_pother_PID_300->Scale(normMCBNB);
+
+  selproton2_costheta_muon_PID_300->Scale(normMCBNB);
+  selproton2_costheta_proton_PID_300->Scale(normMCBNB);
+  selproton2_costheta_pion_PID_300->Scale(normMCBNB);
+  selproton2_costheta_electron_PID_300->Scale(normMCBNB);
+  selproton2_costheta_pother_PID_300->Scale(normMCBNB);
+
+  selproton2_phi_muon_PID_300->Scale(normMCBNB);
+  selproton2_phi_proton_PID_300->Scale(normMCBNB);
+  selproton2_phi_pion_PID_300->Scale(normMCBNB);
+  selproton2_phi_electron_PID_300->Scale(normMCBNB);
+  selproton2_phi_pother_PID_300->Scale(normMCBNB);
+
+  selproton2_chi2proton_muon_PID_300->Scale(normMCBNB);
+  selproton2_chi2proton_proton_PID_300->Scale(normMCBNB);
+  selproton2_chi2proton_pion_PID_300->Scale(normMCBNB);
+  selproton2_chi2proton_electron_PID_300->Scale(normMCBNB);
+  selproton2_chi2proton_pother_PID_300->Scale(normMCBNB);
+
+  angle_mup1_CC0Pion0Proton_PID_300->Scale(normMCBNB);
+  angle_mup1_CC0Pion1Proton_PID_300->Scale(normMCBNB);
+  angle_mup1_CC0Pion2Proton_PID_300->Scale(normMCBNB);
+  angle_mup1_CC0PionNProton_PID_300->Scale(normMCBNB);
+  angle_mup1_CC1PionNProton_PID_300->Scale(normMCBNB);
+  angle_mup1_CCNPionNProton_PID_300->Scale(normMCBNB);
+  angle_mup1_CCNue_PID_300->Scale(normMCBNB);;
+  angle_mup1_NC_PID_300->Scale(normMCBNB);
+  angle_mup1_OOFV_PID_300->Scale(normMCBNB);
+  angle_mup1_EXT_PID_300->Scale(normMCBNB);
+  angle_mup1_other_PID_300->Scale(normMCBNB);
+
+  angle_mup2_CC0Pion0Proton_PID_300->Scale(normMCBNB);
+  angle_mup2_CC0Pion1Proton_PID_300->Scale(normMCBNB);
+  angle_mup2_CC0Pion2Proton_PID_300->Scale(normMCBNB);
+  angle_mup2_CC0PionNProton_PID_300->Scale(normMCBNB);
+  angle_mup2_CC1PionNProton_PID_300->Scale(normMCBNB);
+  angle_mup2_CCNPionNProton_PID_300->Scale(normMCBNB);
+  angle_mup2_CCNue_PID_300->Scale(normMCBNB);;
+  angle_mup2_NC_PID_300->Scale(normMCBNB);
+  angle_mup2_OOFV_PID_300->Scale(normMCBNB);
+  angle_mup2_EXT_PID_300->Scale(normMCBNB);
+  angle_mup2_other_PID_300->Scale(normMCBNB);
+
+  angle_p1p2_CC0Pion0Proton_PID_300->Scale(normMCBNB);
+  angle_p1p2_CC0Pion1Proton_PID_300->Scale(normMCBNB);
+  angle_p1p2_CC0Pion2Proton_PID_300->Scale(normMCBNB);
+  angle_p1p2_CC0PionNProton_PID_300->Scale(normMCBNB);
+  angle_p1p2_CC1PionNProton_PID_300->Scale(normMCBNB);
+  angle_p1p2_CCNPionNProton_PID_300->Scale(normMCBNB);
+  angle_p1p2_CCNue_PID_300->Scale(normMCBNB);;
+  angle_p1p2_NC_PID_300->Scale(normMCBNB);
+  angle_p1p2_OOFV_PID_300->Scale(normMCBNB);
+  angle_p1p2_EXT_PID_300->Scale(normMCBNB);
+  angle_p1p2_other_PID_300->Scale(normMCBNB);
+
+  cosangle_p1p2_CC0Pion0Proton_PID_300->Scale(normMCBNB);
+  cosangle_p1p2_CC0Pion1Proton_PID_300->Scale(normMCBNB);
+  cosangle_p1p2_CC0Pion2Proton_PID_300->Scale(normMCBNB);
+  cosangle_p1p2_CC0PionNProton_PID_300->Scale(normMCBNB);
+  cosangle_p1p2_CC1PionNProton_PID_300->Scale(normMCBNB);
+  cosangle_p1p2_CCNPionNProton_PID_300->Scale(normMCBNB);
+  cosangle_p1p2_CCNue_PID_300->Scale(normMCBNB);
+  cosangle_p1p2_NC_PID_300->Scale(normMCBNB);
+  cosangle_p1p2_OOFV_PID_300->Scale(normMCBNB);
+  cosangle_p1p2_EXT_PID_300->Scale(normMCBNB);
+  cosangle_p1p2_other_PID_300->Scale(normMCBNB);
+
+  /// Off beam data normalization
+
+  /// muon candidate properties
+  selmuon_lenght_OffBeam_PID->Scale(normOffBeam);
+  selmuon_mom_OffBeam_PID->Scale(normOffBeam);
+  selmuon_costheta_OffBeam_PID->Scale(normOffBeam);
+  selmuon_phi_OffBeam_PID->Scale(normOffBeam);  
+  selmuon_chi2proton_OffBeam_PID->Scale(normOffBeam);
+  selmuon_chi2proton_cont_OffBeam_PID->Scale(normOffBeam);
+  selmuon_chi2proton_uncont_OffBeam_PID->Scale(normOffBeam);
+
+  selmuon_dEdx_vs_resrange_OffBeam_PID->Scale(normOffBeam);
+
+  ////proton 1
+
+  selproton1_lenght_OffBeam_PID->Scale(normOffBeam);
+  selproton1_costheta_OffBeam_PID->Scale(normOffBeam);
+  selproton1_phi_OffBeam_PID->Scale(normOffBeam);
+  selproton1_mom_OffBeam_PID->Scale(normOffBeam);
+
+  selproton1_chi2proton_OffBeam_PID->Scale(normOffBeam);
+  selproton1_dEdx_vs_resrange_OffBeam_PID->Scale(normOffBeam);
+
+  //////////////// proton 2
+  selproton2_lenght_OffBeam_PID->Scale(normOffBeam);
+  selproton2_costheta_OffBeam_PID->Scale(normOffBeam);
+  selproton2_phi_OffBeam_PID->Scale(normOffBeam);
+  selproton2_mom_OffBeam_PID->Scale(normOffBeam);
+
+  selproton2_chi2proton_OffBeam_PID->Scale(normOffBeam);
+
+  selproton2_dEdx_vs_resrange_OffBeam_PID->Scale(normOffBeam);  
+
+  angle_mup1_OffBeam_PID->Scale(normOffBeam);
+  angle_mup2_OffBeam_PID->Scale(normOffBeam);
+  angle_p1p2_OffBeam_PID->Scale(normOffBeam);
+  cosangle_p1p2_OffBeam_PID->Scale(normOffBeam);
+
+  //  gStyle->SetOptFit(0);
+  //gStyle->SetOptStat(00000);
+ 
+  std::cout<<"antes de los plots"<<std::endl;  
+
+  TCanvas *c1 = new TCanvas("c1", "c1", 900, 900);
+
+  selmuon_lenght_CC0Pion0Proton_PID_300-> SetFillColor(kRed -10);
+  selmuon_lenght_CC0Pion1Proton_PID_300-> SetFillColor(kGreen-8);
+  selmuon_lenght_CC0Pion2Proton_PID_300-> SetFillColor(kAzure+4);
+  selmuon_lenght_CC0PionNProton_PID_300-> SetFillColor(kRed-9);
+  selmuon_lenght_CC1PionNProton_PID_300-> SetFillColor(kOrange);
+  selmuon_lenght_CCNPionNProton_PID_300-> SetFillColor(kCyan-8);
+  selmuon_lenght_CCNue_PID_300-> SetFillColor(31);
+  selmuon_lenght_NC_PID_300-> SetFillColor(kOrange+6);
+  selmuon_lenght_OOFV_PID_300-> SetFillColor(kYellow+2);
+  selmuon_lenght_EXT_PID_300-> SetFillColor(kBlack);
+  selmuon_lenght_OffBeam_PID-> SetFillColor(kGray);
+  //DistFlstrk_other_PID_300-> SetFillColor(kRed);
+
+  THStack *selmuon_lenght_PID_300 = new THStack("selmuon_lenght_PID_300","");
+  selmuon_lenght_PID_300-> Add(selmuon_lenght_CC0Pion0Proton_PID_300);
+  selmuon_lenght_PID_300-> Add(selmuon_lenght_CC0Pion1Proton_PID_300);
+  selmuon_lenght_PID_300-> Add(selmuon_lenght_CC0Pion2Proton_PID_300);
+  selmuon_lenght_PID_300-> Add(selmuon_lenght_CC0PionNProton_PID_300);
+  selmuon_lenght_PID_300-> Add(selmuon_lenght_CC1PionNProton_PID_300);
+  selmuon_lenght_PID_300-> Add(selmuon_lenght_CCNPionNProton_PID_300);
+  selmuon_lenght_PID_300-> Add(selmuon_lenght_CCNue_PID_300);
+  selmuon_lenght_PID_300-> Add(selmuon_lenght_NC_PID_300);
+  selmuon_lenght_PID_300-> Add(selmuon_lenght_OOFV_PID_300);
+  selmuon_lenght_PID_300-> Add(selmuon_lenght_EXT_PID_300);
+  //selmuon_lenght_PID_300-> Add(selmuon_lenght_other_PID_300);
+  selmuon_lenght_PID_300-> Add(selmuon_lenght_OffBeam_PID);
+  //selmuon_lenght_PID_300->SetMaximum(600.);
+  selmuon_lenght_PID_300-> Draw();
+  selmuon_lenght_PID_300->GetXaxis()->SetTitle("muon candidate, length [cm]");
+
+  selmuon_lenght_OnBeam_PID->SetLineColor(kBlack);
+  selmuon_lenght_OnBeam_PID->SetMarkerStyle(20);
+  selmuon_lenght_OnBeam_PID->Draw("e1same");
+
+  TLegend *l1 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l1 -> SetNColumns(2);
+  /*
+  l1 -> AddEntry(selmuon_lenght_CC0Pion0Proton_PID_300, "CC0P0#pi", "f");
+  l1 -> AddEntry(selmuon_lenght_CC0Pion1Proton_PID_300, "CC1P0#pi", "f");
+  l1 -> AddEntry(selmuon_lenght_CC0Pion2Proton_PID_300, "CC2P0#pi", "f");
+  l1 -> AddEntry(selmuon_lenght_CC0PionNProton_PID_300, "CCNP0#pi", "f");
+  l1 -> AddEntry(selmuon_lenght_CC1PionNProton_PID_300, "CCNP1#pi", "f");
+  l1 -> AddEntry(selmuon_lenght_CCNPionNProton_PID_300, "CCNPN#pi", "f");
+  l1 -> AddEntry(selmuon_lenght_CCNue_PID_300, "CC#nu_{e}", "f");
+  l1 -> AddEntry(selmuon_lenght_NC_PID_300, "NC", "f");
+  l1 -> AddEntry(selmuon_lenght_OOFV_PID_300, "OOFV", "f");
+  l1 -> AddEntry(selmuon_lenght_EXT_PID_300, "cosmic", "f");
+  //l1 -> AddEntry(selmuon_lenght_other_PID_300, "other", "f");
+  l1 -> AddEntry(selmuon_lenght_OffBeam_PID, "off-beam data", "f");
+  l1 -> AddEntry(selmuon_lenght_OffBeam_PID, "on-beam data", "lep");
+  */
+  l1 -> AddEntry(selmuon_lenght_CC0Pion0Proton_PID_300, "CC0P0#pi", "f");
+  l1 -> AddEntry(selmuon_lenght_CCNue_PID_300, "CC#nu_{e}", "f");
+  l1 -> AddEntry(selmuon_lenght_CC0Pion1Proton_PID_300, "CC1P0#pi", "f");
+  l1 -> AddEntry(selmuon_lenght_NC_PID_300, "NC", "f");
+  l1 -> AddEntry(selmuon_lenght_CC0Pion2Proton_PID_300, "CC2P0#pi", "f");
+  l1 -> AddEntry(selmuon_lenght_OOFV_PID_300, "OOFV", "f");
+  l1 -> AddEntry(selmuon_lenght_CC0PionNProton_PID_300, "CCNP0#pi", "f");
+  l1 -> AddEntry(selmuon_lenght_EXT_PID_300, "cosmic", "f");
+  l1 -> AddEntry(selmuon_lenght_CC1PionNProton_PID_300, "CCNP1#pi", "f");
+  l1 -> AddEntry(selmuon_lenght_OffBeam_PID, "off-beam data", "f");
+  l1 -> AddEntry(selmuon_lenght_CCNPionNProton_PID_300, "CCNPN#pi", "f");
+  l1 -> AddEntry(selmuon_lenght_OnBeam_PID, "on-beam data", "lep");
+  l1 -> Draw();  
+  
+  c1->Update();
+  c1->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selmuon_lenght_topo_PID_300.pdf");
+
+ 
+  TCanvas *c2 = new TCanvas("c2", "c2", 900, 900);
+
+  selmuon_mom_CC0Pion0Proton_PID_300-> SetFillColor(kRed -10);
+  selmuon_mom_CC0Pion1Proton_PID_300-> SetFillColor(kGreen-8);
+  selmuon_mom_CC0Pion2Proton_PID_300-> SetFillColor(kAzure+4);
+  selmuon_mom_CC0PionNProton_PID_300-> SetFillColor(kRed-9);
+  selmuon_mom_CC1PionNProton_PID_300-> SetFillColor(kOrange);
+  selmuon_mom_CCNPionNProton_PID_300-> SetFillColor(kCyan-8);
+  selmuon_mom_CCNue_PID_300-> SetFillColor(31);
+  selmuon_mom_NC_PID_300-> SetFillColor(kOrange+6);
+  selmuon_mom_OOFV_PID_300-> SetFillColor(kYellow+2);
+  selmuon_mom_EXT_PID_300-> SetFillColor(kBlack);
+  selmuon_mom_OffBeam_PID-> SetFillColor(kGray);
+  //DistFlstrk_other_PID_300-> SetFillColor(kRed);
+
+  THStack *selmuon_mom_PID_300 = new THStack("selmuon_mom_PID_300","");
+  selmuon_mom_PID_300-> Add(selmuon_mom_CC0Pion0Proton_PID_300);
+  selmuon_mom_PID_300-> Add(selmuon_mom_CC0Pion1Proton_PID_300);
+  selmuon_mom_PID_300-> Add(selmuon_mom_CC0Pion2Proton_PID_300);
+  selmuon_mom_PID_300-> Add(selmuon_mom_CC0PionNProton_PID_300);
+  selmuon_mom_PID_300-> Add(selmuon_mom_CC1PionNProton_PID_300);
+  selmuon_mom_PID_300-> Add(selmuon_mom_CCNPionNProton_PID_300);
+  selmuon_mom_PID_300-> Add(selmuon_mom_CCNue_PID_300);
+  selmuon_mom_PID_300-> Add(selmuon_mom_NC_PID_300);
+  selmuon_mom_PID_300-> Add(selmuon_mom_OOFV_PID_300);
+  selmuon_mom_PID_300-> Add(selmuon_mom_EXT_PID_300);
+  //selmuon_mom_PID_300-> Add(selmuon_mom_other_PID_300);
+  selmuon_mom_PID_300-> Add(selmuon_mom_OffBeam_PID);
+  //selmuon_mom_PID_300->SetMaximum(600.);
+  selmuon_mom_PID_300-> Draw();
+  selmuon_mom_PID_300->GetXaxis()->SetTitle("muon candidate, momemtum [GeV]");
+
+  selmuon_mom_OnBeam_PID->SetLineColor(kBlack);
+  selmuon_mom_OnBeam_PID->SetMarkerStyle(20);
+  selmuon_mom_OnBeam_PID->Draw("e1same");
+
+  TLegend *l2 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l2 -> SetNColumns(2);
+  l2 -> AddEntry(selmuon_mom_CC0Pion0Proton_PID_300, "CC0P0#pi", "f");
+  l2 -> AddEntry(selmuon_mom_CCNue_PID_300, "CC#nu_{e}", "f");
+  l2 -> AddEntry(selmuon_mom_CC0Pion1Proton_PID_300, "CC1P0#pi", "f");
+  l2 -> AddEntry(selmuon_mom_NC_PID_300, "NC", "f");
+  l2 -> AddEntry(selmuon_mom_CC0Pion2Proton_PID_300, "CC2P0#pi", "f");
+  l2 -> AddEntry(selmuon_mom_OOFV_PID_300, "OOFV", "f");
+  l2 -> AddEntry(selmuon_mom_CC0PionNProton_PID_300, "CCNP0#pi", "f");
+  l2 -> AddEntry(selmuon_mom_EXT_PID_300, "cosmic", "f");
+  l2 -> AddEntry(selmuon_mom_CC1PionNProton_PID_300, "CCNP1#pi", "f");
+  l2 -> AddEntry(selmuon_mom_OffBeam_PID, "off-beam data", "f");
+  l2 -> AddEntry(selmuon_mom_CCNPionNProton_PID_300, "CCNPN#pi", "f");
+  l2 -> AddEntry(selmuon_mom_OnBeam_PID, "on-beam data", "lep");
+
+  l2 -> Draw();  
+  
+  c2->Update();
+  c2->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selmuon_mom_topo_PID_300.pdf");
+
+  TCanvas *c3 = new TCanvas("c3", "c3", 900, 900);
+
+  selmuon_costheta_CC0Pion0Proton_PID_300-> SetFillColor(kRed -10);
+  selmuon_costheta_CC0Pion1Proton_PID_300-> SetFillColor(kGreen-8);
+  selmuon_costheta_CC0Pion2Proton_PID_300-> SetFillColor(kAzure+4);
+  selmuon_costheta_CC0PionNProton_PID_300-> SetFillColor(kRed-9);
+  selmuon_costheta_CC1PionNProton_PID_300-> SetFillColor(kOrange);
+  selmuon_costheta_CCNPionNProton_PID_300-> SetFillColor(kCyan-8);
+  selmuon_costheta_CCNue_PID_300-> SetFillColor(31);
+  selmuon_costheta_NC_PID_300-> SetFillColor(kOrange+6);
+  selmuon_costheta_OOFV_PID_300-> SetFillColor(kYellow+2);
+  selmuon_costheta_EXT_PID_300-> SetFillColor(kBlack);
+  selmuon_costheta_OffBeam_PID-> SetFillColor(kGray);
+  //DistFlstrk_other_PID_300-> SetFillColor(kRed);
+
+  THStack *selmuon_costheta_PID_300 = new THStack("selmuon_costheta_PID_300","");
+  selmuon_costheta_PID_300-> Add(selmuon_costheta_CC0Pion0Proton_PID_300);
+  selmuon_costheta_PID_300-> Add(selmuon_costheta_CC0Pion1Proton_PID_300);
+  selmuon_costheta_PID_300-> Add(selmuon_costheta_CC0Pion2Proton_PID_300);
+  selmuon_costheta_PID_300-> Add(selmuon_costheta_CC0PionNProton_PID_300);
+  selmuon_costheta_PID_300-> Add(selmuon_costheta_CC1PionNProton_PID_300);
+  selmuon_costheta_PID_300-> Add(selmuon_costheta_CCNPionNProton_PID_300);
+  selmuon_costheta_PID_300-> Add(selmuon_costheta_CCNue_PID_300);
+  selmuon_costheta_PID_300-> Add(selmuon_costheta_NC_PID_300);
+  selmuon_costheta_PID_300-> Add(selmuon_costheta_OOFV_PID_300);
+  selmuon_costheta_PID_300-> Add(selmuon_costheta_EXT_PID_300);
+  //selmuon_costheta_PID_300-> Add(selmuon_costheta_other_PID_300);
+  selmuon_costheta_PID_300-> Add(selmuon_costheta_OffBeam_PID);
+  selmuon_costheta_PID_300->SetMaximum(150.);
+  selmuon_costheta_PID_300-> Draw();
+  selmuon_costheta_PID_300->GetXaxis()->SetTitle("muon candidate, cos #theta");
+
+  selmuon_costheta_OnBeam_PID->SetLineColor(kBlack);
+  selmuon_costheta_OnBeam_PID->SetMarkerStyle(20);
+  selmuon_costheta_OnBeam_PID->Draw("e1same");
+
+  TLegend *l3 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l3 -> SetNColumns(2);
+
+  l3 -> AddEntry(selmuon_costheta_CC0Pion0Proton_PID_300, "CC0P0#pi", "f");
+  l3 -> AddEntry(selmuon_costheta_CCNue_PID_300, "CC#nu_{e}", "f");
+  l3 -> AddEntry(selmuon_costheta_CC0Pion1Proton_PID_300, "CC1P0#pi", "f");
+  l3 -> AddEntry(selmuon_costheta_NC_PID_300, "NC", "f");
+  l3 -> AddEntry(selmuon_costheta_CC0Pion2Proton_PID_300, "CC2P0#pi", "f");
+  l3 -> AddEntry(selmuon_costheta_OOFV_PID_300, "OOFV", "f");
+  l3 -> AddEntry(selmuon_costheta_CC0PionNProton_PID_300, "CCNP0#pi", "f");
+  l3 -> AddEntry(selmuon_costheta_EXT_PID_300, "cosmic", "f");
+  l3 -> AddEntry(selmuon_costheta_CC1PionNProton_PID_300, "CCNP1#pi", "f");
+  l3 -> AddEntry(selmuon_costheta_OffBeam_PID, "off-beam data", "f");
+  l3 -> AddEntry(selmuon_costheta_CCNPionNProton_PID_300, "CCNPN#pi", "f");
+  l3 -> AddEntry(selmuon_costheta_OnBeam_PID, "on-beam data", "lep");
+
+  l3 -> Draw();  
+  
+  c3->Update();
+  c3->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selmuon_costheta_topo_PID_300.pdf");
+
+  TCanvas *c4 = new TCanvas("c4", "c4", 900, 900);
+
+  selmuon_phi_CC0Pion0Proton_PID_300-> SetFillColor(kRed -10);
+  selmuon_phi_CC0Pion1Proton_PID_300-> SetFillColor(kGreen-8);
+  selmuon_phi_CC0Pion2Proton_PID_300-> SetFillColor(kAzure+4);
+  selmuon_phi_CC0PionNProton_PID_300-> SetFillColor(kRed-9);
+  selmuon_phi_CC1PionNProton_PID_300-> SetFillColor(kOrange);
+  selmuon_phi_CCNPionNProton_PID_300-> SetFillColor(kCyan-8);
+  selmuon_phi_CCNue_PID_300-> SetFillColor(31);
+  selmuon_phi_NC_PID_300-> SetFillColor(kOrange+6);
+  selmuon_phi_OOFV_PID_300-> SetFillColor(kYellow+2);
+  selmuon_phi_EXT_PID_300-> SetFillColor(kBlack);
+  selmuon_phi_OffBeam_PID-> SetFillColor(kGray);
+  //DistFlstrk_other_PID_300-> SetFillColor(kRed);
+
+  THStack *selmuon_phi_PID_300 = new THStack("selmuon_phi_PID_300","");
+  selmuon_phi_PID_300-> Add(selmuon_phi_CC0Pion0Proton_PID_300);
+  selmuon_phi_PID_300-> Add(selmuon_phi_CC0Pion1Proton_PID_300);
+  selmuon_phi_PID_300-> Add(selmuon_phi_CC0Pion2Proton_PID_300);
+  selmuon_phi_PID_300-> Add(selmuon_phi_CC0PionNProton_PID_300);
+  selmuon_phi_PID_300-> Add(selmuon_phi_CC1PionNProton_PID_300);
+  selmuon_phi_PID_300-> Add(selmuon_phi_CCNPionNProton_PID_300);
+  selmuon_phi_PID_300-> Add(selmuon_phi_CCNue_PID_300);
+  selmuon_phi_PID_300-> Add(selmuon_phi_NC_PID_300);
+  selmuon_phi_PID_300-> Add(selmuon_phi_OOFV_PID_300);
+  selmuon_phi_PID_300-> Add(selmuon_phi_EXT_PID_300);
+  //selmuon_phi_PID_300-> Add(selmuon_phi_other_PID_300);
+  selmuon_phi_PID_300-> Add(selmuon_phi_OffBeam_PID);
+  selmuon_phi_PID_300->SetMaximum(50.);
+  selmuon_phi_PID_300-> Draw();
+  selmuon_phi_PID_300->GetXaxis()->SetTitle("muon candidate, #phi");
+
+  selmuon_phi_OnBeam_PID->SetLineColor(kBlack);
+  selmuon_phi_OnBeam_PID->SetMarkerStyle(20);
+  selmuon_phi_OnBeam_PID->Draw("e1same");
+
+  TLegend *l4 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l4 -> SetNColumns(2);
+
+  l4 -> AddEntry(selmuon_phi_CC0Pion0Proton_PID_300, "CC0P0#pi", "f");
+  l4 -> AddEntry(selmuon_phi_CCNue_PID_300, "CC#nu_{e}", "f");
+  l4 -> AddEntry(selmuon_phi_CC0Pion1Proton_PID_300, "CC1P0#pi", "f");
+  l4 -> AddEntry(selmuon_phi_NC_PID_300, "NC", "f");
+  l4 -> AddEntry(selmuon_phi_CC0Pion2Proton_PID_300, "CC2P0#pi", "f");
+  l4 -> AddEntry(selmuon_phi_OOFV_PID_300, "OOFV", "f");
+  l4 -> AddEntry(selmuon_phi_CC0PionNProton_PID_300, "CCNP0#pi", "f");
+  l4 -> AddEntry(selmuon_phi_EXT_PID_300, "cosmic", "f");
+  l4 -> AddEntry(selmuon_phi_CC1PionNProton_PID_300, "CCNP1#pi", "f");
+  l4 -> AddEntry(selmuon_phi_OffBeam_PID, "off-beam data", "f");
+  l4 -> AddEntry(selmuon_phi_CCNPionNProton_PID_300, "CCNPN#pi", "f");
+  l4 -> AddEntry(selmuon_phi_OnBeam_PID, "on-beam data", "lep");
+
+  l4 -> Draw();  
+  
+  c4->Update();
+  c4->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selmuon_phi_topo_PID_300.pdf");
+
+  TCanvas *c5 = new TCanvas("c5", "c5", 900, 900);
+
+  selmuon_lenght_muon_PID_300-> SetFillColor(kRed +1);
+  selmuon_lenght_proton_PID_300-> SetFillColor(kAzure+4);
+  selmuon_lenght_pion_PID_300-> SetFillColor(kOrange);
+  selmuon_lenght_electron_PID_300-> SetFillColor(kRed-9);
+  selmuon_lenght_pother_PID_300-> SetFillColor(kGreen-8);
+  selmuon_lenght_OffBeam_PID-> SetFillColor(kGray);
+
+  THStack *selmuon_lenghtpdg_PID_300 = new THStack("selmuon_lenghtpdg_PID_300","");
+  selmuon_lenghtpdg_PID_300-> Add(selmuon_lenght_muon_PID_300);
+  selmuon_lenghtpdg_PID_300-> Add(selmuon_lenght_proton_PID_300);
+  selmuon_lenghtpdg_PID_300-> Add(selmuon_lenght_pion_PID_300);
+  selmuon_lenghtpdg_PID_300-> Add(selmuon_lenght_electron_PID_300);
+  selmuon_lenghtpdg_PID_300-> Add(selmuon_lenght_pother_PID_300);
+  selmuon_lenghtpdg_PID_300-> Add(selmuon_lenght_OffBeam_PID);
+  //selmuon_phi_PID_300->SetMaximum(600.);
+  selmuon_lenghtpdg_PID_300-> Draw();
+  selmuon_lenghtpdg_PID_300->GetXaxis()->SetTitle("muon candidate, length [cm]");
+
+  selmuon_lenght_OnBeam_PID->SetLineColor(kBlack);
+  selmuon_lenght_OnBeam_PID->SetMarkerStyle(20);
+  selmuon_lenght_OnBeam_PID->Draw("e1same");
+
+  TLegend *l5 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l5 -> SetNColumns(2);
+
+  l5 -> AddEntry(selmuon_lenght_muon_PID_300, "#mu", "f");
+  l5 -> AddEntry(selmuon_lenght_proton_PID_300, "proton", "f");
+  l5 -> AddEntry(selmuon_lenght_pion_PID_300, "#pi", "f");
+  l5 -> AddEntry(selmuon_lenght_electron_PID_300, "e^{+/-}", "f");
+  l5 -> AddEntry(selmuon_lenght_pother_PID_300, "other", "f");
+  l5 -> AddEntry(selmuon_lenght_OffBeam_PID, "off-beam data", "f");
+  l5 -> AddEntry(selmuon_lenght_OnBeam_PID, "on-beam data", "lep");
+  l5 -> Draw();  
+  
+  c5->Update();
+  c5->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selmuon_lenght_pdg_PID_300.pdf");
+
+  TCanvas *c6 = new TCanvas("c6", "c6", 900, 900);
+
+  selmuon_mom_muon_PID_300-> SetFillColor(kRed +1);
+  selmuon_mom_proton_PID_300-> SetFillColor(kAzure+4);
+  selmuon_mom_pion_PID_300-> SetFillColor(kOrange);
+  selmuon_mom_electron_PID_300-> SetFillColor(kRed-9);
+  selmuon_mom_pother_PID_300-> SetFillColor(kGreen-8);
+  selmuon_mom_OffBeam_PID-> SetFillColor(kGray);
+
+  THStack *selmuon_mompdg_PID_300 = new THStack("selmuon_mompdg_PID_300","");
+  selmuon_mompdg_PID_300-> Add(selmuon_mom_muon_PID_300);
+  selmuon_mompdg_PID_300-> Add(selmuon_mom_proton_PID_300);
+  selmuon_mompdg_PID_300-> Add(selmuon_mom_pion_PID_300);
+  selmuon_mompdg_PID_300-> Add(selmuon_mom_electron_PID_300);
+  selmuon_mompdg_PID_300-> Add(selmuon_mom_pother_PID_300);
+  selmuon_mompdg_PID_300-> Add(selmuon_mom_OffBeam_PID);
+  //selmuon_phi_PID_300->SetMaximum(600.);
+  selmuon_mompdg_PID_300-> Draw();
+  selmuon_mompdg_PID_300->GetXaxis()->SetTitle("muon candidate, momemtum [GeV]");
+
+  selmuon_mom_OnBeam_PID->SetLineColor(kBlack);
+  selmuon_mom_OnBeam_PID->SetMarkerStyle(20);
+  selmuon_mom_OnBeam_PID->Draw("e1same");
+
+  TLegend *l6 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l6 -> SetNColumns(2);
+  l6 -> AddEntry(selmuon_mom_muon_PID_300, "#mu", "f");
+  l6 -> AddEntry(selmuon_mom_proton_PID_300, "proton", "f");
+  l6 -> AddEntry(selmuon_mom_pion_PID_300, "#pi", "f");
+  l6 -> AddEntry(selmuon_mom_electron_PID_300, "e^{+/-}", "f");
+  l6 -> AddEntry(selmuon_mom_pother_PID_300, "other", "f");
+  l6 -> AddEntry(selmuon_mom_OffBeam_PID, "off-beam data", "f");
+  l6 -> AddEntry(selmuon_mom_OnBeam_PID, "on-beam data", "lep");
+  l6 -> Draw();  
+  
+  c6->Update();
+  c6->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selmuon_mom_pdg_PID_300.pdf");
+
+  TCanvas *c7 = new TCanvas("c7", "c7", 900, 900);
+
+  selmuon_costheta_muon_PID_300-> SetFillColor(kRed +1);
+  selmuon_costheta_proton_PID_300-> SetFillColor(kAzure+4);
+  selmuon_costheta_pion_PID_300-> SetFillColor(kOrange);
+  selmuon_costheta_electron_PID_300-> SetFillColor(kRed-9);
+  selmuon_costheta_pother_PID_300-> SetFillColor(kGreen-8);
+  selmuon_costheta_OffBeam_PID-> SetFillColor(kGray);
+
+  THStack *selmuon_costhetapdg_PID_300 = new THStack("selmuon_costhetapdg_PID_300","");
+  selmuon_costhetapdg_PID_300-> Add(selmuon_costheta_muon_PID_300);
+  selmuon_costhetapdg_PID_300-> Add(selmuon_costheta_proton_PID_300);
+  selmuon_costhetapdg_PID_300-> Add(selmuon_costheta_pion_PID_300);
+  selmuon_costhetapdg_PID_300-> Add(selmuon_costheta_electron_PID_300);
+  selmuon_costhetapdg_PID_300-> Add(selmuon_costheta_pother_PID_300);
+  selmuon_costhetapdg_PID_300-> Add(selmuon_costheta_OffBeam_PID);
+  selmuon_costhetapdg_PID_300->SetMaximum(150.);
+  selmuon_costhetapdg_PID_300-> Draw();
+  selmuon_costhetapdg_PID_300->GetXaxis()->SetTitle("muon candidate, cos #theta");
+
+  selmuon_costheta_OnBeam_PID->SetLineColor(kBlack);
+  selmuon_costheta_OnBeam_PID->SetMarkerStyle(20);
+  selmuon_costheta_OnBeam_PID->Draw("e1same");
+
+  TLegend *l7 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l7 -> SetNColumns(2);
+  l7 -> AddEntry(selmuon_costheta_muon_PID_300, "#mu", "f");
+  l7 -> AddEntry(selmuon_costheta_proton_PID_300, "proton", "f");
+  l7 -> AddEntry(selmuon_costheta_pion_PID_300, "#pi", "f");
+  l7 -> AddEntry(selmuon_costheta_electron_PID_300, "e^{+/-}", "f");
+  l7 -> AddEntry(selmuon_costheta_pother_PID_300, "other", "f");
+  l7 -> AddEntry(selmuon_costheta_OffBeam_PID, "off-beam data", "f");
+  l7 -> AddEntry(selmuon_costheta_OnBeam_PID, "on-beam data", "lep");
+  l7 -> Draw();  
+  
+  c7->Update();
+  c7->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selmuon_costheta_pdg_PID_300.pdf");
+
+  TCanvas *c8 = new TCanvas("c8", "c8", 900, 900);
+
+  selmuon_phi_muon_PID_300-> SetFillColor(kRed +1);
+  selmuon_phi_proton_PID_300-> SetFillColor(kAzure+4);
+  selmuon_phi_pion_PID_300-> SetFillColor(kOrange);
+  selmuon_phi_electron_PID_300-> SetFillColor(kRed-9);
+  selmuon_phi_pother_PID_300-> SetFillColor(kGreen-8);
+  selmuon_phi_OffBeam_PID-> SetFillColor(kGray);
+
+  THStack *selmuon_phipdg_PID_300 = new THStack("selmuon_phipdg_PID_300","");
+  selmuon_phipdg_PID_300-> Add(selmuon_phi_muon_PID_300);
+  selmuon_phipdg_PID_300-> Add(selmuon_phi_proton_PID_300);
+  selmuon_phipdg_PID_300-> Add(selmuon_phi_pion_PID_300);
+  selmuon_phipdg_PID_300-> Add(selmuon_phi_electron_PID_300);
+  selmuon_phipdg_PID_300-> Add(selmuon_phi_pother_PID_300);
+  selmuon_phipdg_PID_300-> Add(selmuon_phi_OffBeam_PID);
+  selmuon_phipdg_PID_300->SetMaximum(50.);
+  selmuon_phipdg_PID_300-> Draw();
+  selmuon_phipdg_PID_300->GetXaxis()->SetTitle("muon candidate, #phi");
+
+  selmuon_phi_OnBeam_PID->SetLineColor(kBlack);
+  selmuon_phi_OnBeam_PID->SetMarkerStyle(20);
+  selmuon_phi_OnBeam_PID->Draw("e1same");
+
+  TLegend *l8 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l8 -> SetNColumns(2);
+  l8 -> AddEntry(selmuon_phi_muon_PID_300, "#mu", "f");
+  l8 -> AddEntry(selmuon_phi_proton_PID_300, "proton", "f");
+  l8 -> AddEntry(selmuon_phi_pion_PID_300, "#pi", "f");
+  l8 -> AddEntry(selmuon_phi_electron_PID_300, "e^{+/-}", "f");
+  l8 -> AddEntry(selmuon_phi_pother_PID_300, "other", "f");
+  l8 -> AddEntry(selmuon_phi_OffBeam_PID, "off-beam data", "f");
+  l8 -> AddEntry(selmuon_phi_OnBeam_PID, "on-beam data", "lep");
+  l8 -> Draw();  
+  
+  c8->Update();
+  c8->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selmuon_phi_pdg_PID_300.pdf");
+
+  TCanvas *c9 = new TCanvas("c9", "c9", 900, 900);
+
+  selmuon_chi2proton_muon_PID_300-> SetFillColor(kRed +1);
+  selmuon_chi2proton_proton_PID_300-> SetFillColor(kAzure+4);
+  selmuon_chi2proton_pion_PID_300-> SetFillColor(kOrange);
+  selmuon_chi2proton_electron_PID_300-> SetFillColor(kRed-9);
+  selmuon_chi2proton_pother_PID_300-> SetFillColor(kGreen-8);
+  selmuon_chi2proton_OffBeam_PID-> SetFillColor(kGray);
+
+  THStack *selmuon_chi2protonpdg_PID_300 = new THStack("selmuon_chi2protonpdg_PID_300","");
+  selmuon_chi2protonpdg_PID_300-> Add(selmuon_chi2proton_muon_PID_300);
+  selmuon_chi2protonpdg_PID_300-> Add(selmuon_chi2proton_proton_PID_300);
+  selmuon_chi2protonpdg_PID_300-> Add(selmuon_chi2proton_pion_PID_300);
+  selmuon_chi2protonpdg_PID_300-> Add(selmuon_chi2proton_electron_PID_300);
+  selmuon_chi2protonpdg_PID_300-> Add(selmuon_chi2proton_pother_PID_300);
+  selmuon_chi2protonpdg_PID_300-> Add(selmuon_chi2proton_OffBeam_PID);
+  //selmuon_chi2protonpdg_PID_300->SetMaximum(120.);
+  selmuon_chi2protonpdg_PID_300-> Draw();
+  selmuon_chi2protonpdg_PID_300->GetXaxis()->SetTitle("muon candidate, #chi^{2}/dof proton hypothesis");
+
+  selmuon_chi2proton_OnBeam_PID->SetLineColor(kBlack);
+  selmuon_chi2proton_OnBeam_PID->SetMarkerStyle(20);
+  selmuon_chi2proton_OnBeam_PID->Draw("e1same");
+
+  TLegend *l9 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l9 -> SetNColumns(2);
+  l9 -> AddEntry(selmuon_chi2proton_muon_PID_300, "#mu", "f");
+  l9 -> AddEntry(selmuon_chi2proton_proton_PID_300, "proton", "f");
+  l9 -> AddEntry(selmuon_chi2proton_pion_PID_300, "#pi", "f");
+  l9 -> AddEntry(selmuon_chi2proton_electron_PID_300, "e^{+/-}", "f");
+  l9 -> AddEntry(selmuon_chi2proton_pother_PID_300, "other", "f");
+  l9 -> AddEntry(selmuon_chi2proton_OffBeam_PID, "off-beam data", "f");
+  l9 -> AddEntry(selmuon_chi2proton_OnBeam_PID, "on-beam data", "lep");
+  l9 -> Draw();  
+  
+  c9->Update();
+  c9->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selmuon_chi2proton_pdg_PID_300.pdf");
+
+  TCanvas *c10 = new TCanvas("c10", "c10", 900, 900);
+
+  selproton1_lenght_CC0Pion0Proton_PID_300-> SetFillColor(kRed -10);
+  selproton1_lenght_CC0Pion1Proton_PID_300-> SetFillColor(kGreen-8);
+  selproton1_lenght_CC0Pion2Proton_PID_300-> SetFillColor(kAzure+4);
+  selproton1_lenght_CC0PionNProton_PID_300-> SetFillColor(kRed-9);
+  selproton1_lenght_CC1PionNProton_PID_300-> SetFillColor(kOrange);
+  selproton1_lenght_CCNPionNProton_PID_300-> SetFillColor(kCyan-8);
+  selproton1_lenght_CCNue_PID_300-> SetFillColor(31);
+  selproton1_lenght_NC_PID_300-> SetFillColor(kOrange+6);
+  selproton1_lenght_OOFV_PID_300-> SetFillColor(kYellow+2);
+  selproton1_lenght_EXT_PID_300-> SetFillColor(kBlack);
+  selproton1_lenght_OffBeam_PID-> SetFillColor(kGray);
+  //DistFlstrk_other_PID_300-> SetFillColor(kRed);
+
+  THStack *selproton1_lenght_PID_300 = new THStack("selproton1_lenght_PID_300","");
+  selproton1_lenght_PID_300-> Add(selproton1_lenght_CC0Pion0Proton_PID_300);
+  selproton1_lenght_PID_300-> Add(selproton1_lenght_CC0Pion1Proton_PID_300);
+  selproton1_lenght_PID_300-> Add(selproton1_lenght_CC0Pion2Proton_PID_300);
+  selproton1_lenght_PID_300-> Add(selproton1_lenght_CC0PionNProton_PID_300);
+  selproton1_lenght_PID_300-> Add(selproton1_lenght_CC1PionNProton_PID_300);
+  selproton1_lenght_PID_300-> Add(selproton1_lenght_CCNPionNProton_PID_300);
+  selproton1_lenght_PID_300-> Add(selproton1_lenght_CCNue_PID_300);
+  selproton1_lenght_PID_300-> Add(selproton1_lenght_NC_PID_300);
+  selproton1_lenght_PID_300-> Add(selproton1_lenght_OOFV_PID_300);
+  selproton1_lenght_PID_300-> Add(selproton1_lenght_EXT_PID_300);
+  //selproton1_lenght_PID_300-> Add(selproton1_lenght_other_PID_300);
+  selproton1_lenght_PID_300-> Add(selproton1_lenght_OffBeam_PID);
+  //selproton1_lenght_PID_300->SetMaximum(600.);
+  selproton1_lenght_PID_300-> Draw();
+  selproton1_lenght_PID_300->GetXaxis()->SetTitle("proton 1 candidate, length [cm]");
+
+  selproton1_lenght_OnBeam_PID->SetLineColor(kBlack);
+  selproton1_lenght_OnBeam_PID->SetMarkerStyle(20);
+  selproton1_lenght_OnBeam_PID->Draw("e1same");
+
+  TLegend *l10 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l10 -> SetNColumns(2);
+  l10 -> AddEntry(selproton1_lenght_CC0Pion0Proton_PID_300, "CC0P0#pi", "f");
+  l10 -> AddEntry(selproton1_lenght_CCNue_PID_300, "CC#nu_{e}", "f");
+  l10 -> AddEntry(selproton1_lenght_CC0Pion1Proton_PID_300, "CC1P0#pi", "f");
+  l10 -> AddEntry(selproton1_lenght_NC_PID_300, "NC", "f");
+  l10 -> AddEntry(selproton1_lenght_CC0Pion2Proton_PID_300, "CC2P0#pi", "f");
+  l10 -> AddEntry(selproton1_lenght_OOFV_PID_300, "OOFV", "f");
+  l10 -> AddEntry(selproton1_lenght_CC0PionNProton_PID_300, "CCNP0#pi", "f");
+  l10 -> AddEntry(selproton1_lenght_EXT_PID_300, "cosmic", "f");
+  l10 -> AddEntry(selproton1_lenght_CC1PionNProton_PID_300, "CCNP1#pi", "f");
+  l10 -> AddEntry(selproton1_lenght_OffBeam_PID, "off-beam data", "f");
+  l10 -> AddEntry(selproton1_lenght_CCNPionNProton_PID_300, "CCNPN#pi", "f");
+  l10 -> AddEntry(selproton1_lenght_OnBeam_PID, "on-beam data", "lep");
+
+  l10 -> Draw();  
+  
+  c10->Update();
+  c10->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selproton1_lenght_topo_PID_300.pdf");
+
+  TCanvas *c11 = new TCanvas("c11", "c11", 900, 900);
+
+  selproton1_costheta_CC0Pion0Proton_PID_300-> SetFillColor(kRed -10);
+  selproton1_costheta_CC0Pion1Proton_PID_300-> SetFillColor(kGreen-8);
+  selproton1_costheta_CC0Pion2Proton_PID_300-> SetFillColor(kAzure+4);
+  selproton1_costheta_CC0PionNProton_PID_300-> SetFillColor(kRed-9);
+  selproton1_costheta_CC1PionNProton_PID_300-> SetFillColor(kOrange);
+  selproton1_costheta_CCNPionNProton_PID_300-> SetFillColor(kCyan-8);
+  selproton1_costheta_CCNue_PID_300-> SetFillColor(31);
+  selproton1_costheta_NC_PID_300-> SetFillColor(kOrange+6);
+  selproton1_costheta_OOFV_PID_300-> SetFillColor(kYellow+2);
+  selproton1_costheta_EXT_PID_300-> SetFillColor(kBlack);
+  selproton1_costheta_OffBeam_PID-> SetFillColor(kGray);
+  //DistFlstrk_other_PID_300-> SetFillColor(kRed);
+
+  THStack *selproton1_costheta_PID_300 = new THStack("selproton1_costheta_PID_300","");
+  selproton1_costheta_PID_300-> Add(selproton1_costheta_CC0Pion0Proton_PID_300);
+  selproton1_costheta_PID_300-> Add(selproton1_costheta_CC0Pion1Proton_PID_300);
+  selproton1_costheta_PID_300-> Add(selproton1_costheta_CC0Pion2Proton_PID_300);
+  selproton1_costheta_PID_300-> Add(selproton1_costheta_CC0PionNProton_PID_300);
+  selproton1_costheta_PID_300-> Add(selproton1_costheta_CC1PionNProton_PID_300);
+  selproton1_costheta_PID_300-> Add(selproton1_costheta_CCNPionNProton_PID_300);
+  selproton1_costheta_PID_300-> Add(selproton1_costheta_CCNue_PID_300);
+  selproton1_costheta_PID_300-> Add(selproton1_costheta_NC_PID_300);
+  selproton1_costheta_PID_300-> Add(selproton1_costheta_OOFV_PID_300);
+  selproton1_costheta_PID_300-> Add(selproton1_costheta_EXT_PID_300);
+  //selproton1_costheta_PID_300-> Add(selproton1_costheta_other_PID_300);
+  selproton1_costheta_PID_300-> Add(selproton1_costheta_OffBeam_PID);
+  selproton1_costheta_PID_300->SetMaximum(100.);
+  selproton1_costheta_PID_300-> Draw();
+  selproton1_costheta_PID_300->GetXaxis()->SetTitle("proton 1 candidate, cos #theta");
+
+  selproton1_costheta_OnBeam_PID->SetLineColor(kBlack);
+  selproton1_costheta_OnBeam_PID->SetMarkerStyle(20);
+  selproton1_costheta_OnBeam_PID->Draw("e1same");
+
+  TLegend *l11 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l11 -> SetNColumns(2);
+  l11 -> AddEntry(selproton1_costheta_CC0Pion0Proton_PID_300, "CC0P0#pi", "f");
+  l11 -> AddEntry(selproton1_costheta_CCNue_PID_300, "CC#nu_{e}", "f");
+  l11 -> AddEntry(selproton1_costheta_CC0Pion1Proton_PID_300, "CC1P0#pi", "f");
+  l11 -> AddEntry(selproton1_costheta_NC_PID_300, "NC", "f");
+  l11 -> AddEntry(selproton1_costheta_CC0Pion2Proton_PID_300, "CC2P0#pi", "f");
+  l11 -> AddEntry(selproton1_costheta_OOFV_PID_300, "OOFV", "f");
+  l11 -> AddEntry(selproton1_costheta_CC0PionNProton_PID_300, "CCNP0#pi", "f");
+  l11 -> AddEntry(selproton1_costheta_EXT_PID_300, "cosmic", "f");
+  l11 -> AddEntry(selproton1_costheta_CC1PionNProton_PID_300, "CCNP1#pi", "f");
+  l11 -> AddEntry(selproton1_costheta_OffBeam_PID, "off-beam data", "f");
+  l11 -> AddEntry(selproton1_costheta_CCNPionNProton_PID_300, "CCNPN#pi", "f");
+  l11 -> AddEntry(selproton1_costheta_OnBeam_PID, "on-beam data", "lep");
+
+  l11 -> Draw();  
+  
+  c11->Update();
+  c11->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selproton1_costheta_topo_PID_300.pdf");
+
+  TCanvas *c12 = new TCanvas("c12", "c12", 900, 900);
+
+  selproton1_phi_CC0Pion0Proton_PID_300-> SetFillColor(kRed -10);
+  selproton1_phi_CC0Pion1Proton_PID_300-> SetFillColor(kGreen-8);
+  selproton1_phi_CC0Pion2Proton_PID_300-> SetFillColor(kAzure+4);
+  selproton1_phi_CC0PionNProton_PID_300-> SetFillColor(kRed-9);
+  selproton1_phi_CC1PionNProton_PID_300-> SetFillColor(kOrange);
+  selproton1_phi_CCNPionNProton_PID_300-> SetFillColor(kCyan-8);
+  selproton1_phi_CCNue_PID_300-> SetFillColor(31);
+  selproton1_phi_NC_PID_300-> SetFillColor(kOrange+6);
+  selproton1_phi_OOFV_PID_300-> SetFillColor(kYellow+2);
+  selproton1_phi_EXT_PID_300-> SetFillColor(kBlack);
+  selproton1_phi_OffBeam_PID-> SetFillColor(kGray);
+  //DistFlstrk_other_PID_300-> SetFillColor(kRed);
+
+  THStack *selproton1_phi_PID_300 = new THStack("selproton1_phi_PID_300","");
+  selproton1_phi_PID_300-> Add(selproton1_phi_CC0Pion0Proton_PID_300);
+  selproton1_phi_PID_300-> Add(selproton1_phi_CC0Pion1Proton_PID_300);
+  selproton1_phi_PID_300-> Add(selproton1_phi_CC0Pion2Proton_PID_300);
+  selproton1_phi_PID_300-> Add(selproton1_phi_CC0PionNProton_PID_300);
+  selproton1_phi_PID_300-> Add(selproton1_phi_CC1PionNProton_PID_300);
+  selproton1_phi_PID_300-> Add(selproton1_phi_CCNPionNProton_PID_300);
+  selproton1_phi_PID_300-> Add(selproton1_phi_CCNue_PID_300);
+  selproton1_phi_PID_300-> Add(selproton1_phi_NC_PID_300);
+  selproton1_phi_PID_300-> Add(selproton1_phi_OOFV_PID_300);
+  selproton1_phi_PID_300-> Add(selproton1_phi_EXT_PID_300);
+  //selproton1_phi_PID_300-> Add(selproton1_phi_other_PID_300);
+  selproton1_phi_PID_300-> Add(selproton1_phi_OffBeam_PID);
+  selproton1_phi_PID_300->SetMaximum(50.);
+  selproton1_phi_PID_300-> Draw();
+  selproton1_phi_PID_300->GetXaxis()->SetTitle("proton 1 candidate, #phi");
+
+  selproton1_phi_OnBeam_PID->SetLineColor(kBlack);
+  selproton1_phi_OnBeam_PID->SetMarkerStyle(20);
+  selproton1_phi_OnBeam_PID->Draw("e1same");
+
+  TLegend *l12 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l12 -> SetNColumns(2);
+  l12 -> AddEntry(selproton1_phi_CC0Pion0Proton_PID_300, "CC0P0#pi", "f");
+  l12 -> AddEntry(selproton1_phi_CCNue_PID_300, "CC#nu_{e}", "f");
+  l12 -> AddEntry(selproton1_phi_CC0Pion1Proton_PID_300, "CC1P0#pi", "f");
+  l12 -> AddEntry(selproton1_phi_NC_PID_300, "NC", "f");
+  l12 -> AddEntry(selproton1_phi_CC0Pion2Proton_PID_300, "CC2P0#pi", "f");
+  l12 -> AddEntry(selproton1_phi_OOFV_PID_300, "OOFV", "f");
+  l12 -> AddEntry(selproton1_phi_CC0PionNProton_PID_300, "CCNP0#pi", "f");
+  l12 -> AddEntry(selproton1_phi_EXT_PID_300, "cosmic", "f");
+  l12 -> AddEntry(selproton1_phi_CC1PionNProton_PID_300, "CCNP1#pi", "f");
+  l12 -> AddEntry(selproton1_phi_OffBeam_PID, "off-beam data", "f");
+  l12 -> AddEntry(selproton1_phi_CCNPionNProton_PID_300, "CCNPN#pi", "f");
+  l12 -> AddEntry(selproton1_phi_OnBeam_PID, "on-beam data", "lep");
+
+  l12 -> Draw();  
+  
+  c12->Update();
+  c12->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selproton1_phi_topo_PID_300.pdf");
+
+  TCanvas *c13 = new TCanvas("c13", "c13", 900, 900);
+
+  selproton1_mom_CC0Pion0Proton_PID_300-> SetFillColor(kRed -10);
+  selproton1_mom_CC0Pion1Proton_PID_300-> SetFillColor(kGreen-8);
+  selproton1_mom_CC0Pion2Proton_PID_300-> SetFillColor(kAzure+4);
+  selproton1_mom_CC0PionNProton_PID_300-> SetFillColor(kRed-9);
+  selproton1_mom_CC1PionNProton_PID_300-> SetFillColor(kOrange);
+  selproton1_mom_CCNPionNProton_PID_300-> SetFillColor(kCyan-8);
+  selproton1_mom_CCNue_PID_300-> SetFillColor(31);
+  selproton1_mom_NC_PID_300-> SetFillColor(kOrange+6);
+  selproton1_mom_OOFV_PID_300-> SetFillColor(kYellow+2);
+  selproton1_mom_EXT_PID_300-> SetFillColor(kBlack);
+  selproton1_mom_OffBeam_PID-> SetFillColor(kGray);
+  //DistFlstrk_other_PID_300-> SetFillColor(kRed);
+
+  THStack *selproton1_mom_PID_300 = new THStack("selproton1_mom_PID_300","");
+  selproton1_mom_PID_300-> Add(selproton1_mom_CC0Pion0Proton_PID_300);
+  selproton1_mom_PID_300-> Add(selproton1_mom_CC0Pion1Proton_PID_300);
+  selproton1_mom_PID_300-> Add(selproton1_mom_CC0Pion2Proton_PID_300);
+  selproton1_mom_PID_300-> Add(selproton1_mom_CC0PionNProton_PID_300);
+  selproton1_mom_PID_300-> Add(selproton1_mom_CC1PionNProton_PID_300);
+  selproton1_mom_PID_300-> Add(selproton1_mom_CCNPionNProton_PID_300);
+  selproton1_mom_PID_300-> Add(selproton1_mom_CCNue_PID_300);
+  selproton1_mom_PID_300-> Add(selproton1_mom_NC_PID_300);
+  selproton1_mom_PID_300-> Add(selproton1_mom_OOFV_PID_300);
+  selproton1_mom_PID_300-> Add(selproton1_mom_EXT_PID_300);
+  //selproton1_mom_PID_300-> Add(selproton1_mom_other_PID_300);
+  selproton1_mom_PID_300-> Add(selproton1_mom_OffBeam_PID);
+  //selproton1_mom_PID_300->SetMaximum(600.);
+  selproton1_mom_PID_300-> Draw();
+  selproton1_mom_PID_300->GetXaxis()->SetTitle("proton 1 candidate, momentum [GeV]");
+
+  selproton1_mom_OnBeam_PID->SetLineColor(kBlack);
+  selproton1_mom_OnBeam_PID->SetMarkerStyle(20);
+  selproton1_mom_OnBeam_PID->Draw("e1same");
+
+  TLegend *l13 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l13 -> SetNColumns(2);
+  l13 -> AddEntry(selproton1_mom_CC0Pion0Proton_PID_300, "CC0P0#pi", "f");
+  l13 -> AddEntry(selproton1_mom_CCNue_PID_300, "CC#nu_{e}", "f");
+  l13 -> AddEntry(selproton1_mom_CC0Pion1Proton_PID_300, "CC1P0#pi", "f");
+  l13 -> AddEntry(selproton1_mom_NC_PID_300, "NC", "f");
+  l13 -> AddEntry(selproton1_mom_CC0Pion2Proton_PID_300, "CC2P0#pi", "f");
+  l13 -> AddEntry(selproton1_mom_OOFV_PID_300, "OOFV", "f");
+  l13 -> AddEntry(selproton1_mom_CC0PionNProton_PID_300, "CCNP0#pi", "f");
+  l13 -> AddEntry(selproton1_mom_EXT_PID_300, "cosmic", "f");
+  l13 -> AddEntry(selproton1_mom_CC1PionNProton_PID_300, "CCNP1#pi", "f");
+  l13 -> AddEntry(selproton1_mom_OffBeam_PID, "off-beam data", "f");
+  l13 -> AddEntry(selproton1_mom_CCNPionNProton_PID_300, "CCNPN#pi", "f");
+  l13 -> AddEntry(selproton1_mom_OnBeam_PID, "on-beam data", "lep");
+
+  l13 -> Draw();  
+  
+  c13->Update();
+  c13->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selproton1_mom_topo_PID_300.pdf");
+
+  TCanvas *c14 = new TCanvas("c14", "c14", 900, 900);
+
+  selproton1_lenght_muon_PID_300-> SetFillColor(kRed +1);
+  selproton1_lenght_proton_PID_300-> SetFillColor(kAzure+4);
+  selproton1_lenght_pion_PID_300-> SetFillColor(kOrange);
+  selproton1_lenght_electron_PID_300-> SetFillColor(kRed-9);
+  selproton1_lenght_pother_PID_300-> SetFillColor(kGreen-8);
+  selproton1_lenght_OffBeam_PID-> SetFillColor(kGray);
+
+  THStack *selproton1_lenghtpdg_PID_300 = new THStack("selproton1_lenghtpdg_PID_300","");
+  selproton1_lenghtpdg_PID_300-> Add(selproton1_lenght_muon_PID_300);
+  selproton1_lenghtpdg_PID_300-> Add(selproton1_lenght_proton_PID_300);
+  selproton1_lenghtpdg_PID_300-> Add(selproton1_lenght_pion_PID_300);
+  selproton1_lenghtpdg_PID_300-> Add(selproton1_lenght_electron_PID_300);
+  selproton1_lenghtpdg_PID_300-> Add(selproton1_lenght_pother_PID_300);
+  selproton1_lenghtpdg_PID_300-> Add(selproton1_lenght_OffBeam_PID);
+  //selmuon_chi2kaonpdg_PID_300->SetMaximum(50.);
+  selproton1_lenghtpdg_PID_300-> Draw();
+  selproton1_lenghtpdg_PID_300->GetXaxis()->SetTitle("proton 1 candidate, length [cm]");
+
+  selproton1_lenght_OnBeam_PID->SetLineColor(kBlack);
+  selproton1_lenght_OnBeam_PID->SetMarkerStyle(20);
+  selproton1_lenght_OnBeam_PID->Draw("e1same");
+
+  TLegend *l14 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l14 -> SetNColumns(2);
+  l14 -> AddEntry(selproton1_lenght_muon_PID_300, "#mu", "f");
+  l14 -> AddEntry(selproton1_lenght_proton_PID_300, "proton", "f");
+  l14 -> AddEntry(selproton1_lenght_pion_PID_300, "#pi", "f");
+  l14 -> AddEntry(selproton1_lenght_electron_PID_300, "e^{+/-}", "f");
+  l14 -> AddEntry(selproton1_lenght_pother_PID_300, "other", "f");
+  l14 -> AddEntry(selproton1_lenght_OffBeam_PID, "off-beam data", "f");
+  l14 -> AddEntry(selproton1_lenght_OnBeam_PID, "on-beam data", "lep");
+  l14 -> Draw();  
+  
+  c14->Update();
+  c14->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selproton1_lenght_pdg_PID_300.pdf");
+
+  TCanvas *c15 = new TCanvas("c15", "c15", 900, 900);
+
+  selproton1_costheta_muon_PID_300-> SetFillColor(kRed +1);
+  selproton1_costheta_proton_PID_300-> SetFillColor(kAzure+4);
+  selproton1_costheta_pion_PID_300-> SetFillColor(kOrange);
+  selproton1_costheta_electron_PID_300-> SetFillColor(kRed-9);
+  selproton1_costheta_pother_PID_300-> SetFillColor(kGreen-8);
+  selproton1_costheta_OffBeam_PID-> SetFillColor(kGray);
+
+  THStack *selproton1_costhetapdg_PID_300 = new THStack("selproton1_costhetapdg_PID_300","");
+  selproton1_costhetapdg_PID_300-> Add(selproton1_costheta_muon_PID_300);
+  selproton1_costhetapdg_PID_300-> Add(selproton1_costheta_proton_PID_300);
+  selproton1_costhetapdg_PID_300-> Add(selproton1_costheta_pion_PID_300);
+  selproton1_costhetapdg_PID_300-> Add(selproton1_costheta_electron_PID_300);
+  selproton1_costhetapdg_PID_300-> Add(selproton1_costheta_pother_PID_300);
+  selproton1_costhetapdg_PID_300-> Add(selproton1_costheta_OffBeam_PID);
+  selproton1_costhetapdg_PID_300->SetMaximum(100);
+  selproton1_costhetapdg_PID_300-> Draw();
+  selproton1_costhetapdg_PID_300->GetXaxis()->SetTitle("proton 1 candidate, cos #theta");
+
+  selproton1_costheta_OnBeam_PID->SetLineColor(kBlack);
+  selproton1_costheta_OnBeam_PID->SetMarkerStyle(20);
+  selproton1_costheta_OnBeam_PID->Draw("e1same");
+
+  TLegend *l15 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l15 -> SetNColumns(2);
+  l15 -> AddEntry(selproton1_costheta_muon_PID_300, "#mu", "f");
+  l15 -> AddEntry(selproton1_costheta_proton_PID_300, "proton", "f");
+  l15 -> AddEntry(selproton1_costheta_pion_PID_300, "#pi", "f");
+  l15 -> AddEntry(selproton1_costheta_electron_PID_300, "e^{+/-}", "f");
+  l15 -> AddEntry(selproton1_costheta_pother_PID_300, "other", "f");
+  l15 -> AddEntry(selproton1_costheta_OffBeam_PID, "off-beam data", "f");
+  l15 -> AddEntry(selproton1_costheta_OnBeam_PID, "on-beam data", "lep");
+  l15 -> Draw();  
+  
+  c15->Update();
+  c15->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selproton1_costheta_pdg_PID_300.pdf");
+
+  TCanvas *c16 = new TCanvas("c16", "c16", 900, 900);
+
+  selproton1_phi_muon_PID_300-> SetFillColor(kRed +1);
+  selproton1_phi_proton_PID_300-> SetFillColor(kAzure+4);
+  selproton1_phi_pion_PID_300-> SetFillColor(kOrange);
+  selproton1_phi_electron_PID_300-> SetFillColor(kRed-9);
+  selproton1_phi_pother_PID_300-> SetFillColor(kGreen-8);
+  selproton1_phi_OffBeam_PID-> SetFillColor(kGray);
+
+  THStack *selproton1_phipdg_PID_300 = new THStack("selproton1_phipdg_PID_300","");
+  selproton1_phipdg_PID_300-> Add(selproton1_phi_muon_PID_300);
+  selproton1_phipdg_PID_300-> Add(selproton1_phi_proton_PID_300);
+  selproton1_phipdg_PID_300-> Add(selproton1_phi_pion_PID_300);
+  selproton1_phipdg_PID_300-> Add(selproton1_phi_electron_PID_300);
+  selproton1_phipdg_PID_300-> Add(selproton1_phi_pother_PID_300);
+  selproton1_phipdg_PID_300-> Add(selproton1_phi_OffBeam_PID);
+  selproton1_phipdg_PID_300->SetMaximum(50.);
+  selproton1_phipdg_PID_300-> Draw();
+  selproton1_phipdg_PID_300->GetXaxis()->SetTitle("proton 1 candidate, #phi");
+
+  selproton1_phi_OnBeam_PID->SetLineColor(kBlack);
+  selproton1_phi_OnBeam_PID->SetMarkerStyle(20);
+  selproton1_phi_OnBeam_PID->Draw("e1same");
+
+  TLegend *l16 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l16 -> SetNColumns(2);
+  l16 -> AddEntry(selproton1_phi_muon_PID_300, "#mu", "f");
+  l16 -> AddEntry(selproton1_phi_proton_PID_300, "proton", "f");
+  l16 -> AddEntry(selproton1_phi_pion_PID_300, "#pi", "f");
+  l16 -> AddEntry(selproton1_phi_electron_PID_300, "e^{+/-}", "f");
+  l16 -> AddEntry(selproton1_phi_pother_PID_300, "other", "f");
+  l16 -> AddEntry(selproton1_phi_OffBeam_PID, "off-beam data", "f");
+  l16 -> AddEntry(selproton1_phi_OnBeam_PID, "on-beam data", "lep");
+  l16 -> Draw();  
+  
+  c16->Update();
+  c16->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selproton1_phi_pdg_PID_300.pdf");
+
+  TCanvas *c17 = new TCanvas("c17", "c17", 900, 900);
+
+  selproton1_chi2proton_muon_PID_300-> SetFillColor(kRed +1);
+  selproton1_chi2proton_proton_PID_300-> SetFillColor(kAzure+4);
+  selproton1_chi2proton_pion_PID_300-> SetFillColor(kOrange);
+  selproton1_chi2proton_electron_PID_300-> SetFillColor(kRed-9);
+  selproton1_chi2proton_pother_PID_300-> SetFillColor(kGreen-8);
+  selproton1_chi2proton_OffBeam_PID-> SetFillColor(kGray);
+
+  THStack *selproton1_chi2protonpdg_PID_300 = new THStack("selproton1_chi2protonpdg_PID_300","");
+  selproton1_chi2protonpdg_PID_300-> Add(selproton1_chi2proton_muon_PID_300);
+  selproton1_chi2protonpdg_PID_300-> Add(selproton1_chi2proton_proton_PID_300);
+  selproton1_chi2protonpdg_PID_300-> Add(selproton1_chi2proton_pion_PID_300);
+  selproton1_chi2protonpdg_PID_300-> Add(selproton1_chi2proton_electron_PID_300);
+  selproton1_chi2protonpdg_PID_300-> Add(selproton1_chi2proton_pother_PID_300);
+  selproton1_chi2protonpdg_PID_300-> Add(selproton1_chi2proton_OffBeam_PID);
+  //selproton1_chi2protonpdg_PID_300->SetMaximum(25.);
+  selproton1_chi2protonpdg_PID_300-> Draw();
+  selproton1_chi2protonpdg_PID_300->GetXaxis()->SetTitle("proton 1 candidate, #chi^{2}/dof proton hypothesis");
+
+  selproton1_chi2proton_OnBeam_PID->SetLineColor(kBlack);
+  selproton1_chi2proton_OnBeam_PID->SetMarkerStyle(20);
+  selproton1_chi2proton_OnBeam_PID->Draw("e1same");
+
+  TLegend *l17 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l17 -> SetNColumns(2);
+  l17 -> AddEntry(selproton1_chi2proton_muon_PID_300, "#mu", "f");
+  l17 -> AddEntry(selproton1_chi2proton_proton_PID_300, "proton", "f");
+  l17 -> AddEntry(selproton1_chi2proton_pion_PID_300, "#pi", "f");
+  l17 -> AddEntry(selproton1_chi2proton_electron_PID_300, "e^{+/-}", "f");
+  l17 -> AddEntry(selproton1_chi2proton_pother_PID_300, "other", "f");
+  l17 -> AddEntry(selproton1_chi2proton_OffBeam_PID, "off-beam data", "f");
+  l17 -> AddEntry(selproton1_chi2proton_OnBeam_PID, "on-beam data", "lep");
+  l17 -> Draw();  
+  
+  c17->Update();
+  c17->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selproton1_chi2proton_pdg_PID_300.pdf");
+
+  TCanvas *c18 = new TCanvas("c18", "c18", 900, 900);
+
+  selproton2_lenght_CC0Pion0Proton_PID_300-> SetFillColor(kRed -10);
+  selproton2_lenght_CC0Pion1Proton_PID_300-> SetFillColor(kGreen-8);
+  selproton2_lenght_CC0Pion2Proton_PID_300-> SetFillColor(kAzure+4);
+  selproton2_lenght_CC0PionNProton_PID_300-> SetFillColor(kRed-9);
+  selproton2_lenght_CC1PionNProton_PID_300-> SetFillColor(kOrange);
+  selproton2_lenght_CCNPionNProton_PID_300-> SetFillColor(kCyan-8);
+  selproton2_lenght_CCNue_PID_300-> SetFillColor(31);
+  selproton2_lenght_NC_PID_300-> SetFillColor(kOrange+6);
+  selproton2_lenght_OOFV_PID_300-> SetFillColor(kYellow+2);
+  selproton2_lenght_EXT_PID_300-> SetFillColor(kBlack);
+  selproton2_lenght_OffBeam_PID-> SetFillColor(kGray);
+  //DistFlstrk_other_PID_300-> SetFillColor(kRed);
+
+  THStack *selproton2_lenght_PID_300 = new THStack("selproton2_lenght_PID_300","");
+  selproton2_lenght_PID_300-> Add(selproton2_lenght_CC0Pion0Proton_PID_300);
+  selproton2_lenght_PID_300-> Add(selproton2_lenght_CC0Pion1Proton_PID_300);
+  selproton2_lenght_PID_300-> Add(selproton2_lenght_CC0Pion2Proton_PID_300);
+  selproton2_lenght_PID_300-> Add(selproton2_lenght_CC0PionNProton_PID_300);
+  selproton2_lenght_PID_300-> Add(selproton2_lenght_CC1PionNProton_PID_300);
+  selproton2_lenght_PID_300-> Add(selproton2_lenght_CCNPionNProton_PID_300);
+  selproton2_lenght_PID_300-> Add(selproton2_lenght_CCNue_PID_300);
+  selproton2_lenght_PID_300-> Add(selproton2_lenght_NC_PID_300);
+  selproton2_lenght_PID_300-> Add(selproton2_lenght_OOFV_PID_300);
+  selproton2_lenght_PID_300-> Add(selproton2_lenght_EXT_PID_300);
+  //selproton2_lenght_PID_300-> Add(selproton2_lenght_other_PID_300);
+  selproton2_lenght_PID_300-> Add(selproton2_lenght_OffBeam_PID);
+  //selproton2_lenght_PID_300->SetMaximum(600.);
+  selproton2_lenght_PID_300-> Draw();
+  selproton2_lenght_PID_300->GetXaxis()->SetTitle("proton 2 candidate, length [cm]");
+
+  selproton2_lenght_OnBeam_PID->SetLineColor(kBlack);
+  selproton2_lenght_OnBeam_PID->SetMarkerStyle(20);
+  selproton2_lenght_OnBeam_PID->Draw("e1same");
+
+  TLegend *l18 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l18 -> SetNColumns(2);
+  l18 -> AddEntry(selproton2_lenght_CC0Pion0Proton_PID_300, "CC0P0#pi", "f");
+  l18 -> AddEntry(selproton2_lenght_CCNue_PID_300, "CC#nu_{e}", "f");
+  l18 -> AddEntry(selproton2_lenght_CC0Pion1Proton_PID_300, "CC1P0#pi", "f");
+  l18 -> AddEntry(selproton2_lenght_NC_PID_300, "NC", "f");
+  l18 -> AddEntry(selproton2_lenght_CC0Pion2Proton_PID_300, "CC2P0#pi", "f");
+  l18 -> AddEntry(selproton2_lenght_OOFV_PID_300, "OOFV", "f");
+  l18 -> AddEntry(selproton2_lenght_CC0PionNProton_PID_300, "CCNP0#pi", "f");
+  l18 -> AddEntry(selproton2_lenght_EXT_PID_300, "cosmic", "f");
+  l18 -> AddEntry(selproton2_lenght_CC1PionNProton_PID_300, "CCNP1#pi", "f");
+  l18 -> AddEntry(selproton2_lenght_OffBeam_PID, "off-beam data", "f");
+  l18 -> AddEntry(selproton2_lenght_CCNPionNProton_PID_300, "CCNPN#pi", "f");
+  l18 -> AddEntry(selproton2_lenght_OnBeam_PID, "on-beam data", "lep");
+
+  l18 -> Draw();  
+  
+  c18->Update();
+  c18->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selproton2_lenght_topo_PID_300.pdf");
+
+  TCanvas *c19 = new TCanvas("c19", "c19", 900, 900);
+
+  selproton2_costheta_CC0Pion0Proton_PID_300-> SetFillColor(kRed -10);
+  selproton2_costheta_CC0Pion1Proton_PID_300-> SetFillColor(kGreen-8);
+  selproton2_costheta_CC0Pion2Proton_PID_300-> SetFillColor(kAzure+4);
+  selproton2_costheta_CC0PionNProton_PID_300-> SetFillColor(kRed-9);
+  selproton2_costheta_CC1PionNProton_PID_300-> SetFillColor(kOrange);
+  selproton2_costheta_CCNPionNProton_PID_300-> SetFillColor(kCyan-8);
+  selproton2_costheta_CCNue_PID_300-> SetFillColor(31);
+  selproton2_costheta_NC_PID_300-> SetFillColor(kOrange+6);
+  selproton2_costheta_OOFV_PID_300-> SetFillColor(kYellow+2);
+  selproton2_costheta_EXT_PID_300-> SetFillColor(kBlack);
+  selproton2_costheta_OffBeam_PID-> SetFillColor(kGray);
+  //DistFlstrk_other_PID_300-> SetFillColor(kRed);
+
+  THStack *selproton2_costheta_PID_300 = new THStack("selproton2_costheta_PID_300","");
+  selproton2_costheta_PID_300-> Add(selproton2_costheta_CC0Pion0Proton_PID_300);
+  selproton2_costheta_PID_300-> Add(selproton2_costheta_CC0Pion1Proton_PID_300);
+  selproton2_costheta_PID_300-> Add(selproton2_costheta_CC0Pion2Proton_PID_300);
+  selproton2_costheta_PID_300-> Add(selproton2_costheta_CC0PionNProton_PID_300);
+  selproton2_costheta_PID_300-> Add(selproton2_costheta_CC1PionNProton_PID_300);
+  selproton2_costheta_PID_300-> Add(selproton2_costheta_CCNPionNProton_PID_300);
+  selproton2_costheta_PID_300-> Add(selproton2_costheta_CCNue_PID_300);
+  selproton2_costheta_PID_300-> Add(selproton2_costheta_NC_PID_300);
+  selproton2_costheta_PID_300-> Add(selproton2_costheta_OOFV_PID_300);
+  selproton2_costheta_PID_300-> Add(selproton2_costheta_EXT_PID_300);
+  //selproton2_costheta_PID_300-> Add(selproton2_costheta_other_PID_300);
+  selproton2_costheta_PID_300-> Add(selproton2_costheta_OffBeam_PID);
+  selproton2_costheta_PID_300->SetMaximum(70.);
+  selproton2_costheta_PID_300-> Draw();
+  selproton2_costheta_PID_300->GetXaxis()->SetTitle("proton 2 candidate, cos #theta");
+
+  selproton2_costheta_OnBeam_PID->SetLineColor(kBlack);
+  selproton2_costheta_OnBeam_PID->SetMarkerStyle(20);
+  selproton2_costheta_OnBeam_PID->Draw("e1same");
+
+  TLegend *l19 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l19 -> SetNColumns(2);
+  l19 -> AddEntry(selproton2_costheta_CC0Pion0Proton_PID_300, "CC0P0#pi", "f");
+  l19 -> AddEntry(selproton2_costheta_CCNue_PID_300, "CC#nu_{e}", "f");
+  l19 -> AddEntry(selproton2_costheta_CC0Pion1Proton_PID_300, "CC1P0#pi", "f");
+  l19 -> AddEntry(selproton2_costheta_NC_PID_300, "NC", "f");
+  l19 -> AddEntry(selproton2_costheta_CC0Pion2Proton_PID_300, "CC2P0#pi", "f");
+  l19 -> AddEntry(selproton2_costheta_OOFV_PID_300, "OOFV", "f");
+  l19 -> AddEntry(selproton2_costheta_CC0PionNProton_PID_300, "CCNP0#pi", "f");
+  l19 -> AddEntry(selproton2_costheta_EXT_PID_300, "cosmic", "f");
+  l19 -> AddEntry(selproton2_costheta_CC1PionNProton_PID_300, "CCNP1#pi", "f");
+  l19 -> AddEntry(selproton2_costheta_OffBeam_PID, "off-beam data", "f");
+  l19 -> AddEntry(selproton2_costheta_CCNPionNProton_PID_300, "CCNPN#pi", "f");
+  l19 -> AddEntry(selproton2_costheta_OnBeam_PID, "on-beam data", "lep");
+
+  l19 -> Draw();  
+  
+  c19->Update();
+  c19->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selproton2_costheta_topo_PID_300.pdf");
+
+  TCanvas *c20 = new TCanvas("c20", "c20", 900, 900);
+
+  selproton2_phi_CC0Pion0Proton_PID_300-> SetFillColor(kRed -10);
+  selproton2_phi_CC0Pion1Proton_PID_300-> SetFillColor(kGreen-8);
+  selproton2_phi_CC0Pion2Proton_PID_300-> SetFillColor(kAzure+4);
+  selproton2_phi_CC0PionNProton_PID_300-> SetFillColor(kRed-9);
+  selproton2_phi_CC1PionNProton_PID_300-> SetFillColor(kOrange);
+  selproton2_phi_CCNPionNProton_PID_300-> SetFillColor(kCyan-8);
+  selproton2_phi_CCNue_PID_300-> SetFillColor(31);
+  selproton2_phi_NC_PID_300-> SetFillColor(kOrange+6);
+  selproton2_phi_OOFV_PID_300-> SetFillColor(kYellow+2);
+  selproton2_phi_EXT_PID_300-> SetFillColor(kBlack);
+  selproton2_phi_OffBeam_PID-> SetFillColor(kGray);
+  //DistFlstrk_other_PID_300-> SetFillColor(kRed);
+
+  THStack *selproton2_phi_PID_300 = new THStack("selproton2_phi_PID_300","");
+  selproton2_phi_PID_300-> Add(selproton2_phi_CC0Pion0Proton_PID_300);
+  selproton2_phi_PID_300-> Add(selproton2_phi_CC0Pion1Proton_PID_300);
+  selproton2_phi_PID_300-> Add(selproton2_phi_CC0Pion2Proton_PID_300);
+  selproton2_phi_PID_300-> Add(selproton2_phi_CC0PionNProton_PID_300);
+  selproton2_phi_PID_300-> Add(selproton2_phi_CC1PionNProton_PID_300);
+  selproton2_phi_PID_300-> Add(selproton2_phi_CCNPionNProton_PID_300);
+  selproton2_phi_PID_300-> Add(selproton2_phi_CCNue_PID_300);
+  selproton2_phi_PID_300-> Add(selproton2_phi_NC_PID_300);
+  selproton2_phi_PID_300-> Add(selproton2_phi_OOFV_PID_300);
+  selproton2_phi_PID_300-> Add(selproton2_phi_EXT_PID_300);
+  //selproton2_phi_PID_300-> Add(selproton2_phi_other_PID_300);
+  selproton2_phi_PID_300-> Add(selproton2_phi_OffBeam_PID);
+  selproton2_phi_PID_300->SetMaximum(50.);
+  selproton2_phi_PID_300-> Draw();
+  selproton2_phi_PID_300->GetXaxis()->SetTitle("proton 2 candidate, #phi");
+
+  selproton2_phi_OnBeam_PID->SetLineColor(kBlack);
+  selproton2_phi_OnBeam_PID->SetMarkerStyle(20);
+  selproton2_phi_OnBeam_PID->Draw("e1same");
+
+  TLegend *l20 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l20 -> SetNColumns(2);
+  l20 -> AddEntry(selproton2_phi_CC0Pion0Proton_PID_300, "CC0P0#pi", "f");
+  l20 -> AddEntry(selproton2_phi_CCNue_PID_300, "CC#nu_{e}", "f");
+  l20 -> AddEntry(selproton2_phi_CC0Pion1Proton_PID_300, "CC1P0#pi", "f");
+  l20 -> AddEntry(selproton2_phi_NC_PID_300, "NC", "f");
+  l20 -> AddEntry(selproton2_phi_CC0Pion2Proton_PID_300, "CC2P0#pi", "f");
+  l20 -> AddEntry(selproton2_phi_OOFV_PID_300, "OOFV", "f");
+  l20 -> AddEntry(selproton2_phi_CC0PionNProton_PID_300, "CCNP0#pi", "f");
+  l20 -> AddEntry(selproton2_phi_EXT_PID_300, "cosmic", "f");
+  l20 -> AddEntry(selproton2_phi_CC1PionNProton_PID_300, "CCNP1#pi", "f");
+  l20 -> AddEntry(selproton2_phi_OffBeam_PID, "off-beam data", "f");
+  l20 -> AddEntry(selproton2_phi_CCNPionNProton_PID_300, "CCNPN#pi", "f");
+  l20 -> AddEntry(selproton2_phi_OnBeam_PID, "on-beam data", "lep");
+
+  l20 -> Draw();  
+  
+  c20->Update();
+  c20->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selproton2_phi_topo_PID_300.pdf");
+
+  TCanvas *c21 = new TCanvas("c21", "c21", 900, 900);
+
+  selproton2_mom_CC0Pion0Proton_PID_300-> SetFillColor(kRed -10);
+  selproton2_mom_CC0Pion1Proton_PID_300-> SetFillColor(kGreen-8);
+  selproton2_mom_CC0Pion2Proton_PID_300-> SetFillColor(kAzure+4);
+  selproton2_mom_CC0PionNProton_PID_300-> SetFillColor(kRed-9);
+  selproton2_mom_CC1PionNProton_PID_300-> SetFillColor(kOrange);
+  selproton2_mom_CCNPionNProton_PID_300-> SetFillColor(kCyan-8);
+  selproton2_mom_CCNue_PID_300-> SetFillColor(31);
+  selproton2_mom_NC_PID_300-> SetFillColor(kOrange+6);
+  selproton2_mom_OOFV_PID_300-> SetFillColor(kYellow+2);
+  selproton2_mom_EXT_PID_300-> SetFillColor(kBlack);
+  selproton2_mom_OffBeam_PID-> SetFillColor(kGray);
+  //DistFlstrk_other_PID_300-> SetFillColor(kRed);
+
+  THStack *selproton2_mom_PID_300 = new THStack("selproton2_mom_PID_300","");
+  selproton2_mom_PID_300-> Add(selproton2_mom_CC0Pion0Proton_PID_300);
+  selproton2_mom_PID_300-> Add(selproton2_mom_CC0Pion1Proton_PID_300);
+  selproton2_mom_PID_300-> Add(selproton2_mom_CC0Pion2Proton_PID_300);
+  selproton2_mom_PID_300-> Add(selproton2_mom_CC0PionNProton_PID_300);
+  selproton2_mom_PID_300-> Add(selproton2_mom_CC1PionNProton_PID_300);
+  selproton2_mom_PID_300-> Add(selproton2_mom_CCNPionNProton_PID_300);
+  selproton2_mom_PID_300-> Add(selproton2_mom_CCNue_PID_300);
+  selproton2_mom_PID_300-> Add(selproton2_mom_NC_PID_300);
+  selproton2_mom_PID_300-> Add(selproton2_mom_OOFV_PID_300);
+  selproton2_mom_PID_300-> Add(selproton2_mom_EXT_PID_300);
+  //selproton2_mom_PID_300-> Add(selproton2_mom_other_PID_300);
+  selproton2_mom_PID_300-> Add(selproton2_mom_OffBeam_PID);
+  //selproton2_mom_PID_300->SetMaximum(600.);
+  selproton2_mom_PID_300-> Draw();
+  selproton2_mom_PID_300->GetXaxis()->SetTitle("proton 2 candidate, momentum [GeV]");
+
+  selproton2_mom_OnBeam_PID->SetLineColor(kBlack);
+  selproton2_mom_OnBeam_PID->SetMarkerStyle(20);
+  selproton2_mom_OnBeam_PID->Draw("e1same");
+
+  TLegend *l21 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l21 -> SetNColumns(2);
+  l21 -> AddEntry(selproton2_mom_CC0Pion0Proton_PID_300, "CC0P0#pi", "f");
+  l21 -> AddEntry(selproton2_mom_CCNue_PID_300, "CC#nu_{e}", "f");
+  l21 -> AddEntry(selproton2_mom_CC0Pion1Proton_PID_300, "CC1P0#pi", "f");
+  l21 -> AddEntry(selproton2_mom_NC_PID_300, "NC", "f");
+  l21 -> AddEntry(selproton2_mom_CC0Pion2Proton_PID_300, "CC2P0#pi", "f");
+  l21 -> AddEntry(selproton2_mom_OOFV_PID_300, "OOFV", "f");
+  l21 -> AddEntry(selproton2_mom_CC0PionNProton_PID_300, "CCNP0#pi", "f");
+  l21 -> AddEntry(selproton2_mom_EXT_PID_300, "cosmic", "f");
+  l21 -> AddEntry(selproton2_mom_CC1PionNProton_PID_300, "CCNP1#pi", "f");
+  l21 -> AddEntry(selproton2_mom_OffBeam_PID, "off-beam data", "f");
+  l21 -> AddEntry(selproton2_mom_CCNPionNProton_PID_300, "CCNPN#pi", "f");
+  l21 -> AddEntry(selproton2_mom_OnBeam_PID, "on-beam data", "lep");
+
+  l21 -> Draw();  
+  
+  c21->Update();
+  c21->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selproton2_mom_topo_PID_300.pdf");
+
+  TCanvas *c22 = new TCanvas("c22", "c22", 900, 900);
+
+  selproton2_lenght_muon_PID_300-> SetFillColor(kRed +1);
+  selproton2_lenght_proton_PID_300-> SetFillColor(kAzure+4);
+  selproton2_lenght_pion_PID_300-> SetFillColor(kOrange);
+  selproton2_lenght_electron_PID_300-> SetFillColor(kRed-9);
+  selproton2_lenght_pother_PID_300-> SetFillColor(kGreen-8);
+  selproton2_lenght_OffBeam_PID-> SetFillColor(kGray);
+
+  THStack *selproton2_lenghtpdg_PID_300 = new THStack("selproton2_lenghtpdg_PID_300","");
+  selproton2_lenghtpdg_PID_300-> Add(selproton2_lenght_muon_PID_300);
+  selproton2_lenghtpdg_PID_300-> Add(selproton2_lenght_proton_PID_300);
+  selproton2_lenghtpdg_PID_300-> Add(selproton2_lenght_pion_PID_300);
+  selproton2_lenghtpdg_PID_300-> Add(selproton2_lenght_electron_PID_300);
+  selproton2_lenghtpdg_PID_300-> Add(selproton2_lenght_pother_PID_300);
+  selproton2_lenghtpdg_PID_300-> Add(selproton2_lenght_OffBeam_PID);
+  //selmuon_chi2kaonpdg_PID_300->SetMaximum(50.);
+  selproton2_lenghtpdg_PID_300-> Draw();
+  selproton2_lenghtpdg_PID_300->GetXaxis()->SetTitle("proton 2 candidate, length [cm]");
+
+  selproton2_lenght_OnBeam_PID->SetLineColor(kBlack);
+  selproton2_lenght_OnBeam_PID->SetMarkerStyle(20);
+  selproton2_lenght_OnBeam_PID->Draw("e1same");
+
+  TLegend *l22 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l22 -> SetNColumns(2);
+  l22 -> AddEntry(selproton2_lenght_muon_PID_300, "#mu", "f");
+  l22 -> AddEntry(selproton2_lenght_proton_PID_300, "proton", "f");
+  l22 -> AddEntry(selproton2_lenght_pion_PID_300, "#pi", "f");
+  l22 -> AddEntry(selproton2_lenght_electron_PID_300, "e^{+/-}", "f");
+  l22 -> AddEntry(selproton2_lenght_pother_PID_300, "other", "f");
+  l22 -> AddEntry(selproton2_lenght_OffBeam_PID, "off-beam data", "f");
+  l22 -> AddEntry(selproton2_lenght_OnBeam_PID, "on-beam data", "lep");
+  l22 -> Draw();  
+  
+  c22->Update();
+  c22->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selproton2_lenght_pdg_PID_300.pdf");
+
+  TCanvas *c23 = new TCanvas("c23", "c23", 900, 900);
+
+  selproton2_costheta_muon_PID_300-> SetFillColor(kRed +1);
+  selproton2_costheta_proton_PID_300-> SetFillColor(kAzure+4);
+  selproton2_costheta_pion_PID_300-> SetFillColor(kOrange);
+  selproton2_costheta_electron_PID_300-> SetFillColor(kRed-9);
+  selproton2_costheta_pother_PID_300-> SetFillColor(kGreen-8);
+  selproton2_costheta_OffBeam_PID-> SetFillColor(kGray);
+
+  THStack *selproton2_costhetapdg_PID_300 = new THStack("selproton2_costhetapdg_PID_300","");
+  selproton2_costhetapdg_PID_300-> Add(selproton2_costheta_muon_PID_300);
+  selproton2_costhetapdg_PID_300-> Add(selproton2_costheta_proton_PID_300);
+  selproton2_costhetapdg_PID_300-> Add(selproton2_costheta_pion_PID_300);
+  selproton2_costhetapdg_PID_300-> Add(selproton2_costheta_electron_PID_300);
+  selproton2_costhetapdg_PID_300-> Add(selproton2_costheta_pother_PID_300);
+  selproton2_costhetapdg_PID_300-> Add(selproton2_costheta_OffBeam_PID);
+  selproton2_costhetapdg_PID_300->SetMaximum(70.);
+  selproton2_costhetapdg_PID_300-> Draw();
+  selproton2_costhetapdg_PID_300->GetXaxis()->SetTitle("proton 2 candidate, cos #theta");
+
+  selproton2_costheta_OnBeam_PID->SetLineColor(kBlack);
+  selproton2_costheta_OnBeam_PID->SetMarkerStyle(20);
+  selproton2_costheta_OnBeam_PID->Draw("e1same");
+
+  TLegend *l23 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l23 -> SetNColumns(2);
+  l23 -> AddEntry(selproton2_costheta_muon_PID_300, "#mu", "f");
+  l23 -> AddEntry(selproton2_costheta_proton_PID_300, "proton", "f");
+  l23 -> AddEntry(selproton2_costheta_pion_PID_300, "#pi", "f");
+  l23 -> AddEntry(selproton2_costheta_electron_PID_300, "e^{+/-}", "f");
+  l23 -> AddEntry(selproton2_costheta_pother_PID_300, "other", "f");
+  l23 -> AddEntry(selproton2_costheta_OffBeam_PID, "off-beam data", "f");
+  l23 -> AddEntry(selproton2_costheta_OnBeam_PID, "on-beam data", "lep");
+  l23 -> Draw();  
+  
+  c23->Update();
+  c23->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selproton2_costheta_pdg_PID_300.pdf");
+
+  TCanvas *c24 = new TCanvas("c24", "c24", 900, 900);
+
+  selproton2_phi_muon_PID_300-> SetFillColor(kRed +1);
+  selproton2_phi_proton_PID_300-> SetFillColor(kAzure+4);
+  selproton2_phi_pion_PID_300-> SetFillColor(kOrange);
+  selproton2_phi_electron_PID_300-> SetFillColor(kRed-9);
+  selproton2_phi_pother_PID_300-> SetFillColor(kGreen-8);
+  selproton2_phi_OffBeam_PID-> SetFillColor(kGray);
+
+  THStack *selproton2_phipdg_PID_300 = new THStack("selproton2_phipdg_PID_300","");
+  selproton2_phipdg_PID_300-> Add(selproton2_phi_muon_PID_300);
+  selproton2_phipdg_PID_300-> Add(selproton2_phi_proton_PID_300);
+  selproton2_phipdg_PID_300-> Add(selproton2_phi_pion_PID_300);
+  selproton2_phipdg_PID_300-> Add(selproton2_phi_electron_PID_300);
+  selproton2_phipdg_PID_300-> Add(selproton2_phi_pother_PID_300);
+  selproton2_phipdg_PID_300-> Add(selproton2_phi_OffBeam_PID);
+  selproton2_phipdg_PID_300->SetMaximum(50.);
+  selproton2_phipdg_PID_300-> Draw();
+  selproton2_phipdg_PID_300->GetXaxis()->SetTitle("proton 2 candidate, #phi");
+
+  selproton2_phi_OnBeam_PID->SetLineColor(kBlack);
+  selproton2_phi_OnBeam_PID->SetMarkerStyle(20);
+  selproton2_phi_OnBeam_PID->Draw("e1same");
+
+  TLegend *l24 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l24 -> SetNColumns(2);
+  l24 -> AddEntry(selproton2_phi_muon_PID_300, "#mu", "f");
+  l24 -> AddEntry(selproton2_phi_proton_PID_300, "proton", "f");
+  l24 -> AddEntry(selproton2_phi_pion_PID_300, "#pi", "f");
+  l24 -> AddEntry(selproton2_phi_electron_PID_300, "e^{+/-}", "f");
+  l24 -> AddEntry(selproton2_phi_pother_PID_300, "other", "f");
+  l24 -> AddEntry(selproton2_phi_OffBeam_PID, "off-beam data", "f");
+  l24 -> AddEntry(selproton2_phi_OnBeam_PID, "on-beam data", "lep");
+  l24 -> Draw();  
+  
+  c24->Update();
+  c24->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selproton2_phi_pdg_PID_300.pdf");
+
+  TCanvas *c25 = new TCanvas("c25", "c25", 900, 900);
+
+  selproton2_chi2proton_muon_PID_300-> SetFillColor(kRed +1);
+  selproton2_chi2proton_proton_PID_300-> SetFillColor(kAzure+4);
+  selproton2_chi2proton_pion_PID_300-> SetFillColor(kOrange);
+  selproton2_chi2proton_electron_PID_300-> SetFillColor(kRed-9);
+  selproton2_chi2proton_pother_PID_300-> SetFillColor(kGreen-8);
+  selproton2_chi2proton_OffBeam_PID-> SetFillColor(kGray);
+
+  THStack *selproton2_chi2protonpdg_PID_300 = new THStack("selproton2_chi2protonpdg_PID_300","");
+  selproton2_chi2protonpdg_PID_300-> Add(selproton2_chi2proton_muon_PID_300);
+  selproton2_chi2protonpdg_PID_300-> Add(selproton2_chi2proton_proton_PID_300);
+  selproton2_chi2protonpdg_PID_300-> Add(selproton2_chi2proton_pion_PID_300);
+  selproton2_chi2protonpdg_PID_300-> Add(selproton2_chi2proton_electron_PID_300);
+  selproton2_chi2protonpdg_PID_300-> Add(selproton2_chi2proton_pother_PID_300);
+  selproton2_chi2protonpdg_PID_300-> Add(selproton2_chi2proton_OffBeam_PID);
+  //selproton2_chi2protonpdg_PID_300->SetMaximum(25.);
+  selproton2_chi2protonpdg_PID_300-> Draw();
+  selproton2_chi2protonpdg_PID_300->GetXaxis()->SetTitle("proton 2 candidate, #chi^{2}/dof proton hypothesis");
+
+  selproton2_chi2proton_OnBeam_PID->SetLineColor(kBlack);
+  selproton2_chi2proton_OnBeam_PID->SetMarkerStyle(20);
+  selproton2_chi2proton_OnBeam_PID->Draw("e1same");
+
+  TLegend *l25 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l25 -> SetNColumns(2);
+  l25 -> AddEntry(selproton2_chi2proton_muon_PID_300, "#mu", "f");
+  l25 -> AddEntry(selproton2_chi2proton_proton_PID_300, "proton", "f");
+  l25 -> AddEntry(selproton2_chi2proton_pion_PID_300, "#pi", "f");
+  l25 -> AddEntry(selproton2_chi2proton_electron_PID_300, "e^{+/-}", "f");
+  l25 -> AddEntry(selproton2_chi2proton_pother_PID_300, "other", "f");
+  l25 -> AddEntry(selproton2_chi2proton_OffBeam_PID, "off-beam data", "f");
+  l25 -> AddEntry(selproton2_chi2proton_OnBeam_PID, "on-beam data", "lep");
+  l25 -> Draw();  
+  
+  c25->Update();
+  c25->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selproton2_chi2proton_pdg_PID_300.pdf");
+
+  TCanvas *c26 = new TCanvas("c26", "c26", 900, 900);
+
+  selmuon_chi2proton_cont_muon_PID_300-> SetFillColor(kRed +1);
+  selmuon_chi2proton_cont_proton_PID_300-> SetFillColor(kAzure+4);
+  selmuon_chi2proton_cont_pion_PID_300-> SetFillColor(kOrange);
+  selmuon_chi2proton_cont_electron_PID_300-> SetFillColor(kRed-9);
+  selmuon_chi2proton_cont_pother_PID_300-> SetFillColor(kGreen-8);
+  selmuon_chi2proton_cont_OffBeam_PID-> SetFillColor(kGray);
+
+  THStack *selmuon_chi2proton_contpdg_PID_300 = new THStack("selmuon_chi2proton_contpdg_PID_300","");
+  selmuon_chi2proton_contpdg_PID_300-> Add(selmuon_chi2proton_cont_muon_PID_300);
+  selmuon_chi2proton_contpdg_PID_300-> Add(selmuon_chi2proton_cont_proton_PID_300);
+  selmuon_chi2proton_contpdg_PID_300-> Add(selmuon_chi2proton_cont_pion_PID_300);
+  selmuon_chi2proton_contpdg_PID_300-> Add(selmuon_chi2proton_cont_electron_PID_300);
+  selmuon_chi2proton_contpdg_PID_300-> Add(selmuon_chi2proton_cont_pother_PID_300);
+  selmuon_chi2proton_contpdg_PID_300-> Add(selmuon_chi2proton_cont_OffBeam_PID);
+  //selmuon_chi2proton_contpdg_PID_300->SetMaximum(120.);
+  selmuon_chi2proton_contpdg_PID_300-> Draw();
+  selmuon_chi2proton_contpdg_PID_300->GetXaxis()->SetTitle("muon candidate, #chi^{2}/dof proton hypothesis");
+
+  selmuon_chi2proton_cont_OnBeam_PID->SetLineColor(kBlack);
+  selmuon_chi2proton_cont_OnBeam_PID->SetMarkerStyle(20);
+  selmuon_chi2proton_cont_OnBeam_PID->Draw("e1same");
+
+  TLegend *l26 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l26 -> SetNColumns(2);
+  l26 -> AddEntry(selmuon_chi2proton_cont_muon_PID_300, "#mu", "f");
+  l26 -> AddEntry(selmuon_chi2proton_cont_proton_PID_300, "proton", "f");
+  l26 -> AddEntry(selmuon_chi2proton_cont_pion_PID_300, "#pi", "f");
+  l26 -> AddEntry(selmuon_chi2proton_cont_electron_PID_300, "e^{+/-}", "f");
+  l26 -> AddEntry(selmuon_chi2proton_cont_pother_PID_300, "other", "f");
+  l26 -> AddEntry(selmuon_chi2proton_cont_OffBeam_PID, "off-beam data", "f");
+  l26 -> AddEntry(selmuon_chi2proton_cont_OnBeam_PID, "on-beam data", "lep");
+  l26 -> Draw();  
+  
+  c26->Update();
+  c26->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selmuon_chi2proton_cont_pdg_PID_300.pdf");
+
+  TCanvas *c27 = new TCanvas("c27", "c27", 900, 900);
+
+  selmuon_chi2proton_uncont_muon_PID_300-> SetFillColor(kRed +1);
+  selmuon_chi2proton_uncont_proton_PID_300-> SetFillColor(kAzure+4);
+  selmuon_chi2proton_uncont_pion_PID_300-> SetFillColor(kOrange);
+  selmuon_chi2proton_uncont_electron_PID_300-> SetFillColor(kRed-9);
+  selmuon_chi2proton_uncont_pother_PID_300-> SetFillColor(kGreen-8);
+  selmuon_chi2proton_uncont_OffBeam_PID-> SetFillColor(kGray);
+
+  THStack *selmuon_chi2proton_uncontpdg_PID_300 = new THStack("selmuon_chi2proton_uncontpdg_PID_300","");
+  selmuon_chi2proton_uncontpdg_PID_300-> Add(selmuon_chi2proton_uncont_muon_PID_300);
+  selmuon_chi2proton_uncontpdg_PID_300-> Add(selmuon_chi2proton_uncont_proton_PID_300);
+  selmuon_chi2proton_uncontpdg_PID_300-> Add(selmuon_chi2proton_uncont_pion_PID_300);
+  selmuon_chi2proton_uncontpdg_PID_300-> Add(selmuon_chi2proton_uncont_electron_PID_300);
+  selmuon_chi2proton_uncontpdg_PID_300-> Add(selmuon_chi2proton_uncont_pother_PID_300);
+  selmuon_chi2proton_uncontpdg_PID_300-> Add(selmuon_chi2proton_uncont_OffBeam_PID);
+  //selmuon_chi2proton_uncontpdg_PID_300->SetMaximum(120.);
+  selmuon_chi2proton_uncontpdg_PID_300-> Draw();
+  selmuon_chi2proton_uncontpdg_PID_300->GetXaxis()->SetTitle("muon candidate, #chi^{2}/dof proton hypothesis");
+
+  selmuon_chi2proton_uncont_OnBeam_PID->SetLineColor(kBlack);
+  selmuon_chi2proton_uncont_OnBeam_PID->SetMarkerStyle(20);
+  selmuon_chi2proton_uncont_OnBeam_PID->Draw("e1same");
+
+  TLegend *l27 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l27 -> SetNColumns(2);
+  l27 -> AddEntry(selmuon_chi2proton_uncont_muon_PID_300, "#mu", "f");
+  l27 -> AddEntry(selmuon_chi2proton_uncont_proton_PID_300, "proton", "f");
+  l27 -> AddEntry(selmuon_chi2proton_uncont_pion_PID_300, "#pi", "f");
+  l27 -> AddEntry(selmuon_chi2proton_uncont_electron_PID_300, "e^{+/-}", "f");
+  l27 -> AddEntry(selmuon_chi2proton_uncont_pother_PID_300, "other", "f");
+  l27 -> AddEntry(selmuon_chi2proton_uncont_OffBeam_PID, "off-beam data", "f");
+  l27 -> AddEntry(selmuon_chi2proton_uncont_OnBeam_PID, "on-beam data", "lep");
+  l27 -> Draw();  
+  
+  c27->Update();
+  c27->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selmuon_chi2proton_uncont_pdg_PID_300.pdf");
+
+  TCanvas *c28 = new TCanvas("c28", "c28", 900, 900);
+  gStyle->SetOptStat(kFALSE);
+
+  selproton1_dEdx_vs_resrange_OnBeam_PID->GetXaxis()->SetTitle("residual range [cm]");
+  selproton1_dEdx_vs_resrange_OnBeam_PID->GetYaxis()->SetTitle("dE/dx [MeV/cm]");
+  //selproton2_dEdx_vs_resrange_OnBeam_PID->SetMaximum(400.);
+  selproton1_dEdx_vs_resrange_OnBeam_PID->Draw("colz");
+
+  c28->Update();
+  c28-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selproton1_dEdx_vs_resrange_OnBeam_PID.pdf");
+
+  TCanvas *c29 = new TCanvas("c29", "c29", 900, 900);
+  gStyle->SetOptStat(kFALSE);
+
+  selproton2_dEdx_vs_resrange_OnBeam_PID->GetXaxis()->SetTitle("residual range [cm]");
+  selproton2_dEdx_vs_resrange_OnBeam_PID->GetYaxis()->SetTitle("dE/dx [MeV/cm]");
+  //selproton2_dEdx_vs_resrange_OnBeam_PID->SetMaximum(400.);
+  selproton2_dEdx_vs_resrange_OnBeam_PID->Draw("colz");
+
+  c29->Update();
+  c29-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selproton2_dEdx_vs_resrange_OnBeam_PID.pdf");
+
+  TCanvas *c30 = new TCanvas("c30", "c30", 900, 900);
+  gStyle->SetOptStat(kFALSE);
+
+  selmuon_dEdx_vs_resrange_OnBeam_PID->GetXaxis()->SetTitle("residual range [cm]");
+  selmuon_dEdx_vs_resrange_OnBeam_PID->GetYaxis()->SetTitle("dE/dx [MeV/cm]");
+  //selproton2_dEdx_vs_resrange_OnBeam_PID->SetMaximum(400.);
+  selmuon_dEdx_vs_resrange_OnBeam_PID->Draw("colz");
+
+  c30->Update();
+  c30-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/muon_dEdx_vs_resrange_OnBeam_PID.pdf");
+
+  TCanvas *c31 = new TCanvas("c31", "c31", 900, 900);
+
+  angle_mup1_CC0Pion0Proton_PID_300-> SetFillColor(kRed -10);
+  angle_mup1_CC0Pion1Proton_PID_300-> SetFillColor(kGreen-8);
+  angle_mup1_CC0Pion2Proton_PID_300-> SetFillColor(kAzure+4);
+  angle_mup1_CC0PionNProton_PID_300-> SetFillColor(kRed-9);
+  angle_mup1_CC1PionNProton_PID_300-> SetFillColor(kOrange);
+  angle_mup1_CCNPionNProton_PID_300-> SetFillColor(kCyan-8);
+  angle_mup1_CCNue_PID_300-> SetFillColor(31);
+  angle_mup1_NC_PID_300-> SetFillColor(kOrange+6);
+  angle_mup1_OOFV_PID_300-> SetFillColor(kYellow+2);
+  angle_mup1_EXT_PID_300-> SetFillColor(kBlack);
+  angle_mup1_OffBeam_PID-> SetFillColor(kGray);
+  //DistFlstrk_other_PID_300-> SetFillColor(kRed);
+
+  THStack *angle_mup1_PID_300 = new THStack("angle_mup1_PID_300","");
+  angle_mup1_PID_300-> Add(angle_mup1_CC0Pion0Proton_PID_300);
+  angle_mup1_PID_300-> Add(angle_mup1_CC0Pion1Proton_PID_300);
+  angle_mup1_PID_300-> Add(angle_mup1_CC0Pion2Proton_PID_300);
+  angle_mup1_PID_300-> Add(angle_mup1_CC0PionNProton_PID_300);
+  angle_mup1_PID_300-> Add(angle_mup1_CC1PionNProton_PID_300);
+  angle_mup1_PID_300-> Add(angle_mup1_CCNPionNProton_PID_300);
+  angle_mup1_PID_300-> Add(angle_mup1_CCNue_PID_300);
+  angle_mup1_PID_300-> Add(angle_mup1_NC_PID_300);
+  angle_mup1_PID_300-> Add(angle_mup1_OOFV_PID_300);
+  angle_mup1_PID_300-> Add(angle_mup1_EXT_PID_300);
+  //angle_mup1_PID_300-> Add(angle_mup1_other_PID_300);
+  angle_mup1_PID_300-> Add(angle_mup1_OffBeam_PID);
+  angle_mup1_PID_300->SetMaximum(50.);
+  angle_mup1_PID_300-> Draw();
+  angle_mup1_PID_300->GetXaxis()->SetTitle("cos #theta_{#mu -p_{1}} [rad]");
+
+  angle_mup1_OnBeam_PID->SetLineColor(kBlack);
+  angle_mup1_OnBeam_PID->SetMarkerStyle(20);
+  angle_mup1_OnBeam_PID->Draw("e1same");
+
+  TLegend *l31 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l31 -> SetNColumns(2);
+  l31 -> AddEntry(angle_mup1_CC0Pion0Proton_PID_300, "CC0P0#pi", "f");
+  l31 -> AddEntry(angle_mup1_CCNue_PID_300, "CC#nu_{e}", "f");
+  l31 -> AddEntry(angle_mup1_CC0Pion1Proton_PID_300, "CC1P0#pi", "f");
+  l31 -> AddEntry(angle_mup1_NC_PID_300, "NC", "f");
+  l31 -> AddEntry(angle_mup1_CC0Pion2Proton_PID_300, "CC2P0#pi", "f");
+  l31 -> AddEntry(angle_mup1_OOFV_PID_300, "OOFV", "f");
+  l31 -> AddEntry(angle_mup1_CC0PionNProton_PID_300, "CCNP0#pi", "f");
+  l31 -> AddEntry(angle_mup1_EXT_PID_300, "cosmic", "f");
+  l31 -> AddEntry(angle_mup1_CC1PionNProton_PID_300, "CCNP1#pi", "f");
+  l31 -> AddEntry(angle_mup1_OffBeam_PID, "off-beam data", "f");
+  l31 -> AddEntry(angle_mup1_CCNPionNProton_PID_300, "CCNPN#pi", "f");
+  l31 -> AddEntry(angle_mup1_OnBeam_PID, "on-beam data", "lep");
+
+  l31 -> Draw();  
+  
+  c31->Update();
+  c31->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/angle_mup1_topo_PID_300.pdf");
+
+  TCanvas *c32 = new TCanvas("c32", "c32", 900, 900);
+
+  angle_mup2_CC0Pion0Proton_PID_300-> SetFillColor(kRed -10);
+  angle_mup2_CC0Pion1Proton_PID_300-> SetFillColor(kGreen-8);
+  angle_mup2_CC0Pion2Proton_PID_300-> SetFillColor(kAzure+4);
+  angle_mup2_CC0PionNProton_PID_300-> SetFillColor(kRed-9);
+  angle_mup2_CC1PionNProton_PID_300-> SetFillColor(kOrange);
+  angle_mup2_CCNPionNProton_PID_300-> SetFillColor(kCyan-8);
+  angle_mup2_CCNue_PID_300-> SetFillColor(31);
+  angle_mup2_NC_PID_300-> SetFillColor(kOrange+6);
+  angle_mup2_OOFV_PID_300-> SetFillColor(kYellow+2);
+  angle_mup2_EXT_PID_300-> SetFillColor(kBlack);
+  angle_mup2_OffBeam_PID-> SetFillColor(kGray);
+  //DistFlstrk_other_PID_300-> SetFillColor(kRed);
+
+  THStack *angle_mup2_PID_300 = new THStack("angle_mup2_PID_300","");
+  angle_mup2_PID_300-> Add(angle_mup2_CC0Pion0Proton_PID_300);
+  angle_mup2_PID_300-> Add(angle_mup2_CC0Pion1Proton_PID_300);
+  angle_mup2_PID_300-> Add(angle_mup2_CC0Pion2Proton_PID_300);
+  angle_mup2_PID_300-> Add(angle_mup2_CC0PionNProton_PID_300);
+  angle_mup2_PID_300-> Add(angle_mup2_CC1PionNProton_PID_300);
+  angle_mup2_PID_300-> Add(angle_mup2_CCNPionNProton_PID_300);
+  angle_mup2_PID_300-> Add(angle_mup2_CCNue_PID_300);
+  angle_mup2_PID_300-> Add(angle_mup2_NC_PID_300);
+  angle_mup2_PID_300-> Add(angle_mup2_OOFV_PID_300);
+  angle_mup2_PID_300-> Add(angle_mup2_EXT_PID_300);
+  //angle_mup2_PID_300-> Add(angle_mup2_other_PID_300);
+  angle_mup2_PID_300-> Add(angle_mup2_OffBeam_PID);
+  angle_mup2_PID_300->SetMaximum(50.);
+  angle_mup2_PID_300-> Draw();
+  angle_mup2_PID_300->GetXaxis()->SetTitle("cos #theta_{#mu -p_{2}} [rad]");
+
+  angle_mup2_OnBeam_PID->SetLineColor(kBlack);
+  angle_mup2_OnBeam_PID->SetMarkerStyle(20);
+  angle_mup2_OnBeam_PID->Draw("e1same");
+
+  TLegend *l32 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l32 -> SetNColumns(2);
+  l32 -> AddEntry(angle_mup2_CC0Pion0Proton_PID_300, "CC0P0#pi", "f");
+  l32 -> AddEntry(angle_mup2_CCNue_PID_300, "CC#nu_{e}", "f");
+  l32 -> AddEntry(angle_mup2_CC0Pion1Proton_PID_300, "CC1P0#pi", "f");
+  l32 -> AddEntry(angle_mup2_NC_PID_300, "NC", "f");
+  l32 -> AddEntry(angle_mup2_CC0Pion2Proton_PID_300, "CC2P0#pi", "f");
+  l32 -> AddEntry(angle_mup2_OOFV_PID_300, "OOFV", "f");
+  l32 -> AddEntry(angle_mup2_CC0PionNProton_PID_300, "CCNP0#pi", "f");
+  l32 -> AddEntry(angle_mup2_EXT_PID_300, "cosmic", "f");
+  l32 -> AddEntry(angle_mup2_CC1PionNProton_PID_300, "CCNP1#pi", "f");
+  l32 -> AddEntry(angle_mup2_OffBeam_PID, "off-beam data", "f");
+  l32 -> AddEntry(angle_mup2_CCNPionNProton_PID_300, "CCNPN#pi", "f");
+  l32 -> AddEntry(angle_mup2_OnBeam_PID, "on-beam data", "lep");
+
+  l32 -> Draw();  
+  
+  c32->Update();
+  c32->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/angle_mup2_topo_PID_300.pdf");
+
+  TCanvas *c33 = new TCanvas("c33", "c33", 900, 900);
+
+  angle_p1p2_CC0Pion0Proton_PID_300-> SetFillColor(kRed -10);
+  angle_p1p2_CC0Pion1Proton_PID_300-> SetFillColor(kGreen-8);
+  angle_p1p2_CC0Pion2Proton_PID_300-> SetFillColor(kAzure+4);
+  angle_p1p2_CC0PionNProton_PID_300-> SetFillColor(kRed-9);
+  angle_p1p2_CC1PionNProton_PID_300-> SetFillColor(kOrange);
+  angle_p1p2_CCNPionNProton_PID_300-> SetFillColor(kCyan-8);
+  angle_p1p2_CCNue_PID_300-> SetFillColor(31);
+  angle_p1p2_NC_PID_300-> SetFillColor(kOrange+6);
+  angle_p1p2_OOFV_PID_300-> SetFillColor(kYellow+2);
+  angle_p1p2_EXT_PID_300-> SetFillColor(kBlack);
+  angle_p1p2_OffBeam_PID-> SetFillColor(kGray);
+  //DistFlstrk_other_PID_300-> SetFillColor(kRed);
+
+  THStack *angle_p1p2_PID_300 = new THStack("angle_p1p2_PID_300","");
+  angle_p1p2_PID_300-> Add(angle_p1p2_CC0Pion0Proton_PID_300);
+  angle_p1p2_PID_300-> Add(angle_p1p2_CC0Pion1Proton_PID_300);
+  angle_p1p2_PID_300-> Add(angle_p1p2_CC0Pion2Proton_PID_300);
+  angle_p1p2_PID_300-> Add(angle_p1p2_CC0PionNProton_PID_300);
+  angle_p1p2_PID_300-> Add(angle_p1p2_CC1PionNProton_PID_300);
+  angle_p1p2_PID_300-> Add(angle_p1p2_CCNPionNProton_PID_300);
+  angle_p1p2_PID_300-> Add(angle_p1p2_CCNue_PID_300);
+  angle_p1p2_PID_300-> Add(angle_p1p2_NC_PID_300);
+  angle_p1p2_PID_300-> Add(angle_p1p2_OOFV_PID_300);
+  angle_p1p2_PID_300-> Add(angle_p1p2_EXT_PID_300);
+  //angle_p1p2_PID_300-> Add(angle_p1p2_other_PID_300);
+  angle_p1p2_PID_300-> Add(angle_p1p2_OffBeam_PID);
+  angle_p1p2_PID_300->SetMaximum(50.);
+  angle_p1p2_PID_300-> Draw();
+  angle_p1p2_PID_300->GetXaxis()->SetTitle("cos #theta_{p_{1} -p_{2}} [rad]");
+
+  angle_p1p2_OnBeam_PID->SetLineColor(kBlack);
+  angle_p1p2_OnBeam_PID->SetMarkerStyle(20);
+  angle_p1p2_OnBeam_PID->Draw("e1same");
+
+  TLegend *l33 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l33 -> SetNColumns(2);
+
+  l33 -> AddEntry(angle_p1p2_CC0Pion0Proton_PID_300, "CC0P0#pi", "f");
+  l33 -> AddEntry(angle_p1p2_CCNue_PID_300, "CC#nu_{e}", "f");
+  l33 -> AddEntry(angle_p1p2_CC0Pion1Proton_PID_300, "CC1P0#pi", "f");
+  l33 -> AddEntry(angle_p1p2_NC_PID_300, "NC", "f");
+  l33 -> AddEntry(angle_p1p2_CC0Pion2Proton_PID_300, "CC2P0#pi", "f");
+  l33 -> AddEntry(angle_p1p2_OOFV_PID_300, "OOFV", "f");
+  l33 -> AddEntry(angle_p1p2_CC0PionNProton_PID_300, "CCNP0#pi", "f");
+  l33 -> AddEntry(angle_p1p2_EXT_PID_300, "cosmic", "f");
+  l33 -> AddEntry(angle_p1p2_CC1PionNProton_PID_300, "CCNP1#pi", "f");
+  l33 -> AddEntry(angle_p1p2_OffBeam_PID, "off-beam data", "f");
+  l33 -> AddEntry(angle_p1p2_CCNPionNProton_PID_300, "CCNPN#pi", "f");
+  l33 -> AddEntry(angle_p1p2_OnBeam_PID, "on-beam data", "lep");
+
+  l33 -> Draw();  
+  
+  c33->Update();
+  c33->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/angle_p1p2_topo_PID_300.pdf");
+
+  TCanvas *c34 = new TCanvas("c34", "c34", 900, 900);
+  gStyle->SetOptStat(kFALSE);
+  selmuon_mom_res_PID_300->SetTitle("");
+
+  selmuon_mom_res_PID_300->GetXaxis()->SetTitle("truth momentum [GeV]");
+  selmuon_mom_res_PID_300->GetYaxis()->SetTitle("(truth - reconstructed) momenta [GeV]");
+  selmuon_mom_res_PID_300->Draw("colz");
+
+  c34->Update();
+  c34-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selmuon_mom_res_PID_300.pdf");
+
+  TCanvas *c35 = new TCanvas("c35", "c35", 900, 900);
+  gStyle->SetOptStat(kFALSE);
+  selmuon_costheta_res_PID_300->SetTitle("");
+
+  selmuon_costheta_res_PID_300->GetXaxis()->SetTitle("truth cos #theta");
+  selmuon_costheta_res_PID_300->GetYaxis()->SetTitle("(truth - reconstructed) cos #theta");
+  selmuon_costheta_res_PID_300->Draw("colz");
+
+  c35->Update();
+  c35-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selmuon_costheta_res_PID_300.pdf");
+
+  TCanvas *c36 = new TCanvas("c36", "c36", 900, 900);
+  gStyle->SetOptStat(kFALSE);
+  selmuon_phi_res_PID_300->SetTitle("");
+
+  selmuon_phi_res_PID_300->GetXaxis()->SetTitle("truth #phi");
+  selmuon_phi_res_PID_300->GetYaxis()->SetTitle("(truth - reconstructed) #phi");
+  selmuon_phi_res_PID_300->Draw("colz");
+
+  c36->Update();
+  c36-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selmuon_phi_res_PID_300.pdf");
+
+  TCanvas *c37 = new TCanvas("c37", "c37", 900, 900);
+  gStyle->SetOptStat(kFALSE);
+  selproton1_mom_res_PID_300->SetTitle("");
+
+  selproton1_mom_res_PID_300->GetXaxis()->SetTitle("truth momentum [GeV]");
+  selproton1_mom_res_PID_300->GetYaxis()->SetTitle("(truth - reconstructed) momenta [GeV]");
+  selproton1_mom_res_PID_300->Draw("colz");
+
+  c37->Update();
+  c37-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selproton1_mom_res_PID_300.pdf");
+
+  TCanvas *c38 = new TCanvas("c38", "c38", 900, 900);
+  gStyle->SetOptStat(kFALSE);
+  selproton1_costheta_res_PID_300->SetTitle("");
+
+  selproton1_costheta_res_PID_300->GetXaxis()->SetTitle("truth cos #theta");
+  selproton1_costheta_res_PID_300->GetYaxis()->SetTitle("(truth - reconstructed) cos #theta");
+  selproton1_costheta_res_PID_300->Draw("colz");
+
+  c38->Update();
+  c38-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selproton1_costheta_res_PID_300.pdf");
+
+  TCanvas *c39 = new TCanvas("c39", "c39", 900, 900);
+  gStyle->SetOptStat(kFALSE);
+  selproton1_phi_res_PID_300->SetTitle("");
+
+  selproton1_phi_res_PID_300->GetXaxis()->SetTitle("truth #phi");
+  selproton1_phi_res_PID_300->GetYaxis()->SetTitle("(truth - reconstructed) #phi");
+  selproton1_phi_res_PID_300->Draw("colz");
+
+  c39->Update();
+  c39-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selproton1_phi_res_PID_300.pdf");
+
+  TCanvas *c40 = new TCanvas("c40", "c40", 900, 900);
+  gStyle->SetOptStat(kFALSE);
+  selproton2_mom_res_PID_300->SetTitle("");
+
+  selproton2_mom_res_PID_300->GetXaxis()->SetTitle("truth momentum [GeV]");
+  selproton2_mom_res_PID_300->GetYaxis()->SetTitle("(truth - reconstructed) momenta [GeV]");
+  selproton2_mom_res_PID_300->Draw("colz");
+
+  c40->Update();
+  c40-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selproton2_mom_res_PID_300.pdf");
+
+  TCanvas *c41 = new TCanvas("c41", "c41", 900, 900);
+  gStyle->SetOptStat(kFALSE);
+  selproton2_costheta_res_PID_300->SetTitle("");
+
+  selproton2_costheta_res_PID_300->GetXaxis()->SetTitle("truth cos #theta");
+  selproton2_costheta_res_PID_300->GetYaxis()->SetTitle("(truth - reconstructed) cos #theta");
+  selproton2_costheta_res_PID_300->Draw("colz");
+
+  c41->Update();
+  c41-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selproton2_costheta_res_PID_300.pdf");
+
+  TCanvas *c42 = new TCanvas("c42", "c42", 900, 900);
+  gStyle->SetOptStat(kFALSE);
+  selproton2_phi_res_PID_300->SetTitle("");
+
+  selproton2_phi_res_PID_300->GetXaxis()->SetTitle("truth #phi");
+  selproton2_phi_res_PID_300->GetYaxis()->SetTitle("(truth - reconstructed) #phi");
+  selproton2_phi_res_PID_300->Draw("colz");
+
+  c42->Update();
+  c42-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selproton2_phi_res_PID_300.pdf");
+
+  TCanvas *c43 = new TCanvas("c43", "c43", 900, 900);
+
+  cosangle_p1p2_CC0Pion0Proton_PID_300-> SetFillColor(kRed -10);
+  cosangle_p1p2_CC0Pion1Proton_PID_300-> SetFillColor(kGreen-8);
+  cosangle_p1p2_CC0Pion2Proton_PID_300-> SetFillColor(kAzure+4);
+  cosangle_p1p2_CC0PionNProton_PID_300-> SetFillColor(kRed-9);
+  cosangle_p1p2_CC1PionNProton_PID_300-> SetFillColor(kOrange);
+  cosangle_p1p2_CCNPionNProton_PID_300-> SetFillColor(kCyan-8);
+  cosangle_p1p2_CCNue_PID_300-> SetFillColor(31);
+  cosangle_p1p2_NC_PID_300-> SetFillColor(kOrange+6);
+  cosangle_p1p2_OOFV_PID_300-> SetFillColor(kYellow+2);
+  cosangle_p1p2_EXT_PID_300-> SetFillColor(kBlack);
+  cosangle_p1p2_OffBeam_PID-> SetFillColor(kGray);
+  //DistFlstrk_other_PID_300-> SetFillColor(kRed);
+
+  THStack *cosangle_p1p2_PID_300 = new THStack("cosangle_p1p2_PID_300","");
+  cosangle_p1p2_PID_300-> Add(cosangle_p1p2_CC0Pion0Proton_PID_300);
+  cosangle_p1p2_PID_300-> Add(cosangle_p1p2_CC0Pion1Proton_PID_300);
+  cosangle_p1p2_PID_300-> Add(cosangle_p1p2_CC0Pion2Proton_PID_300);
+  cosangle_p1p2_PID_300-> Add(cosangle_p1p2_CC0PionNProton_PID_300);
+  cosangle_p1p2_PID_300-> Add(cosangle_p1p2_CC1PionNProton_PID_300);
+  cosangle_p1p2_PID_300-> Add(cosangle_p1p2_CCNPionNProton_PID_300);
+  cosangle_p1p2_PID_300-> Add(cosangle_p1p2_CCNue_PID_300);
+  cosangle_p1p2_PID_300-> Add(cosangle_p1p2_NC_PID_300);
+  cosangle_p1p2_PID_300-> Add(cosangle_p1p2_OOFV_PID_300);
+  cosangle_p1p2_PID_300-> Add(cosangle_p1p2_EXT_PID_300);
+  //cosangle_p1p2_PID_300-> Add(cosangle_p1p2_other_PID_300);
+  cosangle_p1p2_PID_300-> Add(cosangle_p1p2_OffBeam_PID);
+  cosangle_p1p2_PID_300->SetMaximum(50.);
+  cosangle_p1p2_PID_300-> Draw();
+  cosangle_p1p2_PID_300->GetXaxis()->SetTitle("cos#theta_{p_{1} -p_{2}} [rad]");
+
+  cosangle_p1p2_OnBeam_PID->SetLineColor(kBlack);
+  cosangle_p1p2_OnBeam_PID->SetMarkerStyle(20);
+  cosangle_p1p2_OnBeam_PID->Draw("e1same");
+
+  TLegend *l43 = new TLegend(0.5, 0.7, 0.9, 0.9);
+  l43 -> SetNColumns(2);
+  l43 -> AddEntry(cosangle_p1p2_CC0Pion0Proton_PID_300, "CC0P0#pi", "f");
+  l43 -> AddEntry(cosangle_p1p2_CCNue_PID_300, "CC#nu_{e}", "f");
+  l43 -> AddEntry(cosangle_p1p2_CC0Pion1Proton_PID_300, "CC1P0#pi", "f");
+  l43 -> AddEntry(cosangle_p1p2_NC_PID_300, "NC", "f");
+  l43 -> AddEntry(cosangle_p1p2_CC0Pion2Proton_PID_300, "CC2P0#pi", "f");
+  l43 -> AddEntry(cosangle_p1p2_OOFV_PID_300, "OOFV", "f");
+  l43 -> AddEntry(cosangle_p1p2_CC0PionNProton_PID_300, "CCNP0#pi", "f");
+  l43 -> AddEntry(cosangle_p1p2_EXT_PID_300, "cosmic", "f");
+  l43 -> AddEntry(cosangle_p1p2_CC1PionNProton_PID_300, "CCNP1#pi", "f");
+  l43 -> AddEntry(cosangle_p1p2_OffBeam_PID, "off-beam data", "f");
+  l43 -> AddEntry(cosangle_p1p2_CCNPionNProton_PID_300, "CCNPN#pi", "f");
+  l43 -> AddEntry(cosangle_p1p2_OnBeam_PID, "on-beam data", "lep");
+
+  l43 -> Draw();  
+  
+  c43->Update();
+  c43->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/cosangle_p1p2_topo_PID_300.pdf");
+
+}
