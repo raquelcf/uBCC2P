@@ -1,0 +1,2858 @@
+#define hanalysis_fOffBeam_PID_cxx
+// The class definition in hanalysis_fOffBeam_PID.h has been generated automatically
+// by the ROOT utility TTree::MakeSelector(). This class is derived
+// from the ROOT class TSelector. For more information on the TSelector
+// framework see $ROOTSYS/README/README.SELECTOR or the ROOT User Manual.
+
+// The following methods are defined in this file:
+//    Begin():        called every time a loop on the tree starts,
+//                    a convenient place to create your histograms.
+//    SlaveBegin():   called after Begin(), when on PROOF called only on the
+//                    slave servers.
+//    Process():      called for each event, in this function you decide what
+//                    to read and fill your histograms.
+//    SlaveTerminate: called at the end of the loop on the tree, when on PROOF
+//                    called only on the slave servers.
+//    Terminate():    called at the end of the loop on the tree,
+//                    a convenient place to draw/fit your histograms.
+//
+// To use this file, try the following session on your Tree T:
+//
+// root> T->Process("hanalysis_fOffBeam_PID.C")
+// root> T->Process("hanalysis_fOffBeam_PID.C","some options")
+// root> T->Process("hanalysis_fOffBeam_PID.C+")
+//
+
+#include "hanalysis_fOffBeam_PID.h"
+#include <TH2.h>
+#include <TStyle.h>
+
+#include "TH2D.h"
+#include "TH1D.h"
+#include "TCanvas.h"
+
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+ofstream outfileOffBeam_PID;
+ofstream outfileOffBeam_evt;
+ofstream outfileOffBeam_evt_btb;
+ofstream outfileOffBeam_evt_btb_hammer;
+ofstream outfileOffBeam_evt_btb_CM;
+ofstream outfileOffBeam_evt_btb_nobtbLFlowPT_CM;
+
+TFile *fanalysis_OffBeam_PID;
+
+TFile* f0 = new TFile("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/TheoreticalPredictions_dedxresrange.root","READ");
+
+double Rho = 1.383;
+double betapold = 0.212;
+double alphaold = 0.93;
+double betap = 0.184;
+double alpha = 0.92;
+double Wion = 23.6e-6;
+double Efield = 0.273;
+const double calib_factor = 0.004113; 
+//const double calib_factor = 5.20e-3;
+double newfactorQ = 0.00411911/0.004113;//4rth iteration
+//double newfactorQ =1.;
+
+Float_t Dedx(float dqdx){
+  return (exp(dqdx*(betap/(Rho*Efield)*Wion))-alpha)/(betap/(Rho*Efield));
+}
+
+Float_t Dedxold(float dqdx){
+  return (exp(dqdx*(betapold/(Rho*Efield)*Wion))-alphaold)/(betapold/(Rho*Efield));
+}
+
+void GetMuondEdxR(){
+  //rr, dedx = array.array('f'), array.array('f')
+  std::vector <float> rr, dedx;
+  rr.push_back(0.9833);
+  rr.push_back(1.786);
+  rr.push_back(3.321);
+  rr.push_back(6.598);
+  rr.push_back(10.58);
+  rr.push_back(30.84);
+  rr.push_back(42.50);
+  rr.push_back(67.50);
+  rr.push_back(106.3);
+  rr.push_back(172.5);
+  rr.push_back(238.5);
+  rr.push_back(493.4);
+  rr.push_back(616.3);
+  rr.push_back(855.2);
+  rr.push_back(1202);
+  rr.push_back(1758);
+  rr.push_back(2297);
+  dedx.push_back(5.687);
+  dedx.push_back(4.461);
+  dedx.push_back(3.502);
+  dedx.push_back(2.731);
+  dedx.push_back(2.340);
+  dedx.push_back(1.771);
+  dedx.push_back(1.670);
+  dedx.push_back(1.570);
+  dedx.push_back(1.519);
+  dedx.push_back(1.510);
+  dedx.push_back(1.526);
+  dedx.push_back(1.610);
+  dedx.push_back(1.645);
+  dedx.push_back(1.700);
+  dedx.push_back(1.761);
+  dedx.push_back(1.829);
+  dedx.push_back(1.877);
+  for (int i=0; i< rr.size(); i++){
+      rr[i]/=1.396;
+      dedx[i]*=1.396;
+   }
+  Int_t n2=rr.size();
+  float rr2[n2], dedx2[n2];
+  for(int i2=0; i2<n2; i2++){
+    rr2[i2]=rr[i2];
+    dedx2[i2]=dedx[i2];
+  }
+  TGraph *gr = new TGraph(n2, rr2, dedx2);
+  gr->SetLineWidth(2);
+  gr->SetLineColor(3);
+  gr->Draw("same");
+}
+
+double kinetic_energy1;
+
+double ratioCM= -9999.;
+
+TH1D *selmuon_lenght_OffBeam_PID;
+TH1D *selmuon_mom_OffBeam_PID;
+TH1D *selmuon_contained_mom_OffBeam_PID;
+TH1D *selmuon_uncontained_mom_OffBeam_PID;
+TH1D *selmuon_costheta_OffBeam_PID;
+TH1D *selmuon_phi_OffBeam_PID;
+TH1D *selmuon_chi2proton_OffBeam_PID;
+TH1D *selmuon_chi2proton_cont_OffBeam_PID;
+TH2D *selmuon_dEdx_vs_resrange_OffBeam_PID;
+TH1D *selmuon_chi2proton_uncont_OffBeam_PID;
+
+TH1D *selproton1_lenght_OffBeam_PID;
+TH1D *selproton1_mom_OffBeam_PID;
+TH1D *selproton1_costheta_OffBeam_PID;
+TH1D *selproton1_phi_OffBeam_PID;
+TH1D *selproton1_chi2proton_OffBeam_PID;
+TH2D *selproton1_dEdx_vs_resrange_OffBeam_PID;
+TH2D *selprotondef_dEdx_vs_resrange_OffBeam_PID;
+TH1D *selprotonold_dEdx_OffBeam_PID;
+TH1D *selprotonnew_dEdx_OffBeam_PID;
+
+TH1D *selproton2_lenght_OffBeam_PID;
+TH1D *selproton2_mom_OffBeam_PID;
+TH1D *selproton2_costheta_OffBeam_PID;
+TH1D *selproton2_phi_OffBeam_PID;
+TH1D *selproton2_chi2proton_OffBeam_PID;
+TH2D *selproton2_dEdx_vs_resrange_OffBeam_PID;
+
+TH2D *selall_dEdx_vs_resrange_all_PID;
+TProfile *hprof_all_MC;
+TProfile *hprof_selprotons_MC;
+
+TH1D *selmuon_dEdx_OffBeam_PID;
+TH1D *selproton_dEdx_OffBeam_PID;
+
+/// Opening angles
+TH1D *angle_mup1_OffBeam_PID;
+TH1D *angle_mup2_OffBeam_PID;
+TH1D *angle_p1p2_OffBeam_PID;
+TH1D *cosangle_p1p2_OffBeam_PID;
+/////
+
+////////////////////////////////////////////////////////////////////////////////////
+//// ArgoNeuT studies on opening angles -- reconstructed variables by reaction type/// cut on 300 MeV proton momenta
+////////////////////////////////////////////////////////////////////////////////////
+
+TH1D *reco_Enu_OffBeam_PID;
+
+TH1D *reco_EnuRes_lowPT_OffBeam_PID;
+TH1D *reco_EnuRes_OffBeam_PID;
+TH1D *reco_EnuRes_OffBeam_1binbtbLF_PID;
+TH1D *reco_EnuCCQE_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID;
+TH1D *reco_EnuCCQE_OffBeam_CM_SRCrest_PT_LFbtb_PID;
+TH1D *reco_Q2lep_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID;
+TH1D *reco_Q2had_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID;
+TH1D *reco_Q2lep_OffBeam_CM_SRCrest_PT_LFbtb_PID;
+TH1D *reco_Q2had_OffBeam_CM_SRCrest_PT_LFbtb_PID;
+
+TH1D *reco_Q2rat_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID;
+TH1D *reco_Q2rat_OffBeam_CM_SRCrest_PT_LFbtb_PID;
+
+TH1D *reco_EnuCalo_OffBeam_PID_btb;
+TH1D *reco_EnuCalo_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID;
+TH1D *reco_EnuCalo_OffBeam_CM_SRCrest_PT_LFbtb_PID;
+
+TH1D *reco_PT_OffBeam_PID;
+TH1D *reco_PT_OffBeam_1binCM_PID;
+TH1D *reco_pn_OffBeam_PID;
+TH2D *p1p2_OffBeam_PID;
+TH2D *reco_angle_p1p2_p2_OffBeam_PID_LF;
+TH2D *reco_angle_p1p2_OffBeam_PID_LF_CM;
+TH1D *reco_angle_p1p2_OffBeam_PID_LF;
+TH1D *reco_angle_p1p2_OffBeam_PID_CM;
+TH1D *reco_angle_p1p2_OffBeam_PID_LF_zoom;
+TH1D *reco_angle_p1p2_OffBeam_PID_CM_zoom;
+TH1D *reco_p1p2_OffBeam_PID;
+TH1D *reco_dp1p2_OffBeam_PID;
+TH1D *reco_kp1p2_OffBeam_PID;
+TH1D *reco_kp1p2_OffBeam_PID_btb;
+TH1D *reco_angle_SRCrest_p1p2_OffBeam_PID_CM;
+
+TH1D *reco_PT_OffBeam_nobtbLF_PID;
+TH1D *reco_angle_p1p2_OffBeam_nobtbLF_PID_CM_zoom;
+TH1D *reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom;
+TH1D *reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM;
+TH1D *reco_pn_OffBeam_nobtbLF_PID;
+TH1D *reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_rebin;
+
+const int nbinscCMerr = 4;
+const double binscCMerr[nbinscCMerr+1] = { -1.,-0.9,-0.8,-0.6,1.};
+
+//const int nbinscCMerr = 4;
+//const double binscCMerr[nbinscCMerr+1] = { -1.,-0.95,-0.9,-0.8,1.};
+
+
+TH1D *reco_pn_OffBeam_nobtbLF_PT_PID;
+TH1D *reco_Enu_OffBeam_nobtbLF_PT_PID;
+TH1D *reco_projprel_OffBeam_nobtb_lowPT;
+TH1D *reco_projptot_OffBeam_nobtb_lowPT;
+
+TH1D *reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_p1p2swap;
+TH1D *reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaE;
+TH1D *reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaEminus;
+
+TGraph *gr_recoangle_SRCrest_PT_LFbtb_vsPT_OffBeam_CM;
+TGraph *gr_recoangle_SRCrest_PT_LFbtb_vsP2_OffBeam_CM;
+TGraph *gr_recoangle_SRCrest_PT_LFbtb_vsPn_OffBeam_CM;
+
+TGraph *gr_p1p2_OffBeam_PID;
+TGraph *gr_reco_angle_p1p2_p2_OffBeam_PID_LF;
+TGraph *gr_reco_angle_p1p2_OffBeam_PID_LF_CM;
+
+/// final angular plots with all requirements on LF and CM
+TH2D *reco_angle_p1p2_p2_OffBeam_PID_LF_btb;
+TH1D *reco_angle_p1p2_OffBeam_PID_LF_btb;
+TH1D *reco_angle_p1p2_OffBeam_PID_CM_btb;
+
+TH1D *reco_angle_p1p2_OffBeam_PID_LF_btb_zoom;
+TH1D *reco_angle_p1p2_OffBeam_PID_CM_btb_zoom;
+////////
+
+//TH1D *dummyhisto;
+
+///////
+
+Int_t i1=0, i6=0, i8=0, i5=0;
+
+const Int_t ntest =1000;
+std::vector<double> x1;
+std::vector<double> yy1;
+std::vector<double> x2;
+std::vector<double> y2;
+std::vector<double> x3;
+std::vector<double> y3;
+
+Int_t n1 = 0;/// p1 vs p2
+Int_t n2 = 0;/// cos(theta_lab) vs p2
+Int_t n3 = 0;/// cos(theta_lab) vs cos(theta_CM)
+
+std::vector<double> deltaCMLF;
+std::vector<double> Enu;
+std::vector<double> Q2;
+std::vector<double> PT;
+
+std::vector<double> PTsel;
+std::vector<double> cosCMsel;
+std::vector<double> pnsel;
+std::vector<double> p2sel;
+Int_t n5 = 0;/// selCM
+
+Int_t n4 = 0;/// deltaCMLF
+/// test on q3 boost
+std::vector<double> q3xp1p2;
+std::vector<double> q3yp1p2;
+std::vector<double> q3zp1p2;
+std::vector<double> pTall;
+
+std::vector<double> q3zp1p2PT0;
+std::vector<double> cosCMPT0;
+Int_t n6 = 0;/// 
+
+std::vector<double> cCM_nobtb;
+std::vector<double> pT_nobtb;
+Int_t n7 = 0;
+
+//// LF tests (no cuts)
+
+std::vector<double> cLF;
+std::vector<double> Wnocut;
+std::vector<double> xBnocut;
+std::vector<double> prelnocut;
+std::vector<double> q3_nocut;
+std::vector<double> q0_nocut;
+std::vector<double> cp1q3_nocut;
+std::vector<double> cp2q3_nocut;
+std::vector<double> cpnq3_nocut;
+std::vector<double> projprel_nocut;
+std::vector<double> projprelp1p2_nocut;
+std::vector<double> projptot_nocut;
+std::vector<double> projptotp1p2_nocut;
+
+//// CM tests (no hammer, low PT)
+
+std::vector<double> cCM;
+std::vector<double> W_nobtb_lowPT;
+std::vector<double> xB_nobtb_lowPT;
+std::vector<double> prel_nobtb_lowPT;
+std::vector<double> Q2_nobtb_lowPT;
+std::vector<double> q3_nobtb_lowPT;
+std::vector<double> q0_nobtb_lowPT;
+std::vector<double> cp1q3_nobtb_lowPT;
+std::vector<double> cp2q3_nobtb_lowPT;
+std::vector<double> cpnq3_nobtb_lowPT;
+std::vector<double> projprel_nobtb_lowPT;
+std::vector<double> projprelp1p2_nobtb_lowPT;
+std::vector<double> projptot_nobtb_lowPT;
+std::vector<double> projptotp1p2_nobtb_lowPT;
+
+Int_t n8 = 0;
+
+///////// p1 ~ -p2 (para LF plots)
+/////////exclude back-to-back(LF) from CM
+
+std::vector<double> x2a;
+std::vector<double> y2a;
+std::vector<double> x3a;
+std::vector<double> y3a;
+
+Int_t n2a=0;/// cos(theta_lab) vs p2
+Int_t n3a=0;/// cos(theta_lab) vs cos(theta_CM)
+
+/////
+
+int totentries =0;
+int protons =0;
+
+float FVx = 256.35;
+float FVy = 233;
+float FVz = 1036.8;
+float borderx = 12.;
+float bordery = 35.;
+float borderz = 25.;
+
+int num300 =0;
+int numpairs =0;
+
+TText * drawPrelim(double x, double y, double s, std::string ins){
+  TText *tres = new TText(x, y, ins.c_str());
+  tres->SetTextColor(kBlack);
+  tres->SetTextSize(s);
+  tres->SetNDC();
+  return tres;
+}
+
+//This function returns if a 3D point is within the fiducial volume
+bool inFV(float x, float y, float z) {
+    if(x < (FVx - borderx) && (x > borderx) && (y < (FVy/2. - bordery)) && (y > (-FVy/2. + bordery)) && (z < (FVz - 85)) && (z > borderz)) return true;
+    else return false;
+}
+
+double Ecalomiss(double Esum, double PTmiss, int np) {
+  Esum *= 1000; //convert to MeV
+  PTmiss *= 1000; //convert to MeV
+  double Eexcit = 30.4; //in MeV
+  double Mass = 0; // in MeV
+  if(np == 0) Mass = 37.2050e3; //Ar40
+  else if(np == 1) Mass = 36.2758e3; //Ar39
+  else if(np == 2) Mass = 35.3669e3; //Cl38
+  else if(np == 3) Mass = 34.4201e3; //S37
+  else if(np == 4) Mass = 33.4957e3; //P36
+  else if(np == 5) Mass = 32.5706e3; //Si35
+  else if(np == 6) Mass = 31.6539e3; //Al34
+  else if(np == 7) Mass = 30.7279e3; //Mg33
+  else if(np == 8) Mass = 29.8111e3; //Na32
+  else if(np == 9) Mass = 28.8918e3; //Ne31
+  else if(np >= 10) Mass = 27.9789e3; //F30
+
+  double Ekinrecoil = sqrt(PTmiss*PTmiss + Mass*Mass) - Mass;
+  return Esum + Eexcit + Ekinrecoil; // return result in MeV
+}
+
+double GetERes(double Emu, double cosmu) {
+  double mdelta= 1.232;//delta mass GeV/c2
+  double protonmass = 0.938272;
+
+  double Enum = (mdelta*mdelta) - (protonmass*protonmass) + (2.*protonmass*Emu);
+  double Eden = 2.*(protonmass-(Emu*(1.-cosmu)));
+ 
+  return Enum/Eden;// return result in GeV
+}
+
+double GetECCQE(double Emu, double cosmu, double pmu) {
+  double protonmass = 0.938272;
+  double muonmass = 0.105658;
+
+  double Enum = (protonmass*Emu) - (muonmass*muonmass)/2.;
+  double Eden = protonmass - Emu + (pmu*cosmu);
+ 
+  return Enum/Eden;// return result in GeV
+}
+
+double GetQ2lep(double Enu, double pmu, double cosmu) {
+  double muonmass = 0.105658;
+
+  double Q2 = (2.*Enu*(sqrt(muonmass*muonmass+pmu*pmu) - (pmu*cosmu))) - (muonmass*muonmass);
+  std::cout<<"Q2lep "<<Q2<<std::endl;
+  return Q2;// return result in GeV2
+}
+
+double GetQ2had(TVector3 p1, TVector3 p2, double modp1, double modp2) {/// *** necesito revisar
+  
+  double reco_Eproton1 = pow(modp1,2)/(2*938.272/1000.);
+  double reco_Eproton2 = pow(modp2,2)/(2*938.272/1000.);
+  double mA= 35.3669;
+
+  //double Q2 = mA*mA - ((reco_Eproton1+reco_Eproton2)*(reco_Eproton1+reco_Eproton2)-(p1+p2)*(p1+p2));
+  double Q2 = ((reco_Eproton1+reco_Eproton2)*(reco_Eproton1+reco_Eproton2)-(p1+p2)*(p1+p2));
+  Q2 = sqrt(abs(Q2));
+  //std::cout<<"Q2had "<<Q2<<std::endl;
+  return Q2;// return result in GeV2
+}
+
+double Getq0(double Enu, double Emu) {
+  
+  double omega = Enu - Emu;
+  return omega;// return result in GeV2
+}
+
+double GetW2(double Eps, double p1, double p2) {
+ 
+  double W2 = (Eps)*(Eps) - (p1 + p2)*(p1 + p2);
+
+  std::cout<<"Whad "<<W2<<std::endl;
+  return sqrt(W2);// return result in GeV2
+}
+
+double GetBjorken(double Enu, double Emu, double q2) {
+ 
+  double mproton = 938.272/1000.;
+  double omega = Enu - Emu;
+  double xB = (q2*q2)/(2.*omega*mproton);
+
+  std::cout<<"xB "<<xB<<std::endl;
+  return xB;// return result in GeV2
+}
+
+TVector3 GetPerpPlane(TVector3 vnu, TVector3 vmu) {
+ 
+  TVector3 PerpPlane;
+  PerpPlane[0] = vnu[1]*vmu[2] - vmu[1]*vnu[2];
+  PerpPlane[1] = -(vnu[0]*vmu[2] - vnu[2]*vmu[0]);
+  PerpPlane[2] = vnu[0]*vmu[1] - vnu[1]*vmu[0];
+
+  return PerpPlane;//return TVector3 perpendicular vector to the plane of the 2 initial vectors
+}
+
+double GetProjection(TVector3 v1, TVector3 v2) {
+ 
+  double num = v1.Dot(v2);
+  double denom =  sqrt(pow(v2[0],2) + pow(v2[1],2)+ pow(v2[2],2));
+  double Projection = num/denom;
+  return abs(Projection);//retun the module of the projection of v1 on v2
+}
+
+//********************************************************************
+double PPCM_Tune3 (double dmumom, double dp1mom, double dp2mom, TVector3 NeuDir, TVector3 MuDir, TVector3 P1Dir, TVector3 P2Dir, double Enu, double Emuon, double Eproton1, double Eproton2) {
+//********************************************************************
+
+  if( Enu  < 0  || dmumom < 0 || dp1mom < 0 || dp2mom < 0) return -1000;
+
+  double mumass = 105.658/1000.;
+  double protonmass = 938.272/1000.;
+  double bindE = 30.4/1000.;
+  
+  double Edelta = (protonmass-bindE) + Enu - Emuon;  // Assume target nucleon at rest. (q0)
+  
+  double delta[3];/// this is just Q_3 
+  for( int i = 0; i < 3; i++ ) delta[i] = Enu*NeuDir[i] - dmumom*MuDir[i];////vector directors must be normalized
+
+  double beta[3];/// proper of the boost to the Delta rest frame
+  double b2 = 0.;
+  
+  for(int i = 0; i < 3; i++ ) {
+    beta[i] = delta[i]/Edelta;
+    b2 += beta[i]*beta[i]; 
+  }
+
+  double gamma = 1./TMath::Sqrt(1.-b2); 
+  
+  double b = TMath::Sqrt(b2);
+
+  //std::cout<<" modulo de beta debe ser menor que 1 ----->    "<<b<<std::endl;
+ 
+  TVector3 p1parallel;
+  TVector3 p1perpend;
+  TVector3 p1boost;
+  double p1boostabs = 0.;
+
+  TVector3 p2parallel;
+  TVector3 p2perpend;
+  TVector3 p2boost;
+  double p2boostabs = 0.;
+  
+  TVector3 nuparallel;
+  TVector3 nuperpend;
+  TVector3 nuboost;
+  double nuboostabs = 0.;
+
+  TVector3 muparallel;
+  TVector3 muperpend;
+  TVector3 muboost;
+  double muboostabs = 0.;
+  
+  TVector3 pnboost;
+  double pnboostabs=0.;
+
+  for(int i = 0; i < 3; i++ ) {   
+    p1parallel[i] = beta[i]/b*(beta[0]/b*dp1mom*P1Dir[0]+beta[1]/b*dp1mom*P1Dir[1]+beta[2]/b*dp1mom*P1Dir[2]); // Pre boost 
+    p1perpend[i] = dp1mom*P1Dir[i]-p1parallel[i];
+    p1parallel[i] = gamma*(p1parallel[i]-beta[i]*Eproton1); // After boost
+    p1boost[i] =  p1parallel[i]+p1perpend[i];
+    p1boostabs += p1boost[i]*p1boost[i];
+
+    p2parallel[i] = beta[i]/b*(beta[0]/b*dp2mom*P2Dir[0]+beta[1]/b*dp2mom*P2Dir[1]+beta[2]/b*dp2mom*P2Dir[2]); // Pre boost 
+    p2perpend[i] = dp2mom*P2Dir[i]-p2parallel[i];
+    p2parallel[i] = gamma*(p2parallel[i]-beta[i]*Eproton2); // After boost
+    p2boost[i] =  p2parallel[i]+p2perpend[i];
+    p2boostabs += p2boost[i]*p2boost[i];
+    
+    nuparallel[i] = beta[i]/b*(beta[0]/b*Enu*NeuDir[0]+beta[1]/b*Enu*NeuDir[1]+beta[2]/b*Enu*NeuDir[2]); // Pre boost
+    nuperpend[i] = Enu*NeuDir[i]-nuparallel[i];
+    nuparallel[i] = gamma*(nuparallel[i]-beta[i]*Enu); // After boost
+    nuboost[i] =  nuparallel[i]+nuperpend[i];
+    nuboostabs += nuboost[i]*nuboost[i];
+
+    muparallel[i] = beta[i]/b*(beta[0]/b*dmumom*MuDir[0]+beta[1]/b*dmumom*MuDir[1]+beta[2]/b*dmumom*MuDir[2]); // Pre boost 
+    muperpend[i] = dmumom*MuDir[i]-muparallel[i];
+    muparallel[i] = gamma*(muparallel[i]-beta[i]*Emuon); // After boost
+    muboost[i] =  muparallel[i]+muperpend[i];
+    muboostabs += muboost[i]*muboost[i];
+
+    pnboost[i]=p1boost[i] - delta[i];
+    pnboostabs +=pnboost[i]*pnboost[i]; 
+  }
+
+  p1boostabs = TMath::Sqrt(p1boostabs);
+  p2boostabs = TMath::Sqrt(p2boostabs);
+  nuboostabs = TMath::Sqrt(nuboostabs);
+  muboostabs = TMath::Sqrt(muboostabs);
+  pnboostabs = TMath::Sqrt(pnboostabs);
+
+  //  double p1p2CM_Tune3 = p1boost.Dot(p2boost);  // scalar product
+  // p1p2CM_Tune3 =  p1p2CM_Tune3/((p1boost.Mag())*(p2boost.Mag()));
+
+  double p1p2CM_Tune3 = p1boost.Dot(pnboost);  // scalar product
+  p1p2CM_Tune3 =  p1p2CM_Tune3/(p1boostabs*pnboostabs);
+
+  return p1p2CM_Tune3;
+
+}/// fin del calculo de CM angle
+
+void hanalysis_fOffBeam_PID::Begin(TTree * /*tree*/)
+{
+   // The Begin() function is called at the start of the query.
+   // When running with PROOF Begin() is only called on the client.
+   // The tree argument is deprecated (on PROOF 0 is passed).
+
+   TString option = GetOption();
+   fanalysis_OffBeam_PID= new TFile("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/MC/analysis_PID_OffBeam_PRL.root","RECREATE");
+   outfileOffBeam_PID.open("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/MC/info_PRL_OffBeam.txt");
+   outfileOffBeam_evt.open("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/MC/evd_all2P_OffBeam_PRL.txt");
+   outfileOffBeam_evt_btb_hammer.open("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/MC/evd_all2P_btb_OffBeam_hammerLF_PRL.txt");
+   outfileOffBeam_evt_btb_CM.open("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/MC/evd_all2P_btb_OffBeam_CM_PRL.txt");
+   outfileOffBeam_evt_btb_nobtbLFlowPT_CM.open("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/MC/evd_all2P__btb_nobtbLFlowPT_CM_OffBeam_PRL.txt");
+
+   std::cout<<"declaring histos"<<endl;
+
+   selmuon_lenght_OffBeam_PID= new TH1D("selmuon_lenght_OffBeam_PID", "selmuon_lenght_OffBeam_PID", 10, 0, 500);   
+   selmuon_mom_OffBeam_PID= new TH1D("selmuon_mom_OffBeam_PID", "selmuon_mom_OffBeam_PID", 10, 0, 3);
+   selmuon_contained_mom_OffBeam_PID= new TH1D("selmuon_contained_mom_OffBeam_PID", "selmuon_contained_mom_OffBeam_PID", 10, 0, 3);   
+   selmuon_uncontained_mom_OffBeam_PID= new TH1D("selmuon_uncontained_mom_OffBeam_PID", "selmuon_uncontained_mom_OffBeam_PID", 10, 0, 3);
+   selmuon_costheta_OffBeam_PID= new TH1D("selmuon_costheta_OffBeam_PID", "selmuon_costheta_OffBeam_PID", 10, -1, 1); 
+   selmuon_phi_OffBeam_PID= new TH1D("selmuon_phi_OffBeam_PID", "selmuon_phi_OffBeam_PID", 10, -3.14, 3.14);
+   selmuon_chi2proton_OffBeam_PID= new TH1D("selmuon_chi2proton_OffBeam_PID", "selmuon_chi2proton_OffBeam_PID", 30, 0, 300);
+   selmuon_chi2proton_cont_OffBeam_PID= new TH1D("selmuon_chi2proton_cont_OffBeam_PID", "selmuon_chi2proton_cont_OffBeam_PID", 30, 0, 300);
+   selmuon_chi2proton_uncont_OffBeam_PID= new TH1D("selmuon_chi2proton_uncont_OffBeam_PID", "selmuon_chi2proton_uncont_OffBeam_PID", 30, 0, 300);
+   selmuon_dEdx_vs_resrange_OffBeam_PID = new TH2D("selmuon_dEdx_vs_resrange_OffBeam_PID", "selmuon_dEdx_vs_resrange_OffBeam_PID", 50,0,50,20, 0, 20);
+
+   selproton1_lenght_OffBeam_PID= new TH1D("selproton1_lenght_OffBeam_PID", "selproton1_lenght_OffBeam_PID", 10, 0, 100);   
+   selproton1_costheta_OffBeam_PID= new TH1D("selproton1_costheta_OffBeam_PID", "selproton1_costheta_OffBeam_PID", 10, -1, 1); 
+   selproton1_phi_OffBeam_PID= new TH1D("selproton1_phi_OffBeam_PID", "selproton1_phi_OffBeam_PID", 10, -3.14, 3.14);
+   selproton1_mom_OffBeam_PID= new TH1D("selproton1_mom_OffBeam_PID", "selproton1_mom_OffBeam_PID", 10, 0, 1.5);
+   selproton1_chi2proton_OffBeam_PID= new TH1D("selproton1_chi2proton_OffBeam_PID", "selproton1_chi2proton_OffBeam_PID", 10, 0, 300);
+   selproton1_dEdx_vs_resrange_OffBeam_PID = new TH2D("selproton1_dEdx_vs_resrange_OffBeam_PID", "selproton1_dEdx_vs_resrange_OffBeam_PID", 100,0,100,100, 0, 20);
+
+   selprotondef_dEdx_vs_resrange_OffBeam_PID = new TH2D("selprotondef_dEdx_vs_resrange_OffBeam_PID", "selprotondef_dEdx_vs_resrange_OffBeam_PID", 100,0,100,100, 0, 20);
+   selprotonold_dEdx_OffBeam_PID = new TH1D("selprotonold_dEdx_OffBeam_PID", "selprotonold_dEdx_OffBeam_PID", 100, 0, 20);
+   selprotonnew_dEdx_OffBeam_PID = new TH1D("selprotonnew_dEdx_OffBeam_PID", "selprotonnew_dEdx_OffBeam_PID", 100, 0, 20);
+
+   selproton2_lenght_OffBeam_PID= new TH1D("selproton2_lenght_OffBeam_PID", "selproton2_lenght_OffBeam_PID", 10, 0, 40);   
+   selproton2_costheta_OffBeam_PID= new TH1D("selproton2_costheta_OffBeam_PID", "selproton2_costheta_OffBeam_PID", 10, -1, 1); 
+   selproton2_phi_OffBeam_PID= new TH1D("selproton2_phi_OffBeam_PID", "selproton2_phi_OffBeam_PID", 10, -3.14, 3.14);
+   selproton2_mom_OffBeam_PID= new TH1D("selproton2_mom_OffBeam_PID", "selproton2_mom_OffBeam_PID", 10, 0, 1.);
+   selproton2_chi2proton_OffBeam_PID= new TH1D("selproton2_chi2proton_OffBeam_PID", "selproton2_chi2proton_OffBeam_PID", 10, 0, 300);
+   selproton2_dEdx_vs_resrange_OffBeam_PID = new TH2D("selproton2_dEdx_vs_resrange_OffBeam_PID", "selproton2_dEdx_vs_resrange_OffBeam_PID", 50,0,50,20, 0, 20);
+
+   angle_mup1_OffBeam_PID= new TH1D("angle_mup1_OffBeam_PID", "angle_mup1_OffBeam_PID", 10,-1,1);
+   angle_mup2_OffBeam_PID= new TH1D("angle_mup2_OffBeam_PID", "angle_mup2_OffBeam_PID", 10,-1,1);
+   angle_p1p2_OffBeam_PID= new TH1D("angle_p1p2_OffBeam_PID", "angle_p1p2_OffBeam_PID", 10, -1,1);
+   cosangle_p1p2_OffBeam_PID= new TH1D("cosangle_p1p2_OffBeam_PID", "cosangle_p1p2_OffBeam_PID", 10, -1,1);
+
+   selall_dEdx_vs_resrange_all_PID = new TH2D("selall_dEdx_vs_resrange_all_PID", "selall_dEdx_vs_resrange_all_PID", 100,0,100,20, 0, 20);
+
+   hprof_all_MC = new TProfile("hprof_all_MC", "",100,0,100,0,20);
+   hprof_selprotons_MC = new TProfile("hprof_selprotons_MC", "",100,0,100,0,20);
+
+   selmuon_dEdx_OffBeam_PID = new TH1D("selmuon_dEdx_OffBeam_PID","selmuon_dEdx_OffBeam_PID",100,0,20);
+   selproton_dEdx_OffBeam_PID = new TH1D("selproton_dEdx_OffBeam_PID","selproton_dEdx_OffBeam_PID",100,0,20);
+
+   ///// reco ArgoNeuT studies///
+
+   reco_Enu_OffBeam_PID= new TH1D("reco_Enu_OffBeam_PID", "reco_Enu_OffBeam_PID", 10, 0.,2.5);
+   reco_PT_OffBeam_PID= new TH1D("reco_PT_OffBeam_PID", "reco_PT_OffBeam_PID", 10, 0.,2.);
+   reco_PT_OffBeam_1binCM_PID= new TH1D("reco_PT_OffBeam_1binCM_PID", "reco_PT_OffBeam_1binCM_PID", 10, 0.,2.);
+   reco_pn_OffBeam_PID= new TH1D("reco_pn_OffBeam_PID", "reco_pn_OffBeam_PID", 10, 0.,2.);
+   reco_p1p2_OffBeam_PID= new TH1D("reco_p1p2_OffBeam_PID", "reco_p1p2_OffBeam_PID", 10, 0.5,2.);
+   reco_dp1p2_OffBeam_PID= new TH1D("reco_dp1p2_OffBeam_PID", "reco_dp1p2_OffBeam_PID", 10, 0.,1.);
+   reco_kp1p2_OffBeam_PID= new TH1D("reco_kp1p2_OffBeam_PID", "reco_kp1p2_OffBeam_PID", 20, 0.,1.5);
+   reco_kp1p2_OffBeam_PID_btb= new TH1D("reco_kp1p2_OffBeam_PID_btb", "reco_kp1p2_OffBeam_PID_btb", 20, 0.,1.5);
+   p1p2_OffBeam_PID= new TH2D("p1p2_OffBeam_PID", "p1p2_OffBeam_PID", 10,0.,2., 10, 0.,2.);
+   reco_angle_p1p2_p2_OffBeam_PID_LF= new TH2D("reco_angle_p1p2_p2_OffBeam_PID_LF", "reco_angle_p1p2_p2_OffBeam_PID_LF",5,0.,1., 10, -1.,1.);
+   reco_angle_p1p2_OffBeam_PID_LF_CM= new TH2D("reco_angle_p1p2_OffBeam_PID_LF_CM", "reco_angle_p1p2_OffBeam_PID_LF_CM",10,-1.,1., 10, -1,1.);
+   reco_angle_p1p2_OffBeam_PID_LF= new TH1D("reco_angle_p1p2_OffBeam_PID_LF", "reco_angle_p1p2_OffBeam_PID_LF",10, -1,1);
+   reco_angle_p1p2_OffBeam_PID_CM= new TH1D("reco_angle_p1p2_OffBeam_PID_CM", "reco_angle_p1p2_OffBeam_PID_CM",10, -1,1);   
+   reco_angle_SRCrest_p1p2_OffBeam_PID_CM= new TH1D("reco_angle_SRCrest_p1p2_OffBeam_PID_CM", "reco_angle_SRCrest_p1p2_OffBeam_PID_CM",20, -1,1);   
+
+   reco_angle_p1p2_OffBeam_PID_LF_zoom= new TH1D("reco_angle_p1p2_OffBeam_PID_LF_zoom", "reco_angle_p1p2_OffBeam_PID_LF_zoom",20, -1,1);
+   reco_angle_p1p2_OffBeam_PID_CM_zoom= new TH1D("reco_angle_p1p2_OffBeam_PID_CM_zoom", "reco_angle_p1p2_OffBeam_PID_CM_zoom",20, -1,1);   
+
+   reco_angle_p1p2_p2_OffBeam_PID_LF_btb= new TH2D("reco_angle_p1p2_p2_OffBeam_PID_LF_btb", "reco_angle_p1p2_p2_OffBeam_PID_LF_btb",5,0.,1., 10, -1.,1.);
+   reco_angle_p1p2_OffBeam_PID_LF_btb= new TH1D("reco_angle_p1p2_OffBeam_PID_LF_btb", "reco_angle_p1p2_OffBeam_PID_LF_btb",10, -1,1);
+   reco_angle_p1p2_OffBeam_PID_CM_btb= new TH1D("reco_angle_p1p2_OffBeam_PID_CM_btb", "reco_angle_p1p2_OffBeam_PID_CM_btb",10, -1,1);   
+
+   reco_angle_p1p2_OffBeam_PID_LF_btb_zoom= new TH1D("reco_angle_p1p2_OffBeam_PID_LF_btb_zoom", "reco_angle_p1p2_OffBeam_PID_LF_btb_zoom",20, -1,1);
+   reco_angle_p1p2_OffBeam_PID_CM_btb_zoom= new TH1D("reco_angle_p1p2_OffBeam_PID_CM_btb_zoom", "reco_angle_p1p2_OffBeam_PID_CM_btb_zoom",20, -1,1);   
+  
+   reco_PT_OffBeam_nobtbLF_PID= new TH1D("reco_PT_OffBeam_nobtbLF_PID", "reco_PT_OffBeam_nobtbLF_PID", 20, 0.,2.);
+   reco_angle_p1p2_OffBeam_nobtbLF_PID_CM_zoom= new TH1D("reco_angle_p1p2_OffBeam_nobtbLF_PID_CM_zoom", "reco_angle_p1p2_OffBeam_nobtbLF_PID_CM_zoom",20, -1,1);   
+   reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom= new TH1D("reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom", "reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom",20, -1,1);
+   reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_rebin= new TH1D("reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_rebin", "reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_rebin",nbinscCMerr,binscCMerr);
+   reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM= new TH1D("reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM", "reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM",20, -1,1);   
+
+   reco_EnuRes_lowPT_OffBeam_PID = new TH1D("reco_EnuRes_lowPT_OffBeam_PID", "reco_EnuRes_lowPT_OffBeam_PID", 10, 0.,2.5);
+   reco_EnuRes_OffBeam_PID = new TH1D("reco_EnuRes_OffBeam_PID", "reco_EnuRes_OffBeam_PID", 10, 0.,2.5);
+   reco_EnuRes_OffBeam_1binbtbLF_PID = new TH1D("reco_EnuRes_OffBeam_1binbtbLF_PID", "reco_EnuRes_OffBeam_1binbtbLF_PID", 10, 0.,2.5);
+   reco_EnuCCQE_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID = new TH1D("reco_EnuCCQE_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID", "reco_EnuCCQE_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID", 5, 0.,2.5);
+   reco_EnuCCQE_OffBeam_CM_SRCrest_PT_LFbtb_PID = new TH1D("reco_EnuCCQE_OffBeam_CM_SRCrest_PT_LFbtb_PID", "reco_EnuCCQE_OffBeam_CM_SRCrest_PT_LFbtb_PID", 10, 0.,2.5);
+
+   reco_EnuCalo_OffBeam_PID_btb = new TH1D("reco_EnuCalo_OffBeam_PID_btb", "reco_EnuCalo_OffBeam_PID_btb", 10, 0.,2.5);
+   reco_EnuCalo_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID = new TH1D("reco_EnuCalo_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID", "reco_EnuCalo_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID", 5, 0.,2.5);
+   reco_EnuCalo_OffBeam_CM_SRCrest_PT_LFbtb_PID = new TH1D("reco_EnuCalo_OffBeam_CM_SRCrest_PT_LFbtb_PID", "reco_EnuCalo_OffBeam_CM_SRCrest_PT_LFbtb_PID", 10, 0.,2.5);
+
+   reco_Q2lep_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID = new TH1D("reco_Q2lep_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID", "reco_Q2lep_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID", 5, 0.,3.);
+   reco_Q2had_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID = new TH1D("reco_Q2had_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID", "reco_Q2had_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID", 5, 0.,3.);
+   reco_Q2lep_OffBeam_CM_SRCrest_PT_LFbtb_PID = new TH1D("reco_Q2lep_OffBeam_CM_SRCrest_PT_LFbtb_PID", "reco_Q2lep_OffBeam_CM_SRCrest_PT_LFbtb_PID", 6, 0.,3.);
+   reco_Q2had_OffBeam_CM_SRCrest_PT_LFbtb_PID = new TH1D("reco_Q2had_OffBeam_CM_SRCrest_PT_LFbtb_PID", "reco_Q2had_OffBeam_CM_SRCrest_PT_LFbtb_PID", 6, 0.,3.);
+
+   reco_Q2rat_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID = new TH1D("reco_Q2rat_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID", "reco_Q2rat_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID", 6, -3.,3.);
+   reco_Q2rat_OffBeam_CM_SRCrest_PT_LFbtb_PID = new TH1D("reco_Q2rat_OffBeam_CM_SRCrest_PT_LFbtb_PID", "reco_Q2rat_OffBeam_CM_SRCrest_PT_LFbtb_PID", 6, -3.,3.);
+
+   reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_p1p2swap= new TH1D("reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_p1p2swap", "reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_p1p2swap",20, -1,1);   
+   reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaE= new TH1D("reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaE", "reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaE",20, -1,1);   
+   reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaEminus= new TH1D("reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaEminus", "reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaEminus",20, -1,1);   
+
+   /////////////////
+
+   reco_pn_OffBeam_nobtbLF_PID= new TH1D("reco_pn_OffBeam_nobtbLF_PID", "reco_pn_OffBeam_nobtbLF_PID", 10, 0.,2.);
+
+   reco_pn_OffBeam_nobtbLF_PT_PID= new TH1D("reco_pn_OffBeam_nobtbLF_PT_PID", "reco_pn_OffBeam_nobtbLF_PT_PID", 10, 0.,2.);
+   reco_Enu_OffBeam_nobtbLF_PT_PID = new TH1D("reco_Enu_OffBeam_nobtbLF_PT_PID", "reco_Enu_OffBeam_nobtbLF_PT_PID", 10, 0.,2.5);
+   reco_projprel_OffBeam_nobtb_lowPT= new TH1D("reco_projprel_OffBeam_nobtb_lowPT", "reco_projprel_OffBeam_nobtb_lowPT", 10, 0.,2.);
+   reco_projptot_OffBeam_nobtb_lowPT= new TH1D("reco_projptot_OffBeam_nobtb_lowPT", "reco_projptot_OffBeam_nobtb_lowPT", 10, 0.,2.);
+   
+}
+
+void hanalysis_fOffBeam_PID::SlaveBegin(TTree * /*tree*/)
+{
+   // The SlaveBegin() function is called after the Begin() function.
+   // When running with PROOF SlaveBegin() is called on each slave server.
+   // The tree argument is deprecated (on PROOF 0 is passed).
+
+   TString option = GetOption();
+
+}
+
+Bool_t hanalysis_fOffBeam_PID::Process(Long64_t entry)
+{
+   // The Process() function is called for each entry in the tree (or possibly
+   // keyed object in the case of PROOF) to be processed. The entry argument
+   // specifies which entry in the currently loaded tree is to be processed.
+   // When processing keyed objects with PROOF, the object is already loaded
+   // and is available via the fObject pointer.
+   //
+   // This function should contain the \"body\" of the analysis. It can contain
+   // simple or elaborate selection criteria, run algorithms on the data
+   // of the event and typically fill histograms.
+   //
+   // The processing can be stopped by calling Abort().
+   //
+   // Use fStatus to set the return value of TTree::Process().
+   //
+   // The return value is currently not used.
+
+   fReader.SetEntry(entry);
+   //   std::cout<<"before process"<<endl;
+
+   if(track_pfp_Id.GetSize()<1) std::cout<<"Oooops, there are less than 1 tracks"<<std::endl;
+
+   ///scpecific cuts////
+   if(track_pfp_Id.GetSize()==3){/// minColl requirement
+     double trklength_temp=0;
+     double trklength_temp2=0;
+     double trklength_temp3=0;
+     int muind=-1;
+     int p1ind=-1;
+     int p2ind=-1;
+     bool muoninFV = true;
+
+     for(int allp=0; allp< track_pfp_Id.GetSize(); ++allp){
+       if(track_pfp_length[allp]>trklength_temp){
+	 muind=allp;
+	 trklength_temp=track_pfp_length[allp];
+       }
+     }
+     bool tempflag=true;
+     bool minColl = true;
+ 
+     if(muind>-1 && !inFV(*_nuvtxx_reco, *_nuvtxy_reco,*_nuvtxx_reco)) muoninFV=false;
+     //if (*pfp_upinFVflag) tempflag=false;
+     ///loop over all the proton candidates
+     for(int np=0; np<track_pfp_Id.GetSize(); ++np){
+       if(muind==np) continue;
+       if (!*pfp_upinFVflag) tempflag=false;
+       //if(!inFV(track_pfp_startx[np], track_pfp_starty[np], track_pfp_startz[np]) || !inFV(track_pfp_endx[np], track_pfp_endy[np], track_pfp_endz[np])) {tempflag=false;};
+       //if(tempflag==false) continue;
+       if(track_pfp_length[np]>trklength_temp2) {
+	 p1ind=np;
+	 trklength_temp2=track_pfp_length[np];
+       }
+     }
+
+     ////loop over all the proton candidates
+   
+     for(int np=0; np<track_pfp_Id.GetSize(); ++np){
+       if(muind==np) continue;
+       if(p1ind==np) continue;
+       //if(tempflag==false) continue;
+       if(track_pfp_length[np]>trklength_temp3) {
+	 p2ind=np;
+	 trklength_temp3=track_pfp_length[np];
+       }
+     } //end of loop over proton candidates //second proton selected   
+
+
+     if(muind !=-1 &&p1ind !=-1 && tempflag){
+       
+       for(int np=0; np<track_pfp_Id.GetSize(); ++np){
+	 for(int i =0; i< track_pfp_dEdx[np].size(); ++i){
+	   if(track_pfp_dEdx[np].size()<5) continue;
+	   selall_dEdx_vs_resrange_all_PID->Fill(track_pfp_RR[np][i],track_pfp_dEdx[np][i]);
+	   hprof_all_MC->Fill(track_pfp_RR[np][i],track_pfp_dEdx[np][i],1);
+	  
+	   if(muind==np) continue;
+	   
+	   if(track_pfp_chi2_proton[np]<88.) hprof_selprotons_MC->Fill(track_pfp_RR[np][i],track_pfp_dEdx[np][i],1);
+	 }
+       }
+     }/// loop over all tracks CCNProton no PID cut
+
+     if(muind !=-1 && p1ind !=-1 && p2ind !=-1 && tempflag){/// requirements
+       if(track_pfp_dEdx[muind].size()<5 ||track_pfp_dEdx[p1ind].size()<5 ||track_pfp_dEdx[p2ind].size()<5) minColl=false;
+
+       if(minColl){
+	 if(track_pfp_chi2_proton[muind]>88. && track_pfp_chi2_proton[p1ind]<88. &&track_pfp_chi2_proton[p2ind]<88.){
+
+       if(track_pfp_Mom_p[p1ind]>0.3 && track_pfp_Mom_p[p2ind]>0.3){ /// require proton momenta>300 MeV
+	 //std::cout<<"pasa por el corte de 300 MeV en los dos protones"<<std::endl;
+	   
+	   totentries++;
+       /// opening angles
+
+       float fPlep=*track_pfp_mom_mucand;
+       float fPhad1=track_pfp_Mom_p[p1ind];
+       float fPhad2=track_pfp_Mom_p[p2ind];
+       float fThetaLep=track_pfp_theta[muind];
+       float fThetaHad1=track_pfp_theta[p1ind];
+       float fThetaHad2=track_pfp_theta[p2ind];
+       float fPhiLep=track_pfp_phi[muind];
+       float fPhiHad1=track_pfp_phi[p1ind];
+       float fPhiHad2=track_pfp_phi[p2ind];
+       TVector3 muonP(fPlep*(TMath::Sin(fThetaLep))*(TMath::Cos(fPhiLep)), fPlep*(TMath::Sin(fThetaLep))*(TMath::Sin(fPhiLep)), fPlep*(TMath::Cos(fThetaLep)));
+       TVector3 protonP1(fPhad1*(TMath::Sin(fThetaHad1))*(TMath::Cos(fPhiHad1)), fPhad1*(TMath::Sin(fThetaHad1))*(TMath::Sin(fPhiHad1)), fPhad1*(TMath::Cos(fThetaHad1)));
+       TVector3 protonP2(fPhad2*(TMath::Sin(fThetaHad2))*(TMath::Cos(fPhiHad2)), fPhad2*(TMath::Sin(fThetaHad2))*(TMath::Sin(fPhiHad2)), fPhad2*(TMath::Cos(fThetaHad2)));
+
+       TVector3 trackpdir_mu;
+       TVector3 trackpdir_p1;
+       TVector3 trackpdir_p2;
+       /*
+       trackpdir_mu.SetXYZ(TMath::Cos(fPhiLep),TMath::Sqrt(1-pow(TMath::Cos(fPhiLep),2)- pow(TMath::Cos(fThetaLep),2)), TMath::Cos(fThetaLep));
+       trackpdir_p1.SetXYZ(TMath::Cos(fPhiHad1),TMath::Sqrt(1-pow(TMath::Cos(fPhiHad1),2)- pow(TMath::Cos(fThetaHad1),2)), TMath::Cos(fThetaHad1));
+       trackpdir_p2.SetXYZ(TMath::Cos(fPhiHad2),TMath::Sqrt(1-pow(TMath::Cos(fPhiHad2),2)- pow(TMath::Cos(fThetaHad2),2)), TMath::Cos(fThetaHad2));
+       */
+
+       trackpdir_mu.SetXYZ(TMath::Sin(track_pfp_theta[muind])*TMath::Cos(track_pfp_phi[muind]),TMath::Sin(track_pfp_phi[muind])*TMath::Sin(track_pfp_theta[muind]),track_pfp_costheta[muind]);
+       trackpdir_p1.SetXYZ(TMath::Sin(track_pfp_theta[p1ind])*TMath::Cos(track_pfp_phi[p1ind]),TMath::Sin(track_pfp_phi[p1ind])*TMath::Sin(track_pfp_theta[p1ind]),track_pfp_costheta[p1ind]);
+       trackpdir_p2.SetXYZ(TMath::Sin(track_pfp_theta[p2ind])*TMath::Cos(track_pfp_phi[p2ind]),TMath::Sin(track_pfp_phi[p2ind])*TMath::Sin(track_pfp_theta[p2ind]),track_pfp_costheta[p2ind]);
+
+       Double_t m1 = trackpdir_p1.Mag();
+       Double_t m2 = trackpdir_p2.Mag();
+       Double_t mu = trackpdir_mu.Mag();
+
+       std::cout<<"norm p1: "<<m1<<" norm p2: "<<m2<<" norm mu: "<<mu<<std::endl;
+ 
+       double CosAnglep1p2 = trackpdir_p1.Dot(trackpdir_p2);   // scalar product
+       CosAnglep1p2 =  CosAnglep1p2/(m1*m2);
+
+       double CosAnglemup1 = trackpdir_mu.Dot(trackpdir_p1);   // scalar product
+       CosAnglemup1 =  CosAnglemup1/(mu*m1);
+
+       double CosAnglemup2 = trackpdir_mu.Dot(trackpdir_p2);   // scalar product
+       CosAnglemup2 =  CosAnglemup2/(mu*m2);
+
+       double anglemup1=CosAnglemup1;
+       double anglemup2=CosAnglemup2;
+       double anglep1p2=CosAnglep1p2;
+
+       /*
+       double anglemup1=muonP.Angle(protonP1);
+       double anglemup2=muonP.Angle(protonP2);
+       double anglep1p2=protonP1.Angle(protonP2);
+       */
+       //////////////
+
+       ///// reco Enu & PT
+       double reco_deltax= muonP.X()+protonP1.X()+protonP2.X();
+       double reco_deltay= muonP.Y()+protonP1.Y()+protonP2.Y();
+       double reco_PTmiss = sqrt(reco_deltax*reco_deltax + reco_deltay*reco_deltay);
+
+       //       double reco_PTmissdeltaE = sqrt(reco_deltax*reco_deltax + reco_deltay*reco_deltay)+0.2;
+       // muon energy
+       double  reco_Emuon = sqrt(pow(105.6/1000.,2) + pow(fPlep,2));
+
+       // protons energy
+       double reco_Eprotons = sqrt(pow(938.272/1000.,2) + pow(fPhad1,2)) + sqrt(pow(938.272/1000.,2) + pow(fPhad2,2));
+       double reco_Eproton1 = pow(fPhad1,2)/(2*938.272/1000.);
+       double reco_Eproton2 = pow(fPhad2,2)/(2*938.272/1000.);
+     
+       //double Esum= Emuon + Eprotons;
+       double reco_Esum= reco_Emuon + pow(fPhad1,2)/(2*938.272/1000.) + pow(fPhad2,2)/(2*938.272/1000.);
+       double reco_Enuvis = Ecalomiss(reco_Esum, reco_PTmiss, 2)/1000.;
+
+       double reco_EnuvisdeltaE = Ecalomiss(reco_Esum, reco_PTmiss, 2)/1000.+0.5;/// deltaE=500MeV
+       double reco_EnuvisdeltaEminus = Ecalomiss(reco_Esum, reco_PTmiss, 2)/1000.-0.5;/// deltaE=-500MeV
+     
+       //// special tests on recon energy and Q2
+
+       double reco_ERes = GetERes(reco_Emuon, track_pfp_costheta[muind]);
+       double reco_ECCQE = GetECCQE(reco_Emuon, track_pfp_costheta[muind], fPlep);
+
+       double reco_Q2lep = GetQ2lep(reco_Enuvis, fPlep, track_pfp_costheta[muind]);
+       double reco_Q2had = GetQ2had(trackpdir_p1, trackpdir_p2, fPhad1, fPhad2);/// *** corregir
+
+       double recoW = GetW2(reco_Eprotons, fPhad1, fPhad2);
+       double recoxB = GetBjorken(reco_Enuvis, reco_Emuon, reco_Q2lep);
+       double reco_q0 =Getq0(reco_Enuvis, reco_Emuon);
+       
+       /////
+       double reco_CosAnglep1p2CM =-999.;
+       double reco_CosAnglep1p2CMswap =-999.;
+       double reco_CosAnglep1p2CMdeltaE =-999.;
+       double reco_CosAnglep1p2CMdeltaEminus =-999.;
+       TVector3 reco_NeuDir;
+       reco_NeuDir.SetXYZ(0,0,1);
+
+       double reco_Q3[3];/// this is Q_3 
+       for( int i = 0; i < 3; i++ ) reco_Q3[i] = reco_Enuvis*reco_NeuDir[i] - muonP[i];
+
+       double reco_Q3deltaE[3];/// this is Q_3 
+       for( int i = 0; i < 3; i++ ) reco_Q3deltaE[i] = reco_EnuvisdeltaE*reco_NeuDir[i] - muonP[i];
+       double reco_Q3deltaEminus[3];/// this is Q_3 
+       for( int i = 0; i < 3; i++ ) reco_Q3deltaEminus[i] = reco_EnuvisdeltaEminus*reco_NeuDir[i] - muonP[i];
+
+       TVector3 reco_Pn;
+       for( int i = 0; i < 3; i++) reco_Pn[i] = protonP1[i] - reco_Q3[i]; 
+
+       TVector3 reco_Pnswap;
+       for( int i = 0; i < 3; i++) reco_Pnswap[i] = protonP2[i] - reco_Q3[i]; 
+
+       TVector3 reco_PndeltaE;
+       for( int i = 0; i < 3; i++) reco_PndeltaE[i] = protonP1[i] - reco_Q3deltaE[i]; 
+       TVector3 reco_PndeltaEminus;
+       for( int i = 0; i < 3; i++) reco_PndeltaEminus[i] = protonP1[i] - reco_Q3deltaEminus[i]; 
+
+       if(reco_Enuvis>0) reco_CosAnglep1p2CM = protonP2.Dot(reco_Pn);
+       double norm_recopndirT = sqrt(pow(reco_Pn[0],2) + pow(reco_Pn[1],2)+ pow(reco_Pn[2],2));
+       double norm_recop2dirT = sqrt(pow(protonP2[0],2) + pow(protonP2[1],2)+ pow(protonP2[2],2));
+
+       reco_CosAnglep1p2CM =  reco_CosAnglep1p2CM/(norm_recop2dirT*norm_recopndirT);
+
+       double prel = abs(norm_recopndirT- norm_recop2dirT);
+
+       TVector3 vprel = reco_Pn - protonP2;
+       TVector3 vprelp1p2 = protonP1 - protonP2;
+
+       TVector3 vptot = reco_Pn + protonP2;
+       TVector3 vptotp1p2 = protonP1 + protonP2;
+
+       TVector3 perpplane = GetPerpPlane(reco_Enuvis*reco_NeuDir, muonP);
+       double projprel = GetProjection(vprel, perpplane);
+       double projprelp1p2 = GetProjection(vprelp1p2, perpplane);
+       double projptot = GetProjection(vptot, perpplane);
+       double projptotp1p2 = GetProjection(vptotp1p2, perpplane);
+
+       double reco_q3 = sqrt(pow(reco_Q3[0],2) + pow(reco_Q3[1],2)+ pow(reco_Q3[2],2));
+
+       double Cosp1q3 = trackpdir_p1.Dot(reco_Q3);   // scalar product
+       Cosp1q3 =  Cosp1q3/(m1*reco_q3);
+
+       double Cosp2q3 = trackpdir_p2.Dot(reco_Q3);   // scalar product
+       Cosp2q3 =  Cosp2q3/(m2*reco_q3);
+
+       double Cospnq3 = reco_Pn.Dot(reco_Q3);   // scalar product
+       Cospnq3 =  Cospnq3/(norm_recopndirT*reco_q3);
+
+       /// swap in p1p2
+       if(reco_Enuvis>0) reco_CosAnglep1p2CMswap = protonP1.Dot(reco_Pnswap);
+       double norm_recopndirTswap = sqrt(pow(reco_Pnswap[0],2) + pow(reco_Pnswap[1],2)+ pow(reco_Pnswap[2],2));
+       double norm_recop1dirT = sqrt(pow(protonP1[0],2) + pow(protonP1[1],2)+ pow(protonP1[2],2));
+       // delta E
+       if(reco_Enuvis>0) reco_CosAnglep1p2CMdeltaE = protonP2.Dot(reco_PndeltaE);
+       double norm_recopndirTdeltaE = sqrt(pow(reco_PndeltaE[0],2) + pow(reco_PndeltaE[1],2)+ pow(reco_PndeltaE[2],2));
+       reco_CosAnglep1p2CMdeltaE =  reco_CosAnglep1p2CMdeltaE/(norm_recop2dirT*norm_recopndirTdeltaE);
+
+       if(reco_Enuvis>0) reco_CosAnglep1p2CMdeltaEminus = protonP2.Dot(reco_PndeltaEminus);
+       double norm_recopndirTdeltaEminus = sqrt(pow(reco_PndeltaEminus[0],2) + pow(reco_PndeltaEminus[1],2)+ pow(reco_PndeltaEminus[2],2));
+       reco_CosAnglep1p2CMdeltaEminus =  reco_CosAnglep1p2CMdeltaEminus/(norm_recop2dirT*norm_recopndirTdeltaEminus);
+       ////
+
+       reco_CosAnglep1p2CMswap =  reco_CosAnglep1p2CMswap/(norm_recop1dirT*norm_recopndirTswap);
+
+       //////
+       
+       selmuon_lenght_OffBeam_PID->Fill(track_pfp_length[muind]);
+       selmuon_mom_OffBeam_PID->Fill(*track_pfp_mom_mucand);
+       selmuon_costheta_OffBeam_PID->Fill(track_pfp_costheta[muind]);
+       selmuon_phi_OffBeam_PID->Fill(track_pfp_phi[muind]);
+       selmuon_chi2proton_OffBeam_PID->Fill(track_pfp_chi2_proton[muind]);
+       
+       for(int i =0; i< track_pfp_dEdx[muind].size(); ++i){
+	 selmuon_dEdx_vs_resrange_OffBeam_PID->Fill(track_pfp_RR[muind][i],track_pfp_dEdx[muind][i]);
+	 selmuon_dEdx_OffBeam_PID->Fill(track_pfp_dEdx[muind][i]);
+       }
+             
+       ////contained
+       if(inFV(track_pfp_startx[muind], track_pfp_starty[muind], track_pfp_startz[muind]) && inFV(track_pfp_endx[muind], track_pfp_endy[muind], track_pfp_endz[muind])){
+	 selmuon_chi2proton_cont_OffBeam_PID->Fill(track_pfp_chi2_proton[muind]);
+       }
+       else{ //uncontained
+	 selmuon_chi2proton_uncont_OffBeam_PID->Fill(track_pfp_chi2_proton[muind]);
+       }
+
+       selproton1_lenght_OffBeam_PID->Fill(track_pfp_length[p1ind]);
+       selproton2_lenght_OffBeam_PID->Fill(track_pfp_length[p2ind]);
+       selproton1_costheta_OffBeam_PID->Fill(track_pfp_costheta[p1ind]);
+       selproton2_costheta_OffBeam_PID->Fill(track_pfp_costheta[p2ind]);
+       selproton1_phi_OffBeam_PID->Fill(track_pfp_phi[p1ind]);
+       selproton2_phi_OffBeam_PID->Fill(track_pfp_phi[p2ind]);
+       selproton1_mom_OffBeam_PID->Fill(track_pfp_Mom_p[p1ind]);
+       selproton2_mom_OffBeam_PID->Fill(track_pfp_Mom_p[p2ind]);
+       selproton1_chi2proton_OffBeam_PID->Fill(track_pfp_chi2_proton[p1ind]);
+       selproton2_chi2proton_OffBeam_PID->Fill(track_pfp_chi2_proton[p2ind]);
+       
+       double fakepitch =0.;
+       kinetic_energy1 =0.;
+       for(int i =0; i< track_pfp_dEdx[p1ind].size(); ++i){
+	 selproton1_dEdx_vs_resrange_OffBeam_PID->Fill(track_pfp_RR[p1ind][i],track_pfp_dEdx[p1ind][i]);
+	 selproton_dEdx_OffBeam_PID->Fill(track_pfp_dEdx[p1ind][i]);
+	 if(totentries<115){
+	 float cal_de_dx=Dedx(track_pfp_dQdx[p1ind][i]/calib_factor);
+	 selprotondef_dEdx_vs_resrange_OffBeam_PID->Fill(track_pfp_RR[p1ind][i],cal_de_dx);
+	 float cal_de_dxold=Dedxold(track_pfp_dQdx[p1ind][i]/calib_factor);
+	 std::cout<<"cal new "<<cal_de_dx<<" cal old "<<cal_de_dxold<<" dqdx "<< track_pfp_dQdx[p1ind][i]<<std::endl;
+	 selprotonold_dEdx_OffBeam_PID->Fill(cal_de_dxold);
+	 selprotonnew_dEdx_OffBeam_PID->Fill(cal_de_dx);
+	 }
+	 //if(i< track_pfp_dEdx[p1ind].size()) fakepitch = abs(track_pfp_RR[p1ind][i]-track_pfp_RR[p1ind][i+1]);
+	 //else fakepitch = track_pfp_RR[p1ind][i];
+	 //kinetic_energy1 += track_pfp_dEdx[p1ind][i]*fakepitch;//// ****test
+	 kinetic_energy1 += track_pfp_dEdx[p1ind][i];/// ** test
+       }
+       //kinetic_energy1 = kinetic_energy1*track_pfp_length[p1ind];
+       //std::cout<<"*************************************** "<<std::endl;
+       //std::cout<<"kinetic energy "<<kinetic_energy1<<std::endl;
+       //std::cout<<"kinetic energy - range energy "<<kinetic_energy1-(track_pfp_Mom_p[p1ind]*1000)<<std::endl;
+       //std::cout<<"*************************************** "<<std::endl;
+
+       for(int i =0; i< track_pfp_dEdx[p2ind].size(); ++i){
+	 selproton2_dEdx_vs_resrange_OffBeam_PID->Fill(track_pfp_RR[p2ind][i],track_pfp_dEdx[p2ind][i]);
+	 selproton1_dEdx_vs_resrange_OffBeam_PID->Fill(track_pfp_RR[p2ind][i],track_pfp_dEdx[p2ind][i]);
+	 if(totentries<115){
+	 float cal_de_dx=Dedx(track_pfp_dQdx[p2ind][i]/calib_factor);
+	 selprotondef_dEdx_vs_resrange_OffBeam_PID->Fill(track_pfp_RR[p2ind][i],cal_de_dx);
+	 selproton_dEdx_OffBeam_PID->Fill(track_pfp_dEdx[p2ind][i]);
+	 float cal_de_dxold=Dedxold(track_pfp_dQdx[p2ind][i]/calib_factor);
+      	 selprotonold_dEdx_OffBeam_PID->Fill(cal_de_dxold);
+	 selprotonnew_dEdx_OffBeam_PID->Fill(cal_de_dx);
+	 }
+       }
+
+       angle_mup1_OffBeam_PID->Fill(anglemup1);
+       angle_mup2_OffBeam_PID->Fill(anglemup2);
+       angle_p1p2_OffBeam_PID->Fill(anglep1p2);
+       cosangle_p1p2_OffBeam_PID->Fill(TMath::Cos(anglep1p2));
+
+       double kp1p2 = ((track_pfp_Mom_p[p1ind]*track_pfp_Mom_p[p1ind])+(track_pfp_Mom_p[p2ind]*track_pfp_Mom_p[p2ind]))/(2*0.938272);
+
+       //////
+       //      if(track_pfp_Mom_p[p1ind]>0.3 && track_pfp_Mom_p[p2ind]>0.3){ /// require proton momenta>300 MeV
+	 //std::cout<<"pasa por el corte de 300 MeV en los dos protones"<<std::endl;
+	 num300++;
+
+	 n1++;
+	 n2++;
+	 n3++;
+	 if(reco_CosAnglep1p2CM<-0.9) i1++;
+
+	 outfileOffBeam_evt<<"run "<<*run<<" subrun "<<*subrun<<" event "<<*event<<" costheta_lab "<<anglep1p2<<" costheta_CM "<<reco_CosAnglep1p2CM<<" mom p1 "<<track_pfp_Mom_p[p1ind]<<" mom p2 "<<track_pfp_Mom_p[p2ind]<<" mom muon "<<*track_pfp_mom_mucand<<" reco Enu "<<reco_Enuvis<<" chi2 p1 "<<track_pfp_chi2_proton[p1ind]<<" chi2 p2 "<<track_pfp_chi2_proton[p2ind]<<std::endl;
+
+	 x1.push_back(track_pfp_Mom_p[p2ind]);
+	 yy1.push_back(track_pfp_Mom_p[p1ind]);
+	 x2.push_back(track_pfp_Mom_p[p2ind]);
+	 y2.push_back(anglep1p2);
+	 x3.push_back(anglep1p2);
+	 y3.push_back(reco_CosAnglep1p2CM);
+
+	 q3xp1p2.push_back(reco_Q3[0]-(protonP1[0]+protonP2[0]));
+	 q3yp1p2.push_back(reco_Q3[1]-(protonP1[1]+protonP2[1]));
+	 q3zp1p2.push_back(reco_Q3[2]-(protonP1[2]+protonP2[2]));
+	 pTall.push_back(reco_PTmiss);
+
+	 cLF.push_back(anglep1p2);
+	 Wnocut.push_back(recoW);
+	 xBnocut.push_back(recoxB);
+	 Q2.push_back(reco_Q2lep);
+	 prelnocut.push_back(abs(norm_recopndirT-track_pfp_Mom_p[p2ind]));
+
+	 q3_nocut.push_back(reco_q3);
+	 q0_nocut.push_back(reco_q0);
+
+	 cp1q3_nocut.push_back(Cosp1q3);
+	 cp2q3_nocut.push_back(Cosp2q3);
+	 cpnq3_nocut.push_back(Cospnq3);
+
+	 projprel_nocut.push_back(projprel);
+	 projprelp1p2_nocut.push_back(projprelp1p2);
+	 projptot_nocut.push_back(projptot);
+	 projptotp1p2_nocut.push_back(projptotp1p2);
+
+	 if(reco_PTmiss<0.3){
+	   q3zp1p2PT0.push_back(reco_Q3[2]-(protonP1[2]+protonP2[2]));
+	   cosCMPT0.push_back(reco_CosAnglep1p2CM);
+	   n6++;
+	 }
+
+	 p1p2_OffBeam_PID->Fill(track_pfp_Mom_p[p1ind],track_pfp_Mom_p[p2ind]);
+	 reco_angle_p1p2_p2_OffBeam_PID_LF->Fill(track_pfp_Mom_p[p2ind],anglep1p2);
+	 reco_angle_p1p2_OffBeam_PID_LF_CM->Fill(anglep1p2,reco_CosAnglep1p2CM);
+	 reco_Enu_OffBeam_PID->Fill(reco_Enuvis);
+	 reco_PT_OffBeam_PID->Fill(reco_PTmiss);
+	 reco_p1p2_OffBeam_PID->Fill(track_pfp_Mom_p[p1ind]+track_pfp_Mom_p[p2ind]);
+	 reco_dp1p2_OffBeam_PID->Fill(track_pfp_Mom_p[p1ind]-track_pfp_Mom_p[p2ind]);
+	 reco_pn_OffBeam_PID->Fill(norm_recopndirT);
+	 reco_angle_p1p2_OffBeam_PID_LF->Fill(anglep1p2);
+	 reco_angle_p1p2_OffBeam_PID_CM->Fill(reco_CosAnglep1p2CM);
+	 reco_angle_p1p2_OffBeam_PID_LF_zoom->Fill(anglep1p2);
+	 reco_angle_p1p2_OffBeam_PID_CM_zoom->Fill(reco_CosAnglep1p2CM);
+	 reco_kp1p2_OffBeam_PID->Fill(kp1p2);
+
+	 reco_EnuRes_OffBeam_PID->Fill(reco_ERes);
+
+	 if(anglep1p2<-0.8){
+	   reco_kp1p2_OffBeam_PID_btb->Fill(kp1p2);
+	   reco_EnuRes_OffBeam_1binbtbLF_PID->Fill(reco_ERes);
+	   reco_EnuCalo_OffBeam_PID_btb->Fill(reco_Enuvis);
+
+	   outfileOffBeam_evt_btb_hammer<<"run "<<*run<<" subrun "<<*subrun<<" event "<<*event<<" costheta_lab "<<anglep1p2<<" costheta_CM "<<reco_CosAnglep1p2CM<<" mom p1 "<<track_pfp_Mom_p[p1ind]<<" mom p2 "<<track_pfp_Mom_p[p2ind]<<" mom muon "<<*track_pfp_mom_mucand<<" reco Enu "<<reco_Enuvis<<" chi2 p1 "<<track_pfp_chi2_proton[p1ind]<<" chi2 p2 "<<track_pfp_chi2_proton[p2ind]<<std::endl;
+
+	 }
+	 // removing back-to-back events
+	 //else if(anglep1p2>-0.8){
+	   reco_PT_OffBeam_nobtbLF_PID->Fill(reco_PTmiss);
+	   reco_angle_p1p2_OffBeam_nobtbLF_PID_CM_zoom->Fill(reco_CosAnglep1p2CM);
+	   reco_pn_OffBeam_nobtbLF_PID->Fill(norm_recopndirT);
+	   cCM_nobtb.push_back(reco_CosAnglep1p2CM);
+	   pT_nobtb.push_back(reco_PTmiss);
+	   n7++;
+	   if(reco_CosAnglep1p2CM<-0.9) i6++;
+	   if(reco_PTmiss<0.3) {
+	     reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom->Fill(reco_CosAnglep1p2CM);
+	     reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_rebin->Fill(reco_CosAnglep1p2CM);
+	     reco_pn_OffBeam_nobtbLF_PT_PID->Fill(norm_recopndirT);
+	     reco_Enu_OffBeam_nobtbLF_PT_PID->Fill(reco_Enuvis);
+	     reco_projprel_OffBeam_nobtb_lowPT->Fill(projprel);
+	     reco_projptot_OffBeam_nobtb_lowPT->Fill(projptot); 
+	     cCM.push_back(reco_CosAnglep1p2CM);
+	     W_nobtb_lowPT.push_back(recoW);
+	     xB_nobtb_lowPT.push_back(recoxB);
+	     prel_nobtb_lowPT.push_back(abs(norm_recopndirT-track_pfp_Mom_p[p2ind]));
+	     Q2_nobtb_lowPT.push_back(reco_Q2lep);
+	     q3_nobtb_lowPT.push_back(reco_q3);
+	     q0_nobtb_lowPT.push_back(reco_q0);
+	     cp1q3_nobtb_lowPT.push_back(Cosp1q3);
+	     cp2q3_nobtb_lowPT.push_back(Cosp2q3);
+	     cpnq3_nobtb_lowPT.push_back(Cospnq3);
+	     projprel_nobtb_lowPT.push_back(projprel);
+	     projprelp1p2_nobtb_lowPT.push_back(projprelp1p2);
+	     projptot_nobtb_lowPT.push_back(projptot);
+	     projptotp1p2_nobtb_lowPT.push_back(projptotp1p2);
+	     n8++;
+	     if(reco_CosAnglep1p2CM<-0.9) i8++;
+	   }
+
+	   outfileOffBeam_evt_btb_CM<<"run "<<*run<<" subrun "<<*subrun<<" event "<<*event<<" costheta_lab "<<anglep1p2<<" costheta_CM "<<reco_CosAnglep1p2CM<<" mom p1 "<<track_pfp_Mom_p[p1ind]<<" mom p2 "<<track_pfp_Mom_p[p2ind]<<" mom muon "<<*track_pfp_mom_mucand<<" reco Enu "<<reco_Enuvis<<" chi2 p1 "<<track_pfp_chi2_proton[p1ind]<<" chi2 p2 "<<track_pfp_chi2_proton[p2ind]<<std::endl;
+
+	   //}
+
+	 if(anglep1p2>-0.8 && reco_PTmiss<0.3){ /// p1p2 swap tests///
+	   reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaE->Fill(reco_CosAnglep1p2CMdeltaE);
+	   reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaEminus->Fill(reco_CosAnglep1p2CMdeltaEminus);
+	   reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_p1p2swap->Fill(reco_CosAnglep1p2CMswap);
+	 }
+
+	 if(abs(norm_recopndirT-track_pfp_Mom_p[p2ind])<0.1){
+	   reco_angle_SRCrest_p1p2_OffBeam_PID_CM->Fill(reco_CosAnglep1p2CM);
+	   if(anglep1p2>-0.8 && reco_PTmiss<0.3){
+	     reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM->Fill(reco_CosAnglep1p2CM);
+	     reco_EnuCalo_OffBeam_CM_SRCrest_PT_LFbtb_PID->Fill(reco_Enuvis);
+	     reco_EnuCCQE_OffBeam_CM_SRCrest_PT_LFbtb_PID->Fill(reco_ECCQE);
+	     reco_Q2lep_OffBeam_CM_SRCrest_PT_LFbtb_PID->Fill(reco_Q2lep);
+	     reco_Q2had_OffBeam_CM_SRCrest_PT_LFbtb_PID->Fill(reco_Q2had);
+	     reco_Q2rat_OffBeam_CM_SRCrest_PT_LFbtb_PID->Fill(reco_Q2lep-reco_Q2had);
+
+	     if(reco_CosAnglep1p2CM < -0.9){
+	       reco_EnuCalo_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->Fill(reco_Enuvis);
+	       reco_EnuCCQE_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->Fill(reco_ECCQE);
+	       reco_Q2lep_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->Fill(reco_Q2lep);
+	       reco_Q2had_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->Fill(reco_Q2had);
+	       reco_Q2rat_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->Fill(reco_Q2lep-reco_Q2had);
+
+	       outfileOffBeam_evt_btb_nobtbLFlowPT_CM<<"run "<<*run<<" subrun "<<*subrun<<" event "<<*event<<" costheta_lab "<<anglep1p2<<" costheta_CM "<<reco_CosAnglep1p2CM<<" mom p1 "<<track_pfp_Mom_p[p1ind]<<" mom p2 "<<track_pfp_Mom_p[p2ind]<<" mom muon "<<*track_pfp_mom_mucand<<" reco Enu "<<reco_Enuvis<<" chi2 p1 "<<track_pfp_chi2_proton[p1ind]<<" chi2 p2 "<<track_pfp_chi2_proton[p2ind]<<std::endl;
+
+	     }
+	     if(reco_CosAnglep1p2CM<-0.9) i5++;
+	       PTsel.push_back(reco_PTmiss);
+	       cosCMsel.push_back(reco_CosAnglep1p2CM);
+	       pnsel.push_back(norm_recopndirT);
+	       p2sel.push_back(track_pfp_Mom_p[p2ind]);
+	       n5++;
+	       //}
+	   }/// low PT, no btb LF, pn~p2
+	 }
+	 //	 deltaCMLF.push_back(abs(reco_CosAnglep1p2CM-anglep1p2));
+	 deltaCMLF.push_back(reco_CosAnglep1p2CM-anglep1p2);
+	 Enu.push_back(reco_Enuvis);
+	 PT.push_back(reco_PTmiss);
+
+	 if(reco_CosAnglep1p2CM < -0.9){
+	   reco_PT_OffBeam_1binCM_PID->Fill(reco_PTmiss);
+	 }
+
+	 ///// p1 ~ -p2 (para LF plots)
+	 bool p1p2delta =false;
+	 /////exclude back-to-back(LF) from CM
+	 if(abs(track_pfp_Mom_p[p1ind]-track_pfp_Mom_p[p2ind])<0.1){/// solo n2/// hacer tag a los q son back-to-back para excluir luego
+	   numpairs++;
+	   n2a++;
+	   if(anglep1p2 < -0.8) p1p2delta =true;
+
+	   x2a.push_back(track_pfp_Mom_p[p2ind]);
+	   y2a.push_back(anglep1p2);
+
+	   reco_angle_p1p2_p2_OffBeam_PID_LF_btb->Fill(track_pfp_Mom_p[p2ind],anglep1p2);
+	   reco_angle_p1p2_OffBeam_PID_LF_btb->Fill(anglep1p2);
+	   reco_angle_p1p2_OffBeam_PID_LF_btb_zoom->Fill(anglep1p2);
+
+	 }/// n2 (LF plots)
+
+	 if(!p1p2delta){// plos nuevos CM (necesita quita unos eventos de LF parte)
+	   p1p2delta=true;
+	   n3a++;
+	   x3a.push_back(anglep1p2);
+	   y3a.push_back(reco_CosAnglep1p2CM);
+	   reco_angle_p1p2_OffBeam_PID_CM_btb->Fill(reco_CosAnglep1p2CM);
+	   reco_angle_p1p2_OffBeam_PID_CM_btb_zoom->Fill(reco_CosAnglep1p2CM);
+	 }
+       }///mom>300 MeV
+       
+	 }//PID
+       }///min coll hits
+     }/// muon, p1, p2
+   }// 3 trks
+
+   //   ratioCM = double(i8)/(double)n8;
+   //   std::cout<<"ratio CM "<<ratioCM<<std::endl;
+
+   return kTRUE;
+}
+
+void hanalysis_fOffBeam_PID::SlaveTerminate()
+{
+   // The SlaveTerminate() function is called after all entries or objects
+   // have been processed. When running with PROOF SlaveTerminate() is called
+   // on each slave server.
+
+}
+
+void hanalysis_fOffBeam_PID::Terminate()
+{
+   // The Terminate() function is the last function to be called during
+   // a query. It always runs on the client, it can be used to present
+   // the results graphically or save the results to file.
+  outfileOffBeam_PID<<"total number of event processed "<<totentries<<std::endl;
+  outfileOffBeam_PID<< "........................." << std::endl;
+  outfileOffBeam_PID<< "........................." << std::endl;
+  outfileOffBeam_PID<< "Number of events with p1p2>300 "<<num300 << std::endl;
+
+  outfileOffBeam_PID<< "Number of events sel with >300MeV/c: "<<n1 << std::endl;
+  outfileOffBeam_PID<< "first bin in CM: "<<i1 << std::endl;
+  outfileOffBeam_PID<< "Number of events sel with >300MeV/c, no hammer: "<<n7 << std::endl;
+  outfileOffBeam_PID<< "first bin in CM: "<<i6 << std::endl;
+  outfileOffBeam_PID<< "Number of events sel with >300MeV/c, no hammer, low PT: "<<n8 << std::endl;
+  outfileOffBeam_PID<< "first bin in CM: "<<i8 << std::endl;
+  outfileOffBeam_PID<< "Number of events sel with >300MeV/c, no hammer, low PT, p2=pn: "<<n5 << std::endl;
+  outfileOffBeam_PID<< "first bin in CM: "<<i5 << std::endl;
+
+  cout << "Output file written" << endl;
+
+  ratioCM = double(i8)/(double)n8;
+  std::cout<<"ratio CM "<<ratioCM<<std::endl;
+
+  fanalysis_OffBeam_PID->cd();
+  fanalysis_OffBeam_PID->Write();
+
+  gStyle->SetOptStat(0000);
+  gStyle->SetOptFit(1111);
+  gStyle->SetPadColor(kWhite);
+  gStyle->SetStatY(0.90);
+  gStyle->SetStatX(0.90);
+  gStyle->SetStatW(0.15);
+  gStyle->SetStatH(0.2);
+  gStyle->SetLabelSize(0.035,"X");///004
+  gStyle->SetLabelFont(22,"X");
+  gStyle->SetTitleSize(0.05,"X");
+  gStyle->SetTitleFont(62,"X");
+  gStyle->SetTitleOffset(0.85,"X");
+  gStyle->SetLabelSize(0.035,"Y");
+  gStyle->SetLabelFont(22,"Y");
+  gStyle->SetTitleSize(0.05,"Y");
+  gStyle->SetTitleFont(62,"Y");
+  gStyle->SetTitleOffset(1.0,"Y");
+  gStyle->SetTitleX(0.22);
+  gStyle->SetTitleY(0.98);
+  gStyle->SetTitleSize(0.04,"t");
+  gStyle->SetTitleBorderSize(0);
+  gStyle->SetCanvasBorderSize(0);
+  //gStyle->SetPadRightMargin(0.15);
+
+  gStyle->SetTitleSize(0.045,"xyz");
+  gStyle->SetTitleFont(22,"xyz");
+  gStyle->SetLabelFont(22,"xyz");
+  gStyle->SetTitleOffset(1.,"y");
+  gStyle->SetTitleOffset(1.,"x");
+
+    TGraph* graph=(TGraph*)f0->Get("proton");
+    graph->SetLineColor(2);
+    graph->SetLineWidth(2);
+ 
+    TGraph* graphmu=(TGraph*)f0->Get("muon");
+    graphmu->SetLineColor(3);
+    graphmu->SetLineWidth(2);
+
+    TF1 *f_dEdxVsRR = new TF1("f_dEdxVsRR","17 * x^(-0.42)",0,100);
+    TF1 *f_dEdxVsRRmu = new TF1("f_dEdxVsRRmu","8 * x^(-0.37)",0,100);
+    f_dEdxVsRRmu->SetLineColor(3);
+    TF1 *f_dEdxVsRRMIP = new TF1("f_dEdxVsRRMIP","2.12",0,100);
+    f_dEdxVsRRMIP->SetLineColor(6);
+
+  TCanvas *c1 = new TCanvas("c1", "c1", 900, 900);
+  selall_dEdx_vs_resrange_all_PID->SetTitle("");
+  selall_dEdx_vs_resrange_all_PID->GetXaxis()->SetTitle("residual range (cm)");
+  selall_dEdx_vs_resrange_all_PID->GetYaxis()->SetTitle("dE/dx (MeV/cm)");
+  selall_dEdx_vs_resrange_all_PID->GetYaxis()->SetTitleOffset(0.8); 
+  selall_dEdx_vs_resrange_all_PID->GetXaxis()->SetLabelOffset(0.015);
+  selall_dEdx_vs_resrange_all_PID->Draw("colz");
+
+  //  hprof_all_MC->SetLineWidth(3);
+  //hprof_all_MC->SetLineColor(kBlack);  
+  //hprof_all_MC->Draw("same hist");
+
+  TLegend* leg = new TLegend(0.65, 0.65, .9, .9);
+  leg->AddEntry(graphmu, "Muon Expectation", "l");
+  leg->AddEntry(graph, "Proton Expectation", "l");
+  leg->AddEntry(f_dEdxVsRRMIP,"MIP expectation", "l");
+  //leg -> AddEntry(hprof_all_MC, "<dE/dx> in residual range", "lep");
+  f_dEdxVsRR->Draw("same");
+  GetMuondEdxR();
+  f_dEdxVsRRMIP->Draw("same");
+  leg->Draw("same");
+
+  c1->Update();
+  c1-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selall_dEdx_vs_resrange_all_PID_OffBeam.pdf");
+  c1-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selall_dEdx_vs_resrange_all_PID_OffBeam.eps");
+
+  TCanvas *c2 = new TCanvas("c2", "",900, 900);
+  gStyle->SetOptStat(kFALSE);
+  hprof_selprotons_MC->SetTitle("");
+  hprof_selprotons_MC->GetXaxis()->SetTitle("residual range [cm]");
+  hprof_selprotons_MC->GetYaxis()->SetTitle("dE/dx [MeV/cm]");
+  hprof_selprotons_MC->SetLineColor(kBlack);
+  hprof_selprotons_MC->GetYaxis()->SetTitleOffset(0.8);
+  hprof_selprotons_MC->GetXaxis()->SetLabelOffset(0.015);
+  hprof_selprotons_MC->Draw("E");
+
+  TLegend* leg2 = new TLegend(0.5, 0.65, .9, .9);
+  leg2->AddEntry(graphmu, "Muon Expectation", "l");
+  leg2->AddEntry(graph, "Proton Expectation", "l");
+  leg2->AddEntry(f_dEdxVsRRMIP,"MIP expectation", "l");
+  leg2 -> AddEntry(hprof_selprotons_MC, "<dE/dx> per residual range in selected protons", "lep");
+  f_dEdxVsRR->Draw("same");
+  GetMuondEdxR();
+  f_dEdxVsRRMIP->Draw("same");
+  leg2->Draw("same");
+
+
+  c2->Update();
+  c2-> Print("/pnfs/uboone/persistent/users/rcastill/CC0Pion2P/Plots/BNBCosmicMC/cutsPID/hprof_protons_OffBeam.pdf");
+  c2-> Print("/pnfs/uboone/persistent/users/rcastill/CC0Pion2P/Plots/BNBCosmicMC/cutsPID/hprof_protons_OffBeam.eps");
+
+  Double_t x11[n1], y11[n1], x22[n2], y22[n2], x33[n3], y33[n3], x22a[n2a], y22a[n2a], x33a[n3a], y33a[n3a], dCMLF[n1], rEnu[n1],rPT[n1], recoPTsel[n5], recocosCMsel[n5], recopnsel[n5], recop2sel[n5], recoq3xp1p2[n1], recoq3yp1p2[n1], recoq3zp1p2[n1], recopTall[n1], recocosCMPT0[n6], recoq3zp1p2PT0[n6], recocCM_nobtb[n7], recopT_nobtb[n7], recocLF[n1], recoWnocut[n1], recoxBnocut[n1], recocCM[n8], recoW_nobtb_lowPT[n8], recoxB_nobtb_lowPT[n8], recoprel_nobtb_lowPT[n8], recoQ2[n1], recoprelnocut[n1], recoQ2_nobtb_lowPT[n8], recoq3_nocut[n1], recoq0_nocut[n1], recoq3_nobtb_lowPT[n8], recoq0_nobtb_lowPT[n8], recocp1q3_nocut[n1], recocp2q3_nocut[n1], recocpnq3_nocut[n1], recocp1q3_nobtb_lowPT[n8], recocp2q3_nobtb_lowPT[n8], recocpnq3_nobtb_lowPT[n8], recoprojprel_nocut[n1],recoprojprelp1p2_nocut[n1], recoprojptot_nocut[n1], recoprojptotp1p2_nocut[n1], recoprojprel_nobtb_lowPT[n8], recoprojprelp1p2_nobtb_lowPT[n8], recoprojptot_nobtb_lowPT[n8], recoprojptotp1p2_nobtb_lowPT[n8];
+
+
+  for (Int_t i=0;i<n1;i++) {
+    x11[i] = x1[i];
+    y11[i] = yy1[i];
+
+    dCMLF[i] = deltaCMLF[i];
+    rEnu[i] = Enu[i];
+    rPT[i] = PT[i];
+
+    recoq3xp1p2[i]=q3xp1p2[i];
+    recoq3yp1p2[i]=q3yp1p2[i];
+    recoq3zp1p2[i]=q3zp1p2[i];
+    recopTall[i]= pTall[i];
+
+    recocLF[i]=cLF[i];
+    recoWnocut[i]=Wnocut[i];
+    recoxBnocut[i]=xBnocut[i];
+
+    recoQ2[i]=Q2[i];
+    recoprelnocut[i]=prelnocut[i];
+
+    recoq3_nocut[i]= q3_nocut[i];
+    recoq0_nocut[i]= q0_nocut[i];
+
+    recocp1q3_nocut[i] = cp1q3_nocut[i];
+    recocp2q3_nocut[i] = cp2q3_nocut[i];
+    recocpnq3_nocut[i] = cpnq3_nocut[i];
+
+    recoprojprel_nocut[i]=projprel_nocut[i];
+    recoprojprelp1p2_nocut[i]=projprelp1p2_nocut[i];
+    recoprojptot_nocut[i]=projptot_nocut[i];
+    recoprojptotp1p2_nocut[i]=projptotp1p2_nocut[i];
+  }
+  for (Int_t i=0;i<n2;i++) {
+    x22[i] = x2[i];
+    y22[i] = y2[i];
+  }
+  for (Int_t i=0;i<n3;i++) {
+    x33[i] = x3[i];
+    y33[i] = y3[i];
+  }
+
+  for (Int_t i=0;i<n2a;i++) {
+    x22a[i] = x2a[i];
+    y22a[i] = y2a[i];
+  }
+  for (Int_t i=0;i<n3a;i++) {
+    x33a[i] = x3a[i];
+    y33a[i] = y3a[i];
+  }
+
+  for (Int_t i=0;i<n5;i++) {
+    recoPTsel[i] = PTsel[i];
+    recocosCMsel[i] = cosCMsel[i];
+    recopnsel[i] = pnsel[i];
+    recop2sel[i] = p2sel[i];
+  }
+
+  for (Int_t i=0;i<n6;i++) {
+    recoq3zp1p2PT0[i] = q3zp1p2PT0[i];
+    recocosCMPT0[i] = cosCMPT0[i];
+  }
+
+  for (Int_t i=0;i<n6;i++) {
+    recocCM_nobtb[i] = cCM_nobtb[i];
+    recopT_nobtb[i] = pT_nobtb[i];
+  }
+
+  for (Int_t i=0;i<n8;i++) {
+
+    recocCM[i]=cCM[i];
+    recoW_nobtb_lowPT[i]=W_nobtb_lowPT[i];
+    recoxB_nobtb_lowPT[i]=xB_nobtb_lowPT[i];
+    recoprel_nobtb_lowPT[i]=prel_nobtb_lowPT[i];
+    recoQ2_nobtb_lowPT[i]=Q2_nobtb_lowPT[i];
+    recoq3_nobtb_lowPT[i]=q3_nobtb_lowPT[i];
+    recoq0_nobtb_lowPT[i]=q0_nobtb_lowPT[i];
+    recocp1q3_nobtb_lowPT[i] = cp1q3_nobtb_lowPT[i];
+    recocp2q3_nobtb_lowPT[i] = cp2q3_nobtb_lowPT[i];
+    recocpnq3_nobtb_lowPT[i] = cpnq3_nobtb_lowPT[i];
+
+    recoprojprel_nobtb_lowPT[i]=projprel_nobtb_lowPT[i];
+    recoprojprelp1p2_nobtb_lowPT[i]=projprelp1p2_nobtb_lowPT[i];
+    recoprojptot_nobtb_lowPT[i]=projptot_nobtb_lowPT[i];
+    recoprojptotp1p2_nobtb_lowPT[i]=projptotp1p2_nobtb_lowPT[i];
+  }
+
+  gStyle->SetOptStat(0000);
+  gStyle->SetOptFit(1111);
+  gStyle->SetOptTitle(0);
+  gStyle->SetPadColor(kWhite);
+  gStyle->SetStatY(0.90);
+  gStyle->SetStatX(0.90);
+  gStyle->SetStatW(0.15);
+  gStyle->SetStatH(0.2);
+  gStyle->SetLabelSize(0.035,"X");
+  gStyle->SetLabelFont(22,"X");
+  gStyle->SetTitleSize(0.05,"X");
+  gStyle->SetTitleFont(22,"X");
+  gStyle->SetTitleOffset(0.85,"X");
+
+  gStyle->SetLabelSize(0.035,"Y");
+  gStyle->SetLabelFont(22,"Y");
+  gStyle->SetTitleSize(0.06,"Y");
+  gStyle->SetTitleFont(22,"Y");
+  gStyle->SetTitleOffset(0.8,"Y");
+  gStyle->SetTitleX(0.22);
+  gStyle->SetTitleY(0.98);
+  gStyle->SetTitleSize(0.04,"t");
+  gStyle->SetTitleBorderSize(0);
+  gStyle->SetCanvasBorderSize(0);
+  gStyle->SetPadGridY(kTRUE);
+  gStyle->SetPadGridX(kTRUE);
+  
+  gStyle->SetTitleSize(0.045,"xyz");
+  gStyle->SetTitleFont(22,"xyz");
+  gStyle->SetLabelFont(22,"xyz");
+  gStyle->SetTitleOffset(1.,"y");
+  gStyle->SetTitleOffset(1.,"x");
+
+
+   // create graph
+   TGraph *gr1  = new TGraph(n1,x11,y11);
+   TCanvas *c3 = new TCanvas("c3","",900, 900);
+
+   c3->SetGrid();
+   gr1->SetTitle("");
+   gr1->GetXaxis()->SetTitle("momentum p_{2} [GeV/c]");
+   gr1->GetYaxis()->SetTitle("momentum p_{1} [GeV/c]");
+   gr1->SetMarkerColor(kRed);
+   gr1->GetXaxis()->SetLimits(0., 1.4);
+   gr1->GetYaxis()->SetRangeUser(0, 1.4);
+   gr1->Draw("A*");
+
+   TLegend *lgr1 = new TLegend(0.5, 0.8, 0.9, 0.9);
+   lgr1 -> AddEntry(gr1, "MicroBooNE on-beam data", "p");
+   lgr1 -> Draw();
+
+   c3->Update();
+   c3-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_p1_p2_300.pdf");
+   c3-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_p1_p2_300.eps");
+
+   TGraph *gr2  = new TGraph(n2,x22,y22);
+   TCanvas *c4 = new TCanvas("c4","",900, 900);
+
+   c4->SetGrid();
+   gr2->SetTitle("");
+   gr2->GetXaxis()->SetTitle("p_{p2} [GeV/c]");
+   gr2->GetYaxis()->SetTitle("cos #gamma_{lab}");
+   gr2->GetYaxis()->SetRangeUser(-1., 1);
+   gr2->SetMarkerColor(kRed);
+   gr2->Draw("A*");
+
+   c4->Update();
+   c4-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_costheta_lab_vs_p2_300.pdf");
+   c4-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_costheta_lab_vs_p2_300.eps");
+
+   TGraph *gr3  = new TGraph(n3,x33,y33);
+   TCanvas *c5 = new TCanvas("c5","",900, 900);
+
+   c5->SetGrid();
+   gr3->SetTitle("");
+   gr3->GetXaxis()->SetTitle("cos #gamma_{lab}");
+   gr3->GetYaxis()->SetTitle("cos #gamma_{CM}");
+   //gr3->GetXaxis()->SetLimits(-1., 1);
+   //gr3->GetYaxis()->SetLimits(-1., 1);
+   gr3->GetXaxis()->SetRangeUser(-1., 1);
+   gr3->GetYaxis()->SetRangeUser(-1., 1);
+   gr3->SetMarkerColor(kRed);
+   gr3->Draw("A*");
+
+   c5->Update();
+   c5-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_costheta_lab_vs_costheta_CM_300.pdf");
+   c5-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_costheta_lab_vs_costheta_CM_300.eps");
+
+   TGraph *gr4  = new TGraph(n3a,x33a,y33a);
+   TCanvas *c6 = new TCanvas("c6","",900, 900);
+
+   c6->SetGrid();
+   gr4->SetTitle("");
+   gr4->GetXaxis()->SetTitle("cos #gamma_{lab}");
+   gr4->GetYaxis()->SetTitle("cos #gamma_{CM}");
+   //gr4->GetXaxis()->SetLimits(-1., 1);
+   gr4->GetXaxis()->SetRangeUser(-1., 1);
+   gr4->GetYaxis()->SetRangeUser(-1., 1);
+   //gr4->GetYaxis()->SetLimits(-1., 1);
+   gr4->SetMarkerColor(kRed);
+   gr4->Draw("A*");
+
+   c6->Update();
+   c6-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_costheta_lab_vs_costheta_CM_300_rmp1p2btb.pdf");
+   c6-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_costheta_lab_vs_costheta_CM_300_rmp1p2btb.eps");
+
+   TGraph *gr5  = new TGraph(n2a,x22a,y22a);
+   TCanvas *c7 = new TCanvas("c7","",900, 900);
+
+   c7->SetGrid();
+   gr5->SetTitle("");
+   gr5->GetXaxis()->SetTitle("p_{p2} [GeV/c]");
+   gr5->GetYaxis()->SetTitle("cos #gamma_{lab}");
+   gr5->GetYaxis()->SetRangeUser(-1., 1);
+   //   gr5->GetYaxis()->SetLimits(-1., 1);
+   gr5->SetMarkerColor(kRed);
+   gr5->Draw("A*");
+
+   c7->Update();
+   c7-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_costheta_lab_vs_p2_300_btb.pdf");
+   c7-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_costheta_lab_vs_p2_300_btb.eps");
+
+   TGraph *gr6  = new TGraph(n1,dCMLF,rEnu);
+   TCanvas *c8 = new TCanvas("c8","",900, 900);
+
+   c8->SetGrid();
+   gr6->SetTitle("");
+   gr6->GetXaxis()->SetTitle("#delta(cos #gamma_{CM}-cos #gamma_{lab})");
+   gr6->GetYaxis()->SetTitle("reconstructed E_{#nu} [GeV]");
+   gr6->SetMarkerColor(kRed);
+   gr6->Draw("A*");
+
+   c8->Update();
+   c8-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_Enu_vs_difcostheta.pdf");
+   c8-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_Enu_vs_difcostheta.eps");
+
+   TGraph *gr7  = new TGraph(n1,dCMLF,rPT);
+   TCanvas *c9 = new TCanvas("c9","",900, 900);
+
+   c9->SetGrid();
+   gr7->SetTitle("");
+   gr7->GetXaxis()->SetTitle("#delta(cos #gamma_{CM}-cos #gamma_{lab})");
+   gr7->GetYaxis()->SetTitle("reconstructed P_{T} [GeV]");
+   gr7->SetMarkerColor(kRed);
+   gr7->Draw("A*");
+
+   c9->Update();
+   c9-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_PT_vs_difcostheta.pdf");
+   c9-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_PT_vs_difcostheta.eps");
+
+   ////// data only histos
+
+  TCanvas *c10 = new TCanvas("c10", "c10", 900, 900);
+
+  reco_Enu_OffBeam_PID->SetMarkerColor(kRed+2);
+  reco_Enu_OffBeam_PID->SetLineColor(kRed+2);
+  reco_Enu_OffBeam_PID->SetMarkerStyle(20);
+  reco_Enu_OffBeam_PID->SetMarkerSize(2);
+  reco_Enu_OffBeam_PID->GetYaxis()->SetTitle("No. of Entries");
+  reco_Enu_OffBeam_PID->GetXaxis()->SetTitle("reconstructed E_{#nu} [GeV]");
+  reco_Enu_OffBeam_PID->Draw("e1");
+
+  reco_Enu_OffBeam_PID->GetYaxis()->SetTitleOffset(1.5);
+  //reco_Enu_OffBeam_PID->GetXaxis()->SetTitleOffset(3.);
+  //reco_Enu_OffBeam_PID->GetXaxis()->SetLabelFont(43); // Absolute font size in pixel (precision 3)
+  //reco_Enu_OffBeam_PID->GetXaxis()->SetLabelSize(15);
+  
+  TLegend *l10 = new TLegend(0.5, 0.75, 0.9, 0.9); 
+  l10 -> AddEntry(reco_Enu_OffBeam_PID, "MicroBooNE on-beam data", "lep");
+  l10 -> Draw();  
+  
+  TText *t10 = drawPrelim(0.1, 0.91, 0.052, "MicroBooNE. 1.592e20 POT, stats only");
+  t10->Draw();
+
+  c10->Update();
+  c10->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/EnuReco_PID_OffBeam.pdf");
+  c10->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/EnuReco_PID_OffBeam.eps");
+
+  TCanvas *c11 = new TCanvas("c11", "c11", 900, 900);
+
+  reco_PT_OffBeam_PID->SetMarkerColor(kRed+2);
+  reco_PT_OffBeam_PID->SetLineColor(kRed+2);
+  reco_PT_OffBeam_PID->SetMarkerStyle(20);
+  reco_PT_OffBeam_PID->SetMarkerSize(2);
+  reco_PT_OffBeam_PID->GetYaxis()->SetTitle("No. of Entries");
+  reco_PT_OffBeam_PID->GetXaxis()->SetTitle("reconstructed missing P_{T} [GeV/c]");
+  reco_PT_OffBeam_PID->Draw("e1");
+  reco_PT_OffBeam_PID->GetYaxis()->SetTitleOffset(1.5);
+  
+  TLegend *l11 = new TLegend(0.5, 0.75, 0.9, 0.9); 
+  l11 -> AddEntry(reco_PT_OffBeam_PID, "MicroBooNE on-beam data", "lep");
+  l11 -> Draw();  
+  
+  TText *t11 = drawPrelim(0.1, 0.91, 0.052, "MicroBooNE. 1.592e20 POT, stats only");
+  t11->Draw();
+
+  c11->Update();
+  c11->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/PTReco_PID_OffBeam.pdf");  
+  c11->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/PTReco_PID_OffBeam.eps");
+
+  TCanvas *c12 = new TCanvas("c12", "c12", 900, 900);
+
+  reco_pn_OffBeam_PID->SetMarkerColor(kRed+2);
+  reco_pn_OffBeam_PID->SetLineColor(kRed+2);
+  reco_pn_OffBeam_PID->SetMarkerStyle(20);
+  reco_pn_OffBeam_PID->SetMarkerSize(2);
+  reco_pn_OffBeam_PID->GetYaxis()->SetTitle("No. of Entries");
+  reco_pn_OffBeam_PID->GetXaxis()->SetTitle("reconstructed momentum struck nucleon [GeV/c]");
+  reco_pn_OffBeam_PID->Draw("e1");
+  reco_pn_OffBeam_PID->GetYaxis()->SetTitleOffset(1.5);
+  
+  TLegend *l12 = new TLegend(0.5, 0.75, 0.9, 0.9); 
+  l12 -> AddEntry(reco_pn_OffBeam_PID, "MicroBooNE on-beam data", "lep");
+  l12 -> Draw();  
+  
+  TText *t12 = drawPrelim(0.1, 0.91, 0.052, "MicroBooNE. 1.592e20 POT, stats only");
+  t12->Draw();
+
+  c12->Update();
+  c12->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/pnReco_PID_OffBeam.pdf");  
+  c12->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/pnReco_PID_OffBeam.eps");
+
+  TCanvas *c13 = new TCanvas("c13", "c13", 900, 900);
+
+  reco_angle_p1p2_OffBeam_PID_LF_zoom->SetMarkerColor(kRed+2);
+  reco_angle_p1p2_OffBeam_PID_LF_zoom->SetLineColor(kRed+2);
+  reco_angle_p1p2_OffBeam_PID_LF_zoom->SetMarkerStyle(20);
+  reco_angle_p1p2_OffBeam_PID_LF_zoom->SetMarkerSize(2);
+  reco_angle_p1p2_OffBeam_PID_LF_zoom->GetYaxis()->SetTitle("No. of Entries");
+  reco_angle_p1p2_OffBeam_PID_LF_zoom->GetXaxis()->SetTitle("reconstructed cos#theta_{p_{1} vs p_{2}} in lab frame");
+  reco_angle_p1p2_OffBeam_PID_LF_zoom->Draw("e1");
+  reco_angle_p1p2_OffBeam_PID_LF_zoom->GetYaxis()->SetTitleOffset(1.5);
+  
+  TLegend *l13 = new TLegend(0.5, 0.75, 0.9, 0.9); 
+  l13 -> AddEntry(reco_angle_p1p2_OffBeam_PID_LF_zoom, "MicroBooNE on-beam data", "lep");
+  l13 -> Draw();  
+  
+  TText *t13 = drawPrelim(0.1, 0.91, 0.052, "MicroBooNE. 1.592e20 POT, stats only");
+  t13->Draw();
+
+  c13->Update();
+  c13->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/cosanglep1p2RecoLF_PID_OffBeam_zoom.pdf");  
+  c13->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/cosanglep1p2RecoLF_PID_OffBeam_zoom.eps");
+
+  TCanvas *c14 = new TCanvas("c14", "c14", 900, 900);
+
+  reco_angle_p1p2_OffBeam_PID_CM_zoom->SetMarkerColor(kRed+2);
+  reco_angle_p1p2_OffBeam_PID_CM_zoom->SetLineColor(kRed+2);
+  reco_angle_p1p2_OffBeam_PID_CM_zoom->SetMarkerStyle(20);
+  reco_angle_p1p2_OffBeam_PID_CM_zoom->SetMarkerSize(2);
+  reco_angle_p1p2_OffBeam_PID_CM_zoom->GetYaxis()->SetTitle("No. of Entries");
+  reco_angle_p1p2_OffBeam_PID_CM_zoom->GetXaxis()->SetTitle("reconstructed cos#gamma^{'} in CM");
+  reco_angle_p1p2_OffBeam_PID_CM_zoom->Draw("e1");
+  reco_angle_p1p2_OffBeam_PID_CM_zoom->GetYaxis()->SetTitleOffset(1.5);
+  
+  TLegend *l14 = new TLegend(0.5, 0.75, 0.9, 0.9); 
+  l14 -> AddEntry(reco_angle_p1p2_OffBeam_PID_CM_zoom, "MicroBooNE on-beam data", "lep");
+  l14 -> Draw();  
+  
+  TText *t14 = drawPrelim(0.1, 0.91, 0.052, "MicroBooNE. 1.592e20 POT, stats only");
+  t14->Draw();
+
+  c14->Update();
+  c14->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/cosanglep1p2RecoCM_PID_OffBeam_zoom.pdf");  
+  c14->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/cosanglep1p2RecoCM_PID_OffBeam_zoom.eps");
+
+  TCanvas *c15 = new TCanvas("c15", "c15", 900, 900);
+
+  reco_PT_OffBeam_1binCM_PID->SetMarkerColor(kRed+2);
+  reco_PT_OffBeam_1binCM_PID->SetLineColor(kRed+2);
+  reco_PT_OffBeam_1binCM_PID->SetMarkerStyle(20);
+  reco_PT_OffBeam_1binCM_PID->SetMarkerSize(2);
+  reco_PT_OffBeam_1binCM_PID->GetYaxis()->SetTitle("No. of Entries");
+  reco_PT_OffBeam_1binCM_PID->GetXaxis()->SetTitle("reconstructed missing P_{T} [GeV/c]");
+  reco_PT_OffBeam_1binCM_PID->Draw("e1");
+  reco_PT_OffBeam_1binCM_PID->GetYaxis()->SetTitleOffset(1.5);
+  
+  TLegend *l15 = new TLegend(0.5, 0.75, 0.9, 0.9); 
+  l15 -> AddEntry(reco_PT_OffBeam_1binCM_PID, "MicroBooNE on-beam data", "lep");
+  l15 -> Draw();  
+  
+  TText *t15 = drawPrelim(0.1, 0.91, 0.052, "MicroBooNE. 1.592e20 POT, stats only");
+  t15->Draw();
+
+  c15->Update();
+  c15->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/PTReco_1bibCM_PID_OffBeam.pdf");
+  c15->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/PTReco_1bibCM_PID_OffBeam.eps");
+
+  TCanvas *c16 = new TCanvas("c16", "c16", 900, 900);
+
+  reco_angle_SRCrest_p1p2_OffBeam_PID_CM->SetMarkerColor(kRed+2);
+  reco_angle_SRCrest_p1p2_OffBeam_PID_CM->SetLineColor(kRed+2);
+  reco_angle_SRCrest_p1p2_OffBeam_PID_CM->SetMarkerStyle(20);
+  reco_angle_SRCrest_p1p2_OffBeam_PID_CM->SetMarkerSize(2);
+  reco_angle_SRCrest_p1p2_OffBeam_PID_CM->GetYaxis()->SetTitle("No. of Entries");
+  reco_angle_SRCrest_p1p2_OffBeam_PID_CM->GetXaxis()->SetTitle("reconstructed cos#gamma^{'} in CM");
+  reco_angle_SRCrest_p1p2_OffBeam_PID_CM->Draw("e1");
+  reco_angle_SRCrest_p1p2_OffBeam_PID_CM->GetYaxis()->SetTitleOffset(1.5);
+  
+  TLegend *l16 = new TLegend(0.5, 0.75, 0.9, 0.9); 
+  l16 -> AddEntry(reco_angle_SRCrest_p1p2_OffBeam_PID_CM, "MicroBooNE on-beam data", "lep");
+  l16 -> Draw();  
+  
+  TText *t16 = drawPrelim(0.1, 0.91, 0.052, "MicroBooNE. 1.592e20 POT, stats only");
+  t16->Draw();
+
+  c16->Update();
+  c16->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/costhetaCM_SRCrest_PID_OffBeam.pdf");   
+  c16->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/costhetaCM_SRCrest_PID_OffBeam.eps");
+
+  TCanvas *c17 = new TCanvas("c17", "c17", 900, 900);
+
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM->SetMarkerColor(kRed+2);
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM->SetLineColor(kRed+2);
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM->SetMarkerStyle(20);
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM->SetMarkerSize(2);
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM->GetYaxis()->SetTitle("No. of Entries");
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM->GetXaxis()->SetTitle("reconstructed cos#gamma^{'} in CM");
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM->Draw("e1");
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM->GetYaxis()->SetTitleOffset(1.5);
+  
+  TLegend *l17 = new TLegend(0.5, 0.75, 0.9, 0.9); 
+  l17 -> AddEntry(reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM, "MicroBooNE on-beam data", "lep");
+  l17 -> Draw();  
+  
+  TText *t17 = drawPrelim(0.1, 0.91, 0.052, "MicroBooNE. 1.592e20 POT, stats only");
+  t17->Draw();
+
+  c17->Update();
+  c17->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/costhetaCM_SRCrest_PT_LFbtb_PID_OffBeam.pdf");   
+  c17->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/costhetaCM_SRCrest_PT_LFbtb_PID_OffBeam.eps");
+
+  TCanvas *c18 = new TCanvas("c18", "c18", 900, 900);
+
+  reco_PT_OffBeam_nobtbLF_PID->SetMarkerColor(kRed+2);
+  reco_PT_OffBeam_nobtbLF_PID->SetLineColor(kRed+2);
+  reco_PT_OffBeam_nobtbLF_PID->SetMarkerStyle(20);
+  reco_PT_OffBeam_nobtbLF_PID->SetMarkerSize(2);
+  reco_PT_OffBeam_nobtbLF_PID->GetYaxis()->SetTitle("No. of Entries");
+  reco_PT_OffBeam_nobtbLF_PID->GetXaxis()->SetTitle("reconstructed missing P_{T} [GeV/c]");
+  reco_PT_OffBeam_nobtbLF_PID->Draw("e1");
+  reco_PT_OffBeam_nobtbLF_PID->GetYaxis()->SetTitleOffset(1.5);
+  
+  TLegend *l18 = new TLegend(0.5, 0.75, 0.9, 0.9); 
+  l18 -> AddEntry(reco_PT_OffBeam_nobtbLF_PID, "MicroBooNE on-beam data", "lep");
+  l18 -> Draw();  
+  
+  TText *t18 = drawPrelim(0.1, 0.91, 0.052, "MicroBooNE. 1.592e20 POT, stats only");
+  t18->Draw();
+
+  c18->Update();
+  c18->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/reco_PT_nobtbLF_PID_OffBeam.pdf");
+  c18->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/reco_PT_nobtbLF_PID_OffBeam.eps");  
+
+  TCanvas *c19 = new TCanvas("c19", "c19", 900, 900);
+
+  reco_angle_p1p2_OffBeam_nobtbLF_PID_CM_zoom->SetMarkerColor(kRed+2);
+  reco_angle_p1p2_OffBeam_nobtbLF_PID_CM_zoom->SetLineColor(kRed+2);
+  reco_angle_p1p2_OffBeam_nobtbLF_PID_CM_zoom->SetMarkerStyle(20);
+  reco_angle_p1p2_OffBeam_nobtbLF_PID_CM_zoom->SetMarkerSize(2);
+  reco_angle_p1p2_OffBeam_nobtbLF_PID_CM_zoom->GetYaxis()->SetTitle("No. of Entries");
+  reco_angle_p1p2_OffBeam_nobtbLF_PID_CM_zoom->GetXaxis()->SetTitle("reconstructed cos#gamma^{'} in CM");
+  reco_angle_p1p2_OffBeam_nobtbLF_PID_CM_zoom->Draw("e1");
+  reco_angle_p1p2_OffBeam_nobtbLF_PID_CM_zoom->GetYaxis()->SetTitleOffset(1.5);
+  
+  TLegend *l19 = new TLegend(0.5, 0.75, 0.9, 0.9); 
+  l19 -> AddEntry(reco_angle_p1p2_OffBeam_nobtbLF_PID_CM_zoom, "MicroBooNE on-beam data", "lep");
+  l19 -> Draw();  
+  
+  TText *t19 = drawPrelim(0.1, 0.91, 0.052, "MicroBooNE. 1.592e20 POT, stats only");
+  t19->Draw();
+
+  c19->Update();
+  c19->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/costhetaCM_LFbtb_PID_OffBeam.pdf");   
+  c19->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/costhetaCM_LFbtb_PID_OffBeam.eps");
+
+  TCanvas *c20 = new TCanvas("c20", "c20", 900, 900);
+
+  reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom->SetMarkerColor(kRed+2);
+  reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom->SetLineColor(kRed+2);
+  reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom->SetMarkerStyle(20);
+  reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom->SetMarkerSize(2);
+  reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom->GetYaxis()->SetTitle("No. of Entries");
+  reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom->GetXaxis()->SetTitle("reconstructed cos#gamma^{'} in CM");
+  reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom->Draw("e1");
+  reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom->GetYaxis()->SetTitleOffset(1.5);
+  
+  TLegend *l20 = new TLegend(0.5, 0.75, 0.9, 0.9); 
+  l20 -> AddEntry(reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom, "MicroBooNE on-beam data", "lep");
+  l20 -> Draw();  
+  
+  TText *t20 = drawPrelim(0.1, 0.91, 0.052, "MicroBooNE. 1.592e20 POT, stats only");
+  t20->Draw();
+
+  c20->Update();
+  c20->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/costhetaCM_LFbtbPT_PID_OffBeam.pdf");   
+  c20->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/costhetaCM_LFbtbPT_PID_OffBeam.eps");  
+
+  TGraph *gr21  = new TGraph(n5,recoPTsel,recocosCMsel);
+  TCanvas *c21 = new TCanvas("c21","",900, 900);
+
+  c21->SetGrid();
+  gr21->SetTitle("");
+  gr21->GetXaxis()->SetTitle("reconstructed missing P_{T} [GeV/c]");
+  gr21->GetYaxis()->SetTitle("cos #gamma_{CM}");
+  //  gr21->GetYaxis()->SetLimits(-1., 1);
+  gr21->GetYaxis()->SetRangeUser(-1., 1);
+  gr21->SetMarkerColor(kRed);
+  gr21->Draw("A*");
+
+  c21->Update();
+  c21-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_PT_vs_costhetaCM_sel_SRCPTbtbLF.pdf");
+  c21-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_PT_vs_costhetaCM_sel_SRCPTbtbLF.eps");
+
+  TGraph *gr22  = new TGraph(n5,recopnsel,recocosCMsel);
+  TCanvas *c22 = new TCanvas("c22","",900, 900);
+
+  c22->SetGrid();
+  gr22->SetTitle("");
+  gr22->GetXaxis()->SetTitle("reconstructed p_{n} [GeV/c]");
+  gr22->GetYaxis()->SetTitle("cos #gamma_{CM}");
+  gr22->GetYaxis()->SetRangeUser(-1., 1);
+  //  gr22->GetYaxis()->SetLimits(-1., 1);
+  gr22->SetMarkerColor(kRed);
+  gr22->Draw("A*");
+
+  c22->Update();
+  c22-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_Pn_vs_costhetaCM_sel_SRCPTbtbLF.pdf");
+  c22-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_Pn_vs_costhetaCM_sel_SRCPTbtbLF.eps");
+
+  TGraph *gr23  = new TGraph(n5,recop2sel,recocosCMsel);
+  TCanvas *c23 = new TCanvas("c23","",900, 900);
+
+  c23->SetGrid();
+  gr23->SetTitle("");
+  gr23->GetXaxis()->SetTitle("reconstructed p_{2} [GeV/c]");
+  gr23->GetYaxis()->SetTitle("cos #gamma_{CM}");
+  gr23->GetYaxis()->SetRangeUser(-1., 1);
+  //  gr23->GetYaxis()->SetLimits(-1., 1);
+  gr23->SetMarkerColor(kRed);
+  gr23->Draw("A*");
+
+  c23->Update();
+  c23-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_P2_vs_costhetaCM_sel_SRCPTbtbLF.pdf");
+  c23-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_P2_vs_costhetaCM_sel_SRCPTbtbLF.eps");
+
+  TCanvas *c24 = new TCanvas("c24", "c24", 900, 900);
+
+  reco_EnuCalo_OffBeam_PID_btb->SetMarkerColor(kRed+2);
+  reco_EnuCalo_OffBeam_PID_btb->SetLineColor(kRed+2);
+  reco_EnuCalo_OffBeam_PID_btb->SetMarkerStyle(20);
+  reco_EnuCalo_OffBeam_PID_btb->SetMarkerSize(2);
+  reco_EnuCalo_OffBeam_PID_btb->GetYaxis()->SetTitle("No. of Entries");
+  reco_EnuCalo_OffBeam_PID_btb->GetXaxis()->SetTitle("reconstructed E_{#nu} [GeV]");
+  reco_EnuCalo_OffBeam_PID_btb->Draw("e1");
+  reco_EnuCalo_OffBeam_PID_btb->GetYaxis()->SetTitleOffset(1.5);
+
+  reco_EnuRes_OffBeam_1binbtbLF_PID->SetMarkerColor(kAzure+2);
+  reco_EnuRes_OffBeam_1binbtbLF_PID->SetLineColor(kAzure+2);
+  reco_EnuRes_OffBeam_1binbtbLF_PID->SetMarkerStyle(20);
+  reco_EnuRes_OffBeam_1binbtbLF_PID->SetMarkerSize(2);
+  reco_EnuRes_OffBeam_1binbtbLF_PID->Draw("e1 same");
+  
+  TLegend *l24 = new TLegend(0.5, 0.75, 0.9, 0.9); 
+  l24 -> AddEntry(reco_EnuCalo_OffBeam_PID_btb, "Reconstructed Calorimetry E_{#nu}, back-to-back in Lab frame", "lep");
+  l24 -> AddEntry(reco_EnuRes_OffBeam_1binbtbLF_PID, "Reconstructed resonant production E_{#nu}, back-to-back in Lab frame", "lep");
+  l24 -> Draw();  
+  
+  TText *t24 = drawPrelim(0.1, 0.91, 0.052, "MicroBooNE. 1.592e20 POT, stats only");
+  t24->Draw();
+
+  c24->Update();
+  c24->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/recoEnu_calo_vs_Res_btbLF_OffBeam.pdf");   
+  c24->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/recoEnu_calo_vs_Res_btbLF_OffBeam.eps");    
+
+  TCanvas *c25 = new TCanvas("c25", "c25", 900, 900);
+
+  reco_EnuCalo_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->SetMarkerColor(kRed+2);
+  reco_EnuCalo_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->SetLineColor(kRed+2);
+  reco_EnuCalo_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->SetMarkerStyle(20);
+  reco_EnuCalo_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->SetMarkerSize(2);
+  reco_EnuCalo_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->GetYaxis()->SetTitle("No. of Entries");
+  reco_EnuCalo_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->GetXaxis()->SetTitle("reconstructed E_{#nu}");
+  reco_EnuCalo_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->SetMaximum(30.);
+  reco_EnuCalo_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->Draw("e1");
+  reco_EnuCalo_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->GetYaxis()->SetTitleOffset(1.5);
+
+  reco_EnuCCQE_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->SetMarkerColor(kAzure+2);
+  reco_EnuCCQE_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->SetLineColor(kAzure+2);
+  reco_EnuCCQE_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->SetMarkerStyle(20);
+  reco_EnuCCQE_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->SetMarkerSize(2);
+  reco_EnuCCQE_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->Draw("e1 same");
+  
+  TLegend *l25 = new TLegend(0.5, 0.75, 0.9, 0.9); 
+  l25 -> AddEntry(reco_EnuCalo_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID, "Reconstructed Calorimetry E_{#nu}", "lep");
+  l25 -> AddEntry(reco_EnuCCQE_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID, "Reconstructed CCQE E_{#nu}", "lep");
+  l25 -> Draw();  
+  
+  TText *t25 = drawPrelim(0.1, 0.91, 0.052, "MicroBooNE. 1.592e20 POT, stats only");
+  t25->Draw();
+
+  c25->Update();
+  c25->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/recoEnu_calo_vs_CCQE_btbLF_OffBeam.pdf");       
+  c25->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/recoEnu_calo_vs_CCQE_btbLF_OffBeam.eps");
+
+  TCanvas *c26 = new TCanvas("c26", "c26", 900, 900);
+
+  reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom->SetMarkerColor(kRed+2);
+  reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom->SetLineColor(kRed+2);
+  reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom->SetMarkerStyle(20);
+  reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom->SetMarkerSize(2);
+  reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom->GetYaxis()->SetTitle("No. of Entries");
+  reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom->GetXaxis()->SetTitle("cos #gamma_{CM}");
+  reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom->SetMaximum(150.);
+  reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom->Draw("e1");
+  reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom->GetYaxis()->SetTitleOffset(1.5);
+
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_p1p2swap->SetMarkerColor(kAzure+2);
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_p1p2swap->SetLineColor(kAzure+2);
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_p1p2swap->SetMarkerStyle(20);
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_p1p2swap->SetMarkerSize(2);
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_p1p2swap->Draw("e1 same");
+
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaE->SetMarkerColor(kBlack);
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaE->SetLineColor(kBlack);
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaE->SetMarkerStyle(20);
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaE->SetMarkerSize(2);
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaE->Draw("e1 same");
+  
+  TLegend *l26 = new TLegend(0.5, 0.75, 0.9, 0.9); 
+  l26 -> AddEntry(reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM, "Nominal reconstruction", "lep");
+  l26 -> AddEntry(reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_p1p2swap, "p1<->p2 swap", "lep");
+  l26 -> AddEntry(reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaE, "E_{#nu}+#delta_{E}", "lep");
+  l26 -> Draw();  
+  
+  TText *t26 = drawPrelim(0.1, 0.91, 0.052, "MicroBooNE. 1.592e20 POT, stats only");
+  t26->Draw();
+
+  c26->Update();
+  c26->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/costhetaCM_recotests_PT_LFbtb_OffBeam.pdf");   
+  c26->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/costhetaCM_recotests_PT_LFbtb_OffBeam.eps");  
+
+  TCanvas *c27 = new TCanvas("c27", "c27", 900, 900);
+
+  reco_Q2lep_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->SetMarkerColor(kRed+2);
+  reco_Q2lep_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->SetLineColor(kRed+2);
+  reco_Q2lep_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->SetMarkerStyle(20);
+  reco_Q2lep_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->SetMarkerSize(2);
+  reco_Q2lep_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->GetYaxis()->SetTitle("No. of Entries");
+  reco_Q2lep_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->GetXaxis()->SetTitle("reconstructed Q^{2} [GeV^{2}]");
+  reco_Q2lep_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->SetMaximum(20.);
+  reco_Q2lep_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->Draw("e1");
+  reco_Q2lep_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->GetYaxis()->SetTitleOffset(1.5);
+
+  reco_Q2had_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->SetMarkerColor(kAzure+2);
+  reco_Q2had_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->SetLineColor(kAzure+2);
+  reco_Q2had_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->SetMarkerStyle(20);
+  reco_Q2had_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->SetMarkerSize(2);
+  reco_Q2had_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->Draw("e1 same");
+  
+  TLegend *l27 = new TLegend(0.5, 0.75, 0.9, 0.9); 
+  l27 -> AddEntry(reco_Q2lep_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID, "lepton vertex", "lep");
+  l27 -> AddEntry(reco_Q2had_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID, "hadron vertex", "lep");
+  l27 -> Draw();  
+  
+  TText *t27 = drawPrelim(0.1, 0.91, 0.052, "MicroBooNE. 1.592e20 POT, stats only");
+  t27->Draw();
+
+  c27->Update();
+  c27->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/Q2_recotests_SRCrest_PT_LFbtb_OffBeam_1bin.pdf");   
+  c27->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/Q2_recotests_SRCrest_PT_LFbtb_OffBeam_1bin.eps");
+
+  TCanvas *c28 = new TCanvas("c28", "c28", 900, 900);
+
+  reco_Q2lep_OffBeam_CM_SRCrest_PT_LFbtb_PID->SetMarkerColor(kRed+2);
+  reco_Q2lep_OffBeam_CM_SRCrest_PT_LFbtb_PID->SetLineColor(kRed+2);
+  reco_Q2lep_OffBeam_CM_SRCrest_PT_LFbtb_PID->SetMarkerStyle(20);
+  reco_Q2lep_OffBeam_CM_SRCrest_PT_LFbtb_PID->SetMarkerSize(2);
+  reco_Q2lep_OffBeam_CM_SRCrest_PT_LFbtb_PID->GetYaxis()->SetTitle("No. of Entries");
+  reco_Q2lep_OffBeam_CM_SRCrest_PT_LFbtb_PID->GetXaxis()->SetTitle("reconstructed Q^{2} [GeV^{2}]");
+  reco_Q2lep_OffBeam_CM_SRCrest_PT_LFbtb_PID->SetMaximum(50.);
+  reco_Q2lep_OffBeam_CM_SRCrest_PT_LFbtb_PID->Draw("e1");
+  reco_Q2lep_OffBeam_CM_SRCrest_PT_LFbtb_PID->GetYaxis()->SetTitleOffset(1.5);
+
+  reco_Q2had_OffBeam_CM_SRCrest_PT_LFbtb_PID->SetMarkerColor(kAzure+2);
+  reco_Q2had_OffBeam_CM_SRCrest_PT_LFbtb_PID->SetLineColor(kAzure+2);
+  reco_Q2had_OffBeam_CM_SRCrest_PT_LFbtb_PID->SetMarkerStyle(20);
+  reco_Q2had_OffBeam_CM_SRCrest_PT_LFbtb_PID->SetMarkerSize(2);
+  reco_Q2had_OffBeam_CM_SRCrest_PT_LFbtb_PID->Draw("e1 same");
+  
+  TLegend *l28 = new TLegend(0.5, 0.75, 0.9, 0.9); 
+  l28 -> AddEntry(reco_Q2lep_OffBeam_CM_SRCrest_PT_LFbtb_PID, "lepton vertex", "lep");
+  l28 -> AddEntry(reco_Q2had_OffBeam_CM_SRCrest_PT_LFbtb_PID, "hadron vertex", "lep");
+  l28 -> Draw();  
+  
+  TText *t28 = drawPrelim(0.1, 0.91, 0.052, "MicroBooNE. 1.592e20 POT, stats only");
+  t28->Draw();
+
+  c28->Update();
+  c28->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/Q2_recotests_SRCrest_PT_LFbtb_OffBeam.pdf");   
+  c28->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/Q2_recotests_SRCrest_PT_LFbtb_OffBeam.eps");    
+
+  TCanvas *c29 = new TCanvas("c29", "c29", 900, 900);
+
+  reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom->SetMarkerColor(kRed+2);
+  reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom->SetLineColor(kRed+2);
+  reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom->SetMarkerStyle(20);
+  reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom->SetMarkerSize(2);
+  reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom->GetYaxis()->SetTitle("No. of Entries");
+  reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom->GetXaxis()->SetTitle("cos #gamma_{CM}");
+  reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom->SetMaximum(100.);
+  reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom->Draw("e1");
+  reco_angle_p1p2_OffBeam_nobtbLF_PT_PID_CM_zoom->GetYaxis()->SetTitleOffset(1.5);
+
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaEminus->SetMarkerColor(kAzure+2);
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaEminus->SetLineColor(kAzure+2);
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaEminus->SetMarkerStyle(20);
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaEminus->SetMarkerSize(2);
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaEminus->Draw("e1 same");
+
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaE->SetMarkerColor(kBlack);
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaE->SetLineColor(kBlack);
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaE->SetMarkerStyle(20);
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaE->SetMarkerSize(2);
+  reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaE->Draw("e1 same");
+  
+  TLegend *l29 = new TLegend(0.5, 0.75, 0.9, 0.9); 
+  l29 -> AddEntry(reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM, "Nominal reconstruction", "lep");
+  l29 -> AddEntry(reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaEminus, "E_{#nu}-#delta_{E}", "lep");
+  l29 -> AddEntry(reco_angle_SRCrest_PT_LFbtb_p1p2_OffBeam_PID_CM_deltaE, "E_{#nu}+#delta_{E}", "lep");
+  l29 -> Draw();  
+  
+  TText *t29 = drawPrelim(0.1, 0.91, 0.052, "MicroBooNE. 1.592e20 POT, stats only");
+  t29->Draw();
+
+  c29->Update();
+  c29->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/costhetaCM_testsdeltaE_PT_LFbtb_OffBeam.pdf");   
+  c29->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/costhetaCM_testsdeltaE_PT_LFbtb_OffBeam.eps");
+
+  TCanvas *c30 = new TCanvas("c30", "c30", 900, 900);
+
+  reco_Q2rat_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->SetMarkerColor(kRed+2);
+  reco_Q2rat_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->SetLineColor(kRed+2);
+  reco_Q2rat_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->SetMarkerStyle(20);
+  reco_Q2rat_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->SetMarkerSize(2);
+  reco_Q2rat_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->GetYaxis()->SetTitle("No. of Entries");
+  reco_Q2rat_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->GetXaxis()->SetTitle("difference reconstructed Q^{2} [GeV^{2}], lepton-hadron vertex");
+  reco_Q2rat_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->SetMaximum(40.);
+  reco_Q2rat_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->Draw("e1");
+  reco_Q2rat_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID->GetYaxis()->SetTitleOffset(1.5);
+
+  reco_Q2rat_OffBeam_CM_SRCrest_PT_LFbtb_PID->SetMarkerColor(kAzure+2);
+  reco_Q2rat_OffBeam_CM_SRCrest_PT_LFbtb_PID->SetLineColor(kAzure+2);
+  reco_Q2rat_OffBeam_CM_SRCrest_PT_LFbtb_PID->SetMarkerStyle(20);
+  reco_Q2rat_OffBeam_CM_SRCrest_PT_LFbtb_PID->SetMarkerSize(2);
+  reco_Q2rat_OffBeam_CM_SRCrest_PT_LFbtb_PID->Draw("e1 same");
+  
+  TLegend *l30 = new TLegend(0.5, 0.75, 0.9, 0.9); 
+  l30 -> AddEntry(reco_Q2rat_OffBeam_1binbtbCM_SRCrest_PT_LFbtb_PID, "1st bin (SRC candidates)", "lep");
+  l30 -> AddEntry(reco_Q2rat_OffBeam_CM_SRCrest_PT_LFbtb_PID, "no SRC candidates", "lep");
+  l30 -> Draw();  
+  
+  TText *t30 = drawPrelim(0.1, 0.91, 0.052, "MicroBooNE. 1.592e20 POT, stats only");
+  t30->Draw();
+
+  c30->Update();
+  c30->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/diffQ2_recotests_SRCrest_PT_LFbtb_OffBeam.pdf");   
+  c30->Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/diffQ2_recotests_SRCrest_PT_LFbtb_OffBeam.eps");
+
+   TGraph *gr31_x  = new TGraph(n1,recoq3xp1p2,recopTall);
+   TGraph *gr32_y  = new TGraph(n1,recoq3yp1p2,recopTall);
+   TGraph *gr33_z  = new TGraph(n1,recoq3zp1p2,recopTall);
+   TCanvas *c31 = new TCanvas("c31","",900, 900);
+
+   c31->SetGrid();
+   gr31_x->SetTitle("");
+   gr31_x->GetXaxis()->SetTitle("q_{3x} - (p_{1x}+p_{2x})");
+   gr31_x->GetYaxis()->SetTitle("reconstructed P_{T}");
+   gr31_x->SetMarkerColor(kRed);
+   gr31_x->Draw("A*");
+
+   //gr31_y->SetMarkerColor(kAzure);
+   //gr31_y->Draw("same A*");
+
+   //gr31_z->SetMarkerColor(kBlack);
+   //gr31_z->Draw("same A*");
+
+   c31->Update();
+   c31-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_diffq3p1p2x.pdf");
+   c31-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_diffq3p1p2x.eps");
+
+   TCanvas *c32 = new TCanvas("c32","",900, 900);
+
+   c32->SetGrid();
+   gr32_y->SetTitle("");
+   gr32_y->GetXaxis()->SetTitle("q_{3y} - (p_{1y}+p_{2y})");
+   gr32_y->GetYaxis()->SetTitle("reconstructed P_{T}");
+   gr32_y->SetMarkerColor(kRed);
+   gr32_y->Draw("A*");
+
+   c32->Update();
+   c32-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_diffq3p1p2y.pdf");
+   c32-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_diffq3p1p2y.eps");
+
+   TCanvas *c33 = new TCanvas("c33","",900, 900);
+
+   c33->SetGrid();
+   gr33_z->SetTitle("");
+   gr33_z->GetXaxis()->SetTitle("q_{3z} - (p_{1z}+p_{2z})");
+   gr33_z->GetYaxis()->SetTitle("reconstructed P_{T}");
+   //gr33_z->GetXaxis()->SetLimits(-0.1, 0.1);
+   gr33_z->SetMarkerColor(kRed);
+   gr33_z->Draw("A*");
+
+   c33->Update();
+   c33-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_diffq3p1p2z.pdf");
+   c33-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_diffq3p1p2z.eps");    
+
+   TGraph *gr34  = new TGraph(n6,recoq3zp1p2PT0,recocosCMPT0);
+   TCanvas *c34 = new TCanvas("c34","",900, 900);
+
+   c34->SetGrid();
+   gr34->SetTitle("");
+   gr34->GetXaxis()->SetTitle("q_{3z} - (p_{1z}+p_{2z})");
+   gr34->GetYaxis()->SetTitle("cos#gamma CM");
+   gr34->GetYaxis()->SetRangeUser(-1., 1);
+   //   gr34->GetYaxis()->SetLimits(-1., 1.);
+   gr34->SetMarkerColor(kRed);
+   gr34->Draw("A*");
+
+   c34->Update();
+   c34-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_diffq3p1p2z_vs_cosCM.pdf");
+   c34-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_diffq3p1p2z_vs_cosCM.eps");
+
+   TGraph *gr35  = new TGraph(n7,recopT_nobtb,recocCM_nobtb);
+   TCanvas *c35 = new TCanvas("c35","",900, 900);
+
+   c35->SetGrid();
+   gr35->SetTitle("");
+   gr35->GetXaxis()->SetTitle("reconstructed P_{T} [GeV/c]");
+   gr35->GetYaxis()->SetTitle("cos#gamma CM");
+   gr35->GetYaxis()->SetRangeUser(-1., 1);
+   //  gr35->GetYaxis()->SetLimits(-1., 1.);
+   gr35->SetMarkerColor(kRed);
+   gr35->Draw("A*");
+
+   c35->Update();
+   c35-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_PT_cosCM_nobtbLF.pdf");
+   c35-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_PT_cosCM_nobtbLF.eps");
+
+   /// fake
+   
+   TCanvas *cf = new TCanvas("cf", "cf", 900, 900);
+   selproton1_dEdx_vs_resrange_OffBeam_PID->SetTitle("");
+   selproton1_dEdx_vs_resrange_OffBeam_PID->GetXaxis()->SetTitle("residual range (cm)");
+   selproton1_dEdx_vs_resrange_OffBeam_PID->GetYaxis()->SetTitle("dE/dx (MeV/cm)");
+   selproton1_dEdx_vs_resrange_OffBeam_PID->Draw("colz");
+   gPad->SetRightMargin(0.15);
+
+   TLegend* legf = new TLegend(0.4, 0.65, .85, .9);
+   legf->AddEntry(graphmu, "Muon Expectation", "l");
+   legf->AddEntry(graph, "Proton Expectation", "l");
+   legf->AddEntry(f_dEdxVsRRMIP,"MIP expectation", "l");   
+   f_dEdxVsRR->Draw("same");
+   GetMuondEdxR();
+   f_dEdxVsRRMIP->Draw("same");
+   legf->Draw("same");
+
+   TText *tf = drawPrelim(0.3, 0.91, 0.045, "MicroBooNE");
+   tf->Draw();
+
+   cf->Update();
+   cf-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selproton1_dEdx_vs_resrange_1evt_PID_OffBeam.pdf");
+   cf-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selproton1_dEdx_vs_resrange_1evt_PID_OffBeam.eps");   
+
+   TCanvas *cf2 = new TCanvas("cf2", "cf2", 900, 900);
+   selprotondef_dEdx_vs_resrange_OffBeam_PID->SetTitle("");
+   selprotondef_dEdx_vs_resrange_OffBeam_PID->GetXaxis()->SetTitle("residual range (cm)");
+   selprotondef_dEdx_vs_resrange_OffBeam_PID->GetYaxis()->SetTitle("dE/dx (MeV/cm)");
+   selprotondef_dEdx_vs_resrange_OffBeam_PID->Draw("colz");
+   gPad->SetRightMargin(0.15);
+
+   TLegend* legf2 = new TLegend(0.4, 0.65, .85, .9);
+   legf2->AddEntry(graphmu, "Muon Expectation", "l");
+   legf2->AddEntry(graph, "Proton Expectation", "l");
+   legf2->AddEntry(f_dEdxVsRRMIP,"MIP expectation", "l");   
+   f_dEdxVsRR->Draw("same");
+   GetMuondEdxR();
+   f_dEdxVsRRMIP->Draw("same");
+   legf2->Draw("same");
+
+   TText *tf2 = drawPrelim(0.3, 0.91, 0.045, "MicroBooNE Preliminary");
+   tf2->Draw();
+
+   cf2->Update();
+   cf2-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selprotons_dEdx_vs_resrange_default_OffBeam.pdf");
+   cf2-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/PID_300_tune3/selprotons_dEdx_vs_resrange_default_OffBeam.eps");
+
+   TGraph *gr36  = new TGraph(n1,recoWnocut,recocLF);
+   TCanvas *c36 = new TCanvas("c36","",900, 900);
+
+   c36->SetGrid();
+   gr36->SetTitle("");
+   gr36->GetXaxis()->SetTitle("reconstructed invariant mass [GeV]");
+   gr36->GetYaxis()->SetTitle("cos#gamma lab frame");
+   //gr36->GetXaxis()->SetLimits(0., 3.);
+   gr36->GetYaxis()->SetRangeUser(-1., 1);
+   //gr36->GetYaxis()->SetLimits(-1., 1);
+   gr36->SetMarkerColor(kRed);
+   gr36->Draw("A*");
+
+   c36->Update();
+   c36-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_W_cosLF_nocuts.pdf");
+   c36-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_W_cosLF_nocuts.eps");
+
+   TGraph *gr37  = new TGraph(n1,recoxBnocut,recocLF);
+   TCanvas *c37 = new TCanvas("c37","",900, 900);
+
+   c37->SetGrid();
+   gr37->SetTitle("");
+   gr37->GetXaxis()->SetTitle("reconstructed x_{B}");
+   gr37->GetYaxis()->SetTitle("cos#gamma lab frame");
+   gr37->GetXaxis()->SetLimits(0., 4.);
+   gr37->GetYaxis()->SetRangeUser(-1., 1);
+   //gr37->GetYaxis()->SetLimits(-1., 1);
+   gr37->SetMarkerColor(kRed);
+   gr37->Draw("A*");
+
+   c37->Update();
+   c37-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_xB_cosLF_nocuts.pdf");
+   c37-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_xB_cosLF_nocuts.eps");
+
+   TGraph *gr38  = new TGraph(n8,recoW_nobtb_lowPT,recocCM);
+   TCanvas *c38 = new TCanvas("c38","",900, 900);
+
+   c38->SetGrid();
+   gr38->SetTitle("");
+   gr38->GetXaxis()->SetTitle("reconstructed invariant mas [GeV]");
+   gr38->GetYaxis()->SetTitle("cos#gamma CM");
+   //gr38->GetXaxis()->SetLimits(0., 3.);
+   gr38->GetYaxis()->SetRangeUser(-1., 1);
+   //   gr38->GetYaxis()->SetLimits(-1., 1);
+   gr38->SetMarkerColor(kRed);
+   gr38->Draw("A*");
+
+   c38->Update();
+   c38-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_W_cosCM_nobtbLF_lowPT.pdf");
+   c38-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_W_cosCM_nobtbLF_lowPT.eps");
+
+   TGraph *gr39  = new TGraph(n8,recoxB_nobtb_lowPT,recocCM);
+   TCanvas *c39 = new TCanvas("c39","",900, 900);
+
+   c39->SetGrid();
+   gr39->SetTitle("");
+   gr39->GetXaxis()->SetTitle("reconstructed x_{B}");
+   gr39->GetYaxis()->SetTitle("cos#gamma CM");
+   gr39->GetXaxis()->SetLimits(0., 4.);
+   gr39->GetYaxis()->SetRangeUser(-1., 1);
+   //   gr39->GetYaxis()->SetLimits(-1., 1);
+   gr39->SetMarkerColor(kRed);
+   gr39->Draw("A*");
+
+   c39->Update();
+   c39-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_xB_cosCM_nobtbLF_lowPT.pdf");
+   c39-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_xB_cosCM_nobtbLF_lowPT.eps");
+
+   TGraph *gr40  = new TGraph(n8,recoprel_nobtb_lowPT,recocCM);
+   TCanvas *c40 = new TCanvas("c40","",900, 900);
+
+   c40->SetGrid();
+   gr40->SetTitle("");
+   gr40->GetXaxis()->SetTitle("p_{pn-p2} [GeV/c]");
+   gr40->GetYaxis()->SetTitle("cos#gamma CM");
+   gr40->GetXaxis()->SetLimits(0., 1.);
+   //gr40->GetYaxis()->SetLimits(-1., 1);
+   gr40->GetYaxis()->SetRangeUser(-1., 1);
+   gr40->GetXaxis()->SetRangeUser(0., 1.25);
+   gr40->SetMarkerColor(kRed);
+   gr40->Draw("A*");
+
+   c40->Update();
+   c40-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_prel_cosCM_nobtbLF_lowPT.pdf");
+   c40-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_prel_cosCM_nobtbLF_lowPT.eps");
+
+   TGraph *gr41  = new TGraph(n1,recoprelnocut,recoQ2);
+   TCanvas *c41 = new TCanvas("c41","",900, 900);
+
+   c41->SetGrid();
+   gr41->SetTitle("");
+   gr41->GetXaxis()->SetTitle("p_{pn-p2} [GeV/c]");
+   gr41->GetYaxis()->SetTitle("reconstructed Q^{2} [GeV^{2}]");
+   gr41->GetXaxis()->SetLimits(0., 1.);
+   //gr41->GetYaxis()->SetLimits(-1., 1);
+   gr41->GetYaxis()->SetRangeUser(0., 2.);
+   gr41->GetXaxis()->SetRangeUser(0., 1.25);
+   gr41->SetMarkerColor(kRed);
+   gr41->Draw("A*");
+
+   c41->Update();
+   c41-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_prel_Q2_nocut.pdf");
+   c41-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_prel_Q2_nocut.eps");
+
+   TGraph *gr42  = new TGraph(n8,recoprel_nobtb_lowPT,recoQ2_nobtb_lowPT);
+   TCanvas *c42 = new TCanvas("c42","",900, 900);
+
+   c42->SetGrid();
+   gr42->SetTitle("");
+   gr42->GetXaxis()->SetTitle("p_{pn-p2} [GeV/c]");
+   gr42->GetYaxis()->SetTitle("reconstructed Q^{2} [GeV^{2}]");
+   gr42->GetXaxis()->SetLimits(0., 1.);
+   //gr42->GetYaxis()->SetLimits(-1., 1);
+   gr42->GetYaxis()->SetRangeUser(0., 2.);
+   gr42->GetXaxis()->SetRangeUser(0., 1.25);
+   gr42->SetMarkerColor(kRed);
+   gr42->Draw("A*");
+
+   c42->Update();
+   c42-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_prel_Q2_nobtb_lowPT.pdf");
+   c42-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_prel_Q2_nobtb_lowPT.eps");
+
+   TGraph *gr43  = new TGraph(n1,recoq3_nocut,recoq0_nocut);
+   TCanvas *c43 = new TCanvas("c43","",900, 900);
+
+   c43->SetGrid();
+   gr43->SetTitle("");
+   gr43->GetXaxis()->SetTitle("reconstructed |q_{3}| [GeV/c]");
+   gr43->GetYaxis()->SetTitle("reconstructed #omega [GeV]");
+   //gr43->GetXaxis()->SetLimits(0., 1.);
+   //gr43->GetYaxis()->SetLimits(-1., 1);
+   gr43->GetYaxis()->SetRangeUser(0., 1.5);
+   gr43->GetXaxis()->SetRangeUser(0., 2.5);
+   gr43->SetMarkerColor(kRed);
+   gr43->Draw("A*");
+
+   c43->Update();
+   c43-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_q3_q0_nocuts.pdf");
+   c43-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_q3_q0_nocuts.eps");
+
+   TGraph *gr44  = new TGraph(n8,recoq3_nobtb_lowPT,recoq0_nobtb_lowPT);
+   TCanvas *c44 = new TCanvas("c44","",900, 900);
+
+   c44->SetGrid();
+   gr44->SetTitle("");
+   gr44->GetXaxis()->SetTitle("reconstructed |q_{3}| [GeV/c]");
+   gr44->GetYaxis()->SetTitle("reconstructed #omega [GeV]");
+   //gr44->GetXaxis()->SetLimits(0., 1.);
+   //gr44->GetYaxis()->SetLimits(-1., 1);
+   gr44->GetYaxis()->SetRangeUser(0., 1.5);
+   gr44->GetXaxis()->SetRangeUser(0., 2.5);
+   gr44->SetMarkerColor(kRed);
+   gr44->Draw("A*");
+
+   c44->Update();
+   c44-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_q3_q0_nobtb_lowPT.pdf");
+   c44-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_q3_q0_nobtb_lowPT.eps");
+
+   TGraph *gr45  = new TGraph(n1,recocp1q3_nocut,y33);
+   TCanvas *c45 = new TCanvas("c45","",900, 900);
+
+   c45->SetGrid();
+   gr45->SetTitle("");
+   gr45->GetXaxis()->SetTitle("cos #theta_{p1q3}");
+   gr45->GetYaxis()->SetTitle("cos #gamma_{CM}");
+   //gr45->GetXaxis()->SetLimits(0., 1.);
+   //gr45->GetYaxis()->SetLimits(-1., 1);
+   gr45->GetYaxis()->SetRangeUser(-1., 1.);
+   gr45->GetXaxis()->SetRangeUser(-1., 1.);
+   gr45->SetMarkerColor(kRed);
+   gr45->Draw("A*");
+
+   c45->Update();
+   c45-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_cp1q3_cCM_nocuts.pdf");
+   c45-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_cp1q3_cCM_nocuts.eps");
+
+   TGraph *gr46  = new TGraph(n1,recocp2q3_nocut,y33);
+   TCanvas *c46 = new TCanvas("c46","",900, 900);
+
+   c46->SetGrid();
+   gr46->SetTitle("");
+   gr46->GetXaxis()->SetTitle("cos #theta_{p2q3}");
+   gr46->GetYaxis()->SetTitle("cos #gamma_{CM}");
+   //gr46->GetXaxis()->SetLimits(0., 1.);
+   //gr46->GetYaxis()->SetLimits(-1., 1);
+   gr46->GetYaxis()->SetRangeUser(-1., 1.);
+   gr46->GetXaxis()->SetRangeUser(-1., 1.);
+   gr46->SetMarkerColor(kRed);
+   gr46->Draw("A*");
+
+   c46->Update();
+   c46-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_cp2q3_cCM_nocuts.pdf");
+   c46-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_cp2q3_cCM_nocuts.eps");
+
+   TGraph *gr47  = new TGraph(n1,recocpnq3_nocut,y33);
+   TCanvas *c47 = new TCanvas("c47","",900, 900);
+
+   c47->SetGrid();
+   gr47->SetTitle("");
+   gr47->GetXaxis()->SetTitle("cos #theta_{pnq3}");
+   gr47->GetYaxis()->SetTitle("cos #gamma_{CM}");
+   //gr47->GetXaxis()->SetLimits(0., 1.);
+   //gr47->GetYaxis()->SetLimits(-1., 1);
+   gr47->GetYaxis()->SetRangeUser(-1., 1.);
+   gr47->GetXaxis()->SetRangeUser(-1., 1.);
+   gr47->SetMarkerColor(kRed);
+   gr47->Draw("A*");
+
+   c47->Update();
+   c47-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_cpnq3_cCM_nocuts.pdf");
+   c47-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_cpnq3_cCM_nocuts.eps");
+
+   TGraph *gr48  = new TGraph(n1,recocp1q3_nocut,recoQ2);
+   TCanvas *c48 = new TCanvas("c48","",900, 900);
+
+   c48->SetGrid();
+   gr48->SetTitle("");
+   gr48->GetXaxis()->SetTitle("cos #theta_{p1q3}");
+   gr48->GetYaxis()->SetTitle("Q^{2} [GeV^{2}]");
+   //gr48->GetXaxis()->SetLimits(0., 1.);
+   //gr48->GetYaxis()->SetLimits(-1., 1);
+   gr48->GetYaxis()->SetRangeUser(0., 2.);
+   gr48->GetXaxis()->SetRangeUser(-1., 1.);
+   gr48->SetMarkerColor(kRed);
+   gr48->Draw("A*");
+
+   c48->Update();
+   c48-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_cp1q3_Q2_nocuts.pdf");
+   c48-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_cp1q3_Q2_nocuts.eps");
+
+   TGraph *gr49  = new TGraph(n1,recocp2q3_nocut,recoQ2);
+   TCanvas *c49 = new TCanvas("c49","",900, 900);
+
+   c49->SetGrid();
+   gr49->SetTitle("");
+   gr49->GetXaxis()->SetTitle("cos #theta_{p2q3}");
+   gr49->GetYaxis()->SetTitle("Q^{2} [GeV^{2}]");
+   //gr49->GetXaxis()->SetLimits(0., 1.);
+   //gr49->GetYaxis()->SetLimits(-1., 1);
+   gr49->GetYaxis()->SetRangeUser(0., 2.);
+   gr49->GetXaxis()->SetRangeUser(-1., 1.);
+   gr49->SetMarkerColor(kRed);
+   gr49->Draw("A*");
+
+   c49->Update();
+   c49-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_cp2q3_Q2_nocuts.pdf");
+   c49-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_cp2q3_Q2_nocuts.eps");
+
+   TGraph *gr50  = new TGraph(n1,recocpnq3_nocut,recoQ2);
+   TCanvas *c50 = new TCanvas("c50","",900, 900);
+
+   c50->SetGrid();
+   gr50->SetTitle("");
+   gr50->GetXaxis()->SetTitle("cos #theta_{pnq3}");
+   gr50->GetYaxis()->SetTitle("Q^{2} [GeV^{2}]");
+   //gr50->GetXaxis()->SetLimits(0., 1.);
+   //gr50->GetYaxis()->SetLimits(-1., 1);
+   gr50->GetYaxis()->SetRangeUser(0., 2.);
+   gr50->GetXaxis()->SetRangeUser(-1., 1);
+   gr50->SetMarkerColor(kRed);
+   gr50->Draw("A*");
+
+   c50->Update();
+   c50-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_cpnq3_Q2_nocuts.pdf");
+   c50-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_cpnq3_Q2_nocuts.eps");
+
+   TGraph *gr51  = new TGraph(n8,recocp1q3_nobtb_lowPT,recocCM);
+   TCanvas *c51 = new TCanvas("c51","",900, 900);
+
+   c51->SetGrid();
+   gr51->SetTitle("");
+   gr51->GetXaxis()->SetTitle("cos #theta_{p1q3}");
+   gr51->GetYaxis()->SetTitle("cos #gamma_{CM}");
+   //gr51->GetXaxis()->SetLimits(0., 1.);
+   //gr51->GetYaxis()->SetLimits(-1., 1);
+   gr51->GetYaxis()->SetRangeUser(-1., 1.);
+   gr51->GetXaxis()->SetRangeUser(-1., 1.);
+   gr51->SetMarkerColor(kRed);
+   gr51->Draw("A*");
+
+   c51->Update();
+   c51-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_cp1q3_cCM_nobtb_lowPT.pdf");
+   c51-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_cp1q3_cCM_nobtb_lowPT.eps");
+
+   TGraph *gr52  = new TGraph(n8,recocp2q3_nobtb_lowPT,recocCM);
+   TCanvas *c52 = new TCanvas("c52","",900, 900);
+
+   c52->SetGrid();
+   gr52->SetTitle("");
+   gr52->GetXaxis()->SetTitle("cos #theta_{p2q3}");
+   gr52->GetYaxis()->SetTitle("cos #gamma_{CM}");
+   //gr52->GetXaxis()->SetLimits(0., 1.);
+   //gr52->GetYaxis()->SetLimits(-1., 1);
+   gr52->GetYaxis()->SetRangeUser(-1., 1.);
+   gr52->GetXaxis()->SetRangeUser(-1., 1.);
+   gr52->SetMarkerColor(kRed);
+   gr52->Draw("A*");
+
+   c52->Update();
+   c52-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_cp2q3_cCM_nobtb_lowPT.pdf");
+   c52-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_cp2q3_cCM_nobtb_lowPT.eps");
+
+   TGraph *gr53  = new TGraph(n8,recocpnq3_nobtb_lowPT,recocCM);
+   TCanvas *c53 = new TCanvas("c53","",900, 900);
+
+   c53->SetGrid();
+   gr53->SetTitle("");
+   gr53->GetXaxis()->SetTitle("cos #theta_{pnq3}");
+   gr53->GetYaxis()->SetTitle("cos #gamma_{CM}");
+   //gr53->GetXaxis()->SetLimits(0., 1.);
+   //gr53->GetYaxis()->SetLimits(-1., 1);
+   gr53->GetYaxis()->SetRangeUser(-1., 1.);
+   gr53->GetXaxis()->SetRangeUser(-1., 1.);
+   gr53->SetMarkerColor(kRed);
+   gr53->Draw("A*");
+
+   c53->Update();
+   c53-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_cpnq3_cCM_nobtb_lowPT.pdf");
+   c53-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_cpnq3_cCM_nobtb_lowPT.eps");
+
+   TGraph *gr54  = new TGraph(n8,recocp1q3_nobtb_lowPT,recoQ2_nobtb_lowPT);
+   TCanvas *c54 = new TCanvas("c54","",900, 900);
+
+   c54->SetGrid();
+   gr54->SetTitle("");
+   gr54->GetXaxis()->SetTitle("cos #theta_{p1q3}");
+   gr54->GetYaxis()->SetTitle("Q^{2} [GeV^{2}]");
+   //gr54->GetXaxis()->SetLimits(0., 1.);
+   //gr54->GetYaxis()->SetLimits(-1., 1);
+   gr54->GetYaxis()->SetRangeUser(0., 2);
+   gr54->GetXaxis()->SetRangeUser(-1., 1.);
+   gr54->SetMarkerColor(kRed);
+   gr54->Draw("A*");
+
+   c54->Update();
+   c54-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_cp1q3_Q2_nobtb_lowPT.pdf");
+   c54-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_cp1q3_Q2_nobtb_lowPT.eps");
+
+   TGraph *gr55  = new TGraph(n8,recocp2q3_nobtb_lowPT,recoQ2_nobtb_lowPT);
+   TCanvas *c55 = new TCanvas("c55","",900, 900);
+
+   c55->SetGrid();
+   gr55->SetTitle("");
+   gr55->GetXaxis()->SetTitle("cos #theta_{p2q3}");
+   gr55->GetYaxis()->SetTitle("Q^{2} [GeV^{2}]");
+   //gr55->GetXaxis()->SetLimits(0., 1.);
+   //gr55->GetYaxis()->SetLimits(-1., 1);
+   gr55->GetXaxis()->SetRangeUser(-1., 1.);
+   gr55->GetYaxis()->SetRangeUser(0., 2.);
+   gr55->SetMarkerColor(kRed);
+   gr55->Draw("A*");
+
+   c55->Update();
+   c55-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_cp2q3_Q2_nobtb_lowPT.pdf");
+   c55-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_cp2q3_Q2_nobtb_lowPT.eps");
+
+   TGraph *gr56  = new TGraph(n8,recocpnq3_nobtb_lowPT,recoQ2_nobtb_lowPT);
+   TCanvas *c56 = new TCanvas("c56","",900, 900);
+
+   c56->SetGrid();
+   gr56->SetTitle("");
+   gr56->GetXaxis()->SetTitle("cos #theta_{pnq3}");
+   gr56->GetYaxis()->SetTitle("Q^{2} [GeV^{2}]");
+   //gr56->GetXaxis()->SetLimits(0., 1.);
+   //gr56->GetYaxis()->SetLimits(-1., 1);
+   gr56->GetYaxis()->SetRangeUser(0., 2.);
+   gr56->GetXaxis()->SetRangeUser(-1., 1.);
+   gr56->SetMarkerColor(kRed);
+   gr56->Draw("A*");
+
+   c56->Update();
+   c56-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_cpnq3_Q2_nobtb_lowPT.pdf");
+   c56-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_cpnq3_Q2_nobtb_lowPT.eps");
+
+   TGraph *gr57  = new TGraph(n1,recoprojprel_nocut,y33);
+   TCanvas *c57 = new TCanvas("c57","",900, 900);
+   TH1F *hr57 = c57->DrawFrame(0.,-1.,1.25,1.);
+
+   c57->SetGrid();
+   gr57->SetTitle("");
+   gr57->GetXaxis()->SetTitle("p^{#perp}_{pn-p2} [GeV/c]");
+   gr57->GetYaxis()->SetTitle("cos #gamma_{CM}");
+   //gr57->GetXaxis()->SetLimits(0., 1.);
+   //gr57->GetYaxis()->SetLimits(-1., 1);
+   gr57->GetYaxis()->SetRangeUser(-1., 1.);
+   gr57->GetXaxis()->SetRangeUser(0., 1.25);
+   //gr57->GetXaxis()->SetRangeUser(-1., 1.);
+   gr57->SetMarkerColor(kRed);
+   gr57->GetXaxis()->SetRangeUser(0., 1.25);
+   gr57->Draw("same A*");
+
+   c57->Update();
+   c57-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_prelperp_cCM_nocuts.pdf");
+   c57-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_prelperp_cCM_nocuts.eps");
+
+   TGraph *gr58  = new TGraph(n1,recoprojprelp1p2_nocut,y33);
+   TCanvas *c58 = new TCanvas("c58","",900, 900);
+   TH1F *hr58 = c58->DrawFrame(0.,-1.,1.25,1.);
+
+   c58->SetGrid();
+   gr58->SetTitle("");
+   gr58->GetXaxis()->SetTitle("p^{#perp}_{p1-p2} [GeV/c]");
+   gr58->GetYaxis()->SetTitle("cos #gamma_{CM}");
+   //gr58->GetXaxis()->SetLimits(0., 1.);
+   //gr58->GetYaxis()->SetLimits(-1., 1);
+   gr58->GetYaxis()->SetRangeUser(-1., 1.);
+   gr58->GetXaxis()->SetRangeUser(0., 1.25);
+   //gr58->GetXaxis()->SetRangeUser(-1., 1.);
+   gr58->SetMarkerColor(kRed);
+   gr58->GetXaxis()->SetLimits(0., 1.25);
+   gr58->Draw("same A*");
+
+   c58->Update();
+   c58-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_prelp1p2perp_cCM_nocuts.pdf");
+   c58-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_prelp1p2perp_cCM_nocuts.eps");
+
+   TGraph *gr59  = new TGraph(n1,recoprojptot_nocut,y33);
+   TCanvas *c59 = new TCanvas("c59","",900, 900);
+   TH1F *hr59 = c59->DrawFrame(0.,-1.,1.25,1.);
+
+   c59->SetGrid();
+   gr59->SetTitle("");
+   gr59->GetXaxis()->SetTitle("p^{#perp}_{pn+p2} [GeV/c]");
+   gr59->GetYaxis()->SetTitle("cos #gamma_{CM}");
+   //gr59->GetXaxis()->SetLimits(0., 1.);
+   //gr59->GetYaxis()->SetLimits(-1., 1);
+   gr59->GetYaxis()->SetRangeUser(-1., 1.);
+   gr59->GetXaxis()->SetRangeUser(0., 1.25);
+   //gr59->GetXaxis()->SetRangeUser(-1., 1.);
+   gr59->SetMarkerColor(kRed);
+   gr59->GetXaxis()->SetLimits(0., 1.25);
+   gr59->Draw("same A*");
+
+   c59->Update();
+   c59-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_ptotperp_cCM_nocuts.pdf");
+   c59-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_ptotperp_cCM_nocuts.eps");
+
+   TGraph *gr60  = new TGraph(n1,recoprojptotp1p2_nocut,y33);
+   TCanvas *c60 = new TCanvas("c60","",900, 900);
+   TH1F *hr60 = c60->DrawFrame(0.,-1.,1.25,1.);
+
+   c60->SetGrid();
+   gr60->SetTitle("");
+   gr60->GetXaxis()->SetTitle("p^{#perp}_{p1+p2} [GeV/c]");
+   gr60->GetYaxis()->SetTitle("cos #gamma_{CM}");
+   //gr60->GetXaxis()->SetLimits(0., 1.);
+   //gr60->GetYaxis()->SetLimits(-1., 1);
+   gr60->GetYaxis()->SetRangeUser(-1., 1.);
+   gr60->GetXaxis()->SetRangeUser(0., 1.25);
+   //gr60->GetXaxis()->SetRangeUser(-1., 1.);
+   gr60->SetMarkerColor(kRed);
+   gr60->GetXaxis()->SetLimits(0., 1.25);
+   gr60->Draw("same A*");
+
+   c60->Update();
+   c60-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_ptotp1p2perp_cCM_nocuts.pdf");
+   c60-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_ptotp1p2perp_cCM_nocuts.eps");
+
+   TGraph *gr61  = new TGraph(n8,recoprojprel_nobtb_lowPT,recocCM);
+   TCanvas *c61 = new TCanvas("c61","",900, 900);
+   TH1F *hr61 = c61->DrawFrame(0.,-1.,1.25,1.);
+
+   c61->SetGrid();
+   gr61->SetTitle("");
+   gr61->GetXaxis()->SetTitle("p^{#perp}_{pn-p2} [GeV/c]");
+   gr61->GetYaxis()->SetTitle("cos #gamma_{CM}");
+   //gr61->GetXaxis()->SetLimits(0., 1.);
+   //gr61->GetYaxis()->SetLimits(-1., 1);
+   gr61->GetYaxis()->SetRangeUser(-1., 1.);
+   gr61->GetXaxis()->SetRangeUser(0., 1.25);
+   //gr61->GetXaxis()->SetRangeUser(-1., 1.);
+   gr61->SetMarkerColor(kRed);
+   gr61->GetXaxis()->SetLimits(0., 1.25);
+   gr61->Draw("same A*");
+
+   c61->Update();
+   c61-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_prelperp_cCM_nobtb_lowPT.pdf");
+   c61-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_prelperp_cCM_nobtb_lowPT.eps");
+
+   TGraph *gr62  = new TGraph(n8,recoprojprelp1p2_nobtb_lowPT,recocCM);
+   TCanvas *c62 = new TCanvas("c62","",900, 900);
+   TH1F *hr62 = c62->DrawFrame(0.,-1.,1.25,1.);
+
+   c62->SetGrid();
+   gr62->SetTitle("");
+   gr62->GetXaxis()->SetTitle("p^{#perp}_{p1-p2} [GeV/c]");
+   gr62->GetYaxis()->SetTitle("cos #gamma_{CM}");
+   //gr62->GetXaxis()->SetLimits(0., 1.);
+   //gr62->GetYaxis()->SetLimits(-1., 1);
+   gr62->GetYaxis()->SetRangeUser(-1., 1.);
+   gr62->GetXaxis()->SetRangeUser(0., 1.25);
+   //gr62->GetXaxis()->SetRangeUser(-1., 1.);
+   gr62->SetMarkerColor(kRed);
+   gr62->GetXaxis()->SetLimits(0., 1.25);
+   gr62->Draw("same A*");
+
+   c62->Update();
+   c62-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_prelp1p2perp_cCM_nobtb_lowPT.pdf");
+   c62-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_prelp1p2perp_cCM_nobtb_lowPT.eps");
+
+   TGraph *gr63  = new TGraph(n8,recoprojptot_nobtb_lowPT,recocCM);
+   TCanvas *c63 = new TCanvas("c63","",900, 900);
+   TH1F *hr63 = c63->DrawFrame(0.,-1.,1.25,1.);
+
+   c63->SetGrid();
+   gr63->SetTitle("");
+   gr63->GetXaxis()->SetTitle("p^{#perp}_{pn+p2} [GeV/c]");
+   gr63->GetYaxis()->SetTitle("cos #gamma_{CM}");
+   gr63->GetXaxis()->SetLimits(0., 1.25);
+   //gr63->GetYaxis()->SetLimits(-1., 1);
+   gr63->GetYaxis()->SetRangeUser(-1., 1.);
+   gr63->GetXaxis()->SetRangeUser(0., 1.25);
+   //gr63->GetXaxis()->SetRangeUser(-1., 1.);
+   gr63->GetXaxis()->SetLimits(0., 1.25);
+   gr63->SetMarkerColor(kRed);
+   gr63->Draw("same A*");
+
+   c63->Update();
+   c63-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_ptotperp_cCM_nobtb_lowPT.pdf");
+   c63-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_ptotperp_cCM_nobtb_lowPT.eps");
+
+   TGraph *gr64  = new TGraph(n8,recoprojptotp1p2_nobtb_lowPT,recocCM);
+   TCanvas *c64 = new TCanvas("c64","",900, 900);
+   TH1F *hr64 = c64->DrawFrame(0.,-1.,1.25,1.);
+
+   c64->SetGrid();
+   gr64->SetTitle("");
+   gr64->GetXaxis()->SetTitle("p^{#perp}_{p1+p2} [GeV/c]");
+   gr64->GetYaxis()->SetTitle("cos #gamma_{CM}");
+   gr64->GetXaxis()->SetLimits(0., 1.25);
+   //gr64->GetYaxis()->SetLimits(-1., 1);
+   gr64->GetYaxis()->SetRangeUser(-1., 1.);
+   gr64->GetXaxis()->SetRangeUser(0., 1.25);
+   //gr64->GetXaxis()->SetMaximum(1.25);
+   gr64->SetMarkerColor(kRed);
+   gr64->GetXaxis()->SetLimits(0., 1.25);
+   gr64->Draw("same A*");
+
+   c64->Update();
+   c64-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_ptotp1p2perp_cCM_nobtb_lowPT.pdf");
+   c64-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_ptotp1p2perp_cCM_nobtb_lowPT.eps");   
+
+   Int_t n = 1;
+   Double_t x[n], y[n];
+   for (Int_t i=0; i<n; i++) {
+      x[i] = 0.5;
+      y[i] = ratioCM;
+   }
+
+   //TGraph *gr65  = new TGraph(1,baseX,result);
+   TGraph *gr65  = new TGraph(n,x,y);
+   TCanvas *c65 = new TCanvas("c65","",900, 900);
+   TH1F *hr65 = c65->DrawFrame(0.,0.,1.,1.);
+   //TH1F *hr65 = c65->DrawFrame(0.,-1.,1.25,1.);
+
+   c65->SetGrid();
+   gr65->SetTitle("");
+   gr65->GetXaxis()->SetTitle("Argon");
+   gr65->GetYaxis()->SetTitle("fraction #gamma/A");
+   gr65->GetXaxis()->SetLimits(0., 1.);
+   gr65->GetYaxis()->SetLimits(0., 1);
+   gr65->GetYaxis()->SetRangeUser(0., 1.);
+   gr65->GetXaxis()->SetRangeUser(0., 1.);
+   //gr65->GetXaxis()->SetMaximum(1.);
+   gr65->SetMarkerColor(kRed);
+   //gr65->GetXaxis()->SetLimits(0., 1.25);
+   gr65->Draw("same A*");
+
+   c65->Update();
+   c65-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/ratiocCM_nobtb_lowPT.pdf");
+   c65-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/ratiocCM_nobtb_lowPT.eps");
+
+   ///////
+
+   TGraph *gr66  = new TGraph(n2,recopTall,y22);
+   TCanvas *c66 = new TCanvas("c66","",900, 900);
+
+   //   TBox *fcut=new TBox(0,-0.9,0.3,1.);
+   //   fcut->SetFillColor(kYellow);
+   //   fcut->Draw();
+
+   c66->SetGrid();
+
+   gr66->SetTitle("");
+   gr66->GetXaxis()->SetTitle("P^{T}_{miss} [GeV/c]");
+   gr66->GetYaxis()->SetTitle("cos #gamma_{lab}");
+   gr66->GetYaxis()->SetRangeUser(-1., 1);
+   gr66->GetXaxis()->SetLimits(0., 1.8);
+   gr66->SetMarkerColor(kRed);
+
+   gr66->Draw("A*");
+
+   TLine *fbtb=new TLine(0,-0.9,1.8,-0.9);
+   fbtb->SetLineColor(kBlue);
+   fbtb->SetLineWidth(2);
+   fbtb->Draw("same");
+
+   TLine *fpt=new TLine(0.3,-1,0.3,1.);
+   fpt->SetLineColor(kGreen+3);
+   fpt->SetLineWidth(2);
+   fpt->Draw("same");
+
+   //   TBox *fcut=new TBox(0,-0.9,0.3,1.);
+   //fcut->SetFillColor(kYellow);
+   //fcut->Draw("same");
+
+
+   TLegend *lgr66 = new TLegend(0.53, 0.8, 0.9, 0.9);
+   lgr66 -> AddEntry(gr66, "MicroBooNE on-beam data", "p");
+   lgr66 ->SetTextSize(0.025);
+   lgr66 -> Draw();
+
+   c66->Update();
+   c66-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_costheta_lab_vs_pT_300.pdf");
+   c66-> Print("/uboone/app/users/rcastill/ubooneprefilterv06_26_01_13XSEC/work/DataMC/Plots/angles_data/gr_costheta_lab_vs_pT_300.eps");
+
+   
+}
