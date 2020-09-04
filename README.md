@@ -3,6 +3,7 @@ code repository for the muon neutrino CC2Proton analysis at uB (MCC8)
 
 Scripts in this repository are for offline analyisis: 
 
+Offline analysis can be run with: localProducts_larsoft_v06_26_01_13_e10_prof
 
 analysisOnBeam: scripts for OnBeam data. Input root file: "/uboone/data/users/rcastill/CC2PFiles/data/OnBeam.root"
   #hanalysis_fOnBeam_PID.C (&.h), running using runhanalysis_PID_OnBeam.C: 
